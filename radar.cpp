@@ -514,6 +514,7 @@ void DrawOverview()
 		iY = ImGui::GetCursorScreenPos().y;
 		iW = ImGui::GetContentRegionAvail().x;
 		iH = ImGui::GetContentRegionAvail().y;
+
 		ImU32 color;
 		if (g_Local.iTeam == 1)
 			color = Red();
@@ -521,7 +522,6 @@ void DrawOverview()
 			color = Blue();
 		else
 			color = White();
-
 		ImGui::GetCurrentWindow()->DrawList->AddTriangleFilled({ IM_ROUND(iX + iW / 2 - cvar.radar_point_size) , IM_ROUND(iY + iH / 2) }, { IM_ROUND(iX + iW / 2), IM_ROUND(iY + iH / 2) - cvar.radar_point_size / 2 }, { IM_ROUND(iX + iW / 2) , IM_ROUND(iY + iH / 2) - cvar.radar_point_size }, color);
 		ImGui::GetCurrentWindow()->DrawList->AddTriangleFilled({ IM_ROUND(iX + iW / 2 + cvar.radar_point_size) , IM_ROUND(iY + iH / 2) }, { IM_ROUND(iX + iW / 2), IM_ROUND(iY + iH / 2) - cvar.radar_point_size / 2 }, { IM_ROUND(iX + iW / 2) , IM_ROUND(iY + iH / 2) - cvar.radar_point_size }, color);
 	}
