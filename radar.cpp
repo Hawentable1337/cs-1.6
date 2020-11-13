@@ -213,7 +213,7 @@ void VectorRotateZ(const float* in, float angle, float* out)
 	out[1] = s * in[0] + c * in[1];
 	out[2] = in[2];
 }
-float test1, test2;
+
 void DrawOverviewEntities()
 {
 	if (!cvar.radar || !bAliveLocal())
@@ -510,8 +510,6 @@ void DrawOverview()
 	ImGui::SetNextWindowSize(ImVec2(150, 150), ImGuiCond_Once);
 	ImGui::Begin("overview", NULL, ImGuiWindowFlags_NoTitleBar);
 	{
-		SliderFloat("test1", &test1, -2, 2);
-		SliderFloat("test2", &test2, -2, 2);
 		iX = ImGui::GetCursorScreenPos().x;
 		iY = ImGui::GetCursorScreenPos().y;
 		iW = ImGui::GetContentRegionAvail().x;
