@@ -120,6 +120,11 @@ void LoadOverview(char* levelname)
 	yTile = i * 3;
 }
 
+static int gcd(int a, int b) 
+{
+	return (b == 0) ? a : gcd(b, a % b);
+}
+
 void DrawOverviewLayer()
 {
 	if (!bInitializeImGui)
@@ -139,8 +144,8 @@ void DrawOverviewLayer()
 	{
 		float vStepRight[2], vStepUp[2], inner[2], outer[2];
 		float z = ((90.0f - vAngle[0]) / 90.0f) * m_OverviewData.layersHeights[0];
-		float xStep = (2 * 4096.0f / cvar.radar_zoom) / xTile;
-		float yStep = -(2 * 4096.0f / (cvar.radar_zoom * (4.f / 3.f))) / yTile;
+		float xStep = (8192.f / cvar.radar_zoom) / xTile;
+		float yStep = -(8192.f / (cvar.radar_zoom * (4.f / 3.f))) / yTile;
 		float angle = (float)((vAngle[1] + 90.0) * (M_PI / 180));
 		if (m_OverviewData.rotated)
 			angle -= float(M_PI / 2);
@@ -157,7 +162,7 @@ void DrawOverviewLayer()
 			tile_x = (float)(origin_tiley - (1.0 / 1024) * m_OverviewData.zoom * vEye[1]);
 		}
 		else 
-		{
+		{ 
 			float origin_tilex = (float)(3.f + m_OverviewData.zoom * (1.0 / 1024.0) * m_OverviewData.origin[0]);
 			float origin_tiley = (float)(4.f + m_OverviewData.zoom * (1.0 / 1024.0) * m_OverviewData.origin[1]);
 			tile_x = (float)(origin_tilex - (1.0 / 1024) * m_OverviewData.zoom * vEye[0]);
@@ -208,7 +213,7 @@ void VectorRotateZ(const float* in, float angle, float* out)
 	out[1] = s * in[0] + c * in[1];
 	out[2] = in[2];
 }
-
+float test1, test2;
 void DrawOverviewEntities()
 {
 	if (!cvar.radar || !bAliveLocal())
@@ -260,8 +265,8 @@ void DrawOverviewEntities()
 		aim[1] = ent->origin[1] - vEye[1];
 		aim[2] = ent->origin[2] - vEye[2];
 		VectorRotateZ(aim, -vAngle[1], newaim);
-		screenx = iX + iW / 2 - int(newaim[1] / cvar.radar_zoom * m_OverviewData.zoom * 0.3f * iW / 2 / 160);
-		screeny = iY + iH / 2 - int(newaim[0] / cvar.radar_zoom * m_OverviewData.zoom * 0.4f * iH / 2 / 160);
+		screenx = iX + iW / 2 - int(newaim[1] / cvar.radar_zoom * m_OverviewData.zoom * 0.3f * iW / 2 / (ImGui::GetIO().DisplaySize.x / 6.7));
+		screeny = iY + iH / 2 - int(newaim[0] / cvar.radar_zoom * m_OverviewData.zoom * 0.4f * iH / 2 / (ImGui::GetIO().DisplaySize.y / 5.1));
 		if (screenx > iX + iW / 2 + iW / 2 - boxsize - 2)
 			screenx = iX + iW / 2 + iW / 2 - boxsize - 2;
 		if (screenx < iX + iW / 2 - iW / 2 + boxsize + 3)
@@ -505,6 +510,8 @@ void DrawOverview()
 	ImGui::SetNextWindowSize(ImVec2(150, 150), ImGuiCond_Once);
 	ImGui::Begin("overview", NULL, ImGuiWindowFlags_NoTitleBar);
 	{
+		SliderFloat("test1", &test1, -2, 2);
+		SliderFloat("test2", &test2, -2, 2);
 		iX = ImGui::GetCursorScreenPos().x;
 		iY = ImGui::GetCursorScreenPos().y;
 		iW = ImGui::GetContentRegionAvail().x;
