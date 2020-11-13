@@ -1031,7 +1031,7 @@ void RageAimbot(struct usercmd_s* cmd)
 
 	if (iTargetRage)
 	{
-		QAngle QAimAngles, QSmoothAngles;
+		QAngle QAimAngles;
 
 		Vector vEye = pmove->origin + pmove->view_ofs;
 

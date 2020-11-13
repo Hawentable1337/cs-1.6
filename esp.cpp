@@ -138,8 +138,6 @@ void DrawPlayerSoundIndexEsp()
 			continue;
 		if (ent->curstate.messagenum == g_Engine.GetEntityByIndex(pmove->player_index + 1)->curstate.messagenum)
 			continue;
-		if (sound_index.index == pmove->player_index + 1)
-			continue;
 
 		if (cvar.visual_sound_steps)
 		{

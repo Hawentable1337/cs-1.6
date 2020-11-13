@@ -169,6 +169,7 @@
     <ClCompile Include="imgui\gl3w.cpp" />
     <ClCompile Include="imgui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="model.cpp" />
+    <ClCompile Include="radar.cpp" />
     <ClCompile Include="resources\gl3winit.cpp" />
     <ClCompile Include="sound.cpp" />
     <ClCompile Include="client.cpp" />
@@ -234,6 +235,7 @@
     <ClInclude Include="imgui\gl3w.h" />
     <ClInclude Include="imgui\imgui_impl_opengl3.h" />
     <ClInclude Include="model.h" />
+    <ClInclude Include="radar.h" />
     <ClInclude Include="resources\gl3winit.h" />
     <ClInclude Include="sound.h" />
     <ClInclude Include="client.h" />

@@ -4,7 +4,6 @@ HWND hGameWnd;
 WNDPROC hGameWndProc;
 LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-bool bInitializeImGui = false;
 LRESULT CALLBACK HOOK_WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	if ((bInputActive || bShowMenu))
@@ -14,6 +13,7 @@ LRESULT CALLBACK HOOK_WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 
 bool bOldOpenGL = true; 
 GLint iMajor, iMinor;
+bool bInitializeImGui = false;
 void InistalizeImgui(HDC hdc)
 {
 	if (!bInitializeImGui)
@@ -41,7 +41,6 @@ void InistalizeImgui(HDC hdc)
 		ImGui::GetStyle().ChildRounding = 0.0f;
 		ImGui::GetStyle().ScrollbarRounding = 0.0f;
 		ImGui::GetStyle().GrabRounding = 0.0f;
-		ImGui::GetStyle().FrameBorderSize = 1.0f;
 		ImGui::GetStyle().FramePadding = ImVec2(2, 2);
 		ImGui::GetStyle().WindowPadding = ImVec2(3, 3);
 		ImGui::GetStyle().WindowTitleAlign = ImVec2(0.5f, 0.5f);
@@ -146,7 +145,8 @@ void HookImGui(HDC hdc)
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
 
-		DrawFullScreenWindow();
+		DrawFullScreenWindow(); 
+		DrawOverview();
 		DrawKzWindows();
 		DrawMenuWindow();
 

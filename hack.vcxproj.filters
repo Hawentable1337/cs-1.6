@@ -208,6 +208,9 @@
     <ClCompile Include="hitboxes.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="radar.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="autoroute.h">
@@ -415,6 +418,9 @@
       <Filter>imgui</Filter>
     </ClInclude>
     <ClInclude Include="hitboxes.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="radar.h">
       <Filter>source</Filter>
     </ClInclude>
   </ItemGroup>

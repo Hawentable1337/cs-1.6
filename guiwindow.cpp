@@ -2,6 +2,8 @@
 
 bool WorldToScreen(float* pflOrigin, float* pflVecScreen)
 {
+	if (!bInitializeImGui)
+		return false;
 	int iResult = g_Engine.pTriAPI->WorldToScreen(pflOrigin, pflVecScreen);
 	if (pflVecScreen[0] < 1 && pflVecScreen[1] < 1 && pflVecScreen[0] > -1 && pflVecScreen[1] > -1 && !iResult)
 	{

@@ -23,9 +23,9 @@ void __stdcall m_glReadPixels(GLint x, GLint y, GLsizei width, GLsizei height, G
 
 void Snapshot()
 {
-	SCREENINFO g_Screen;
-	g_Screen.iSize = sizeof(SCREENINFO);
-	g_Engine.pfnGetScreenInfo(&g_Screen);
+	if (!bInitializeImGui)
+		return;
+
 	if (cvar.snapshot)
 	{
 		if (bAntiSSTemp)
@@ -45,10 +45,10 @@ void Snapshot()
 			{
 				bAntiSSTemp = true;
 				ScreenFirst = true;
-				DWORD sz = g_Screen.iWidth * g_Screen.iHeight * 3;
+				DWORD sz = ImGui::GetIO().DisplaySize.x * ImGui::GetIO().DisplaySize.y * 3;
 				free((PBYTE)BufferScreen);
 				PBYTE buf = (PBYTE)malloc(sz);
-				glReadPixels(0, 0, g_Screen.iWidth, g_Screen.iHeight, GL_RGB, GL_UNSIGNED_BYTE, buf);
+				glReadPixels(0, 0, ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y, GL_RGB, GL_UNSIGNED_BYTE, buf);
 				free((PBYTE)buf);
 			}
 
@@ -56,9 +56,9 @@ void Snapshot()
 	}
 	if (FirstFrame)
 	{
-		DWORD sz = g_Screen.iWidth * g_Screen.iHeight * 3;
+		DWORD sz = ImGui::GetIO().DisplaySize.x * ImGui::GetIO().DisplaySize.y * 3;
 		PBYTE buf = (PBYTE)malloc(sz);
-		glReadPixels(0, 0, g_Screen.iWidth, g_Screen.iHeight, GL_RGB, GL_UNSIGNED_BYTE, buf);
+		glReadPixels(0, 0, ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y, GL_RGB, GL_UNSIGNED_BYTE, buf);
 		free((PBYTE)buf);
 
 		FirstFrame = false;

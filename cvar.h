@@ -208,6 +208,10 @@ public:
 	float id5;
 	float id6;
 	float id7;
+
+	float radar;
+	float radar_zoom;
+	float radar_point_size;
 };
 
 extern CVARlist cvar;

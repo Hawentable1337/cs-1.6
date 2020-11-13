@@ -34,7 +34,7 @@ float YawForVec(float* fwd)
 		return 0;
 	else
 	{
-		float yaw = (atan2(fwd[1], fwd[0]) * 180 / M_PI);
+		float yaw = atan2(fwd[1], fwd[0]) * (180 / M_PI);
 		if (yaw < 0)yaw += 360;
 		return yaw;
 	}
@@ -178,9 +178,8 @@ float HeightOrigin()
 	g_pEngine->pEventAPI->EV_PlayerTrace(pmove->origin, vTempOrigin, PM_STUDIO_BOX, -1, &pTrace);
 
 	float flHeightorigin = abs(pTrace.endpos.z - pmove->origin.z);
-	Vector endpos = pTrace.endpos;
 	g_pEngine->pEventAPI->EV_SetTraceHull((pmove->flags & FL_DUCKING) ? 1 : 0);
-	g_pEngine->pEventAPI->EV_PlayerTrace(pmove->origin, endpos, PM_STUDIO_BOX, -1, &pTrace);
+	g_pEngine->pEventAPI->EV_PlayerTrace(pmove->origin, pTrace.endpos, PM_STUDIO_BOX, -1, &pTrace);
 	if (pTrace.fraction < 1.0f)//not working
 	{
 		flHeightorigin = abs(pTrace.endpos.z - pmove->origin.z);

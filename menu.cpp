@@ -86,7 +86,7 @@ bool ComboBox(const char* label, float* current_item, const char* const items[],
 	return value_changed;
 }
 
-bool SliderFloat(const char* label, float* v, float v_min, float v_max, const char* format = "%.1f")
+bool SliderFloat(const char* label, float* v, float v_min, float v_max, const char* format)
 {
 	ImGui::PushItemWidth(-1);
 	char str[256];
@@ -992,6 +992,7 @@ void MenuVisual1Window1()
 	ImGui::Checkbox("Light Map", &cvar.visual_lightmap);
 	ImGui::Checkbox("My Weapon Name", &cvar.visual_weapon_local);
 	ImGui::Checkbox("No Flash", &cvar.visual_rem_flash);
+	ImGui::Checkbox("Radar", &cvar.radar);
 }
 
 void MenuVisual1Window2()
@@ -1004,6 +1005,11 @@ void MenuVisual1Window2()
 	SliderFloat("Chase Up##1", &cvar.visual_chase_up, 16.f, 500.f, "%.0f");
 	ImGui::Text("Custom FOV");
 	SliderFloat("Custom FOV##1", &cvar.visual_custom_fov, 45.f, 150.f, "%.0f");
+	ImGui::Text("Radar Zoom");
+	SliderFloat("Zoom", &cvar.radar_zoom, 1, 10, "%.1f");
+	ImGui::Text("Radar Point Size");
+	SliderFloat("Point Size", &cvar.radar_point_size, 5, 25, "%.1f");
+
 	ImGui::Text("Sound Volume");
 	SliderFloat("Sound Volume##1", &cvar.radio_kill_volume, 0.f, 100.f, "%.0f");
 	ImGui::Text("View Model FOV");
@@ -1332,6 +1338,7 @@ void MenuSettings()
 {
 	ImGui::Text("Settings"), ImGui::Separator();
 
+	ImGui::Text("%.1f", pmove->origin.z);
 	ImGui::Checkbox("Anti Afk", &cvar.afk_anti);
 	ImGui::Text("Anti Afk Time");
 	SliderFloat("Anti Afk Time##1", &cvar.afk_time, 15, 90, "%.0f");
@@ -1460,8 +1467,8 @@ void DrawMenuChild(int total)
 	}
 	if (MenuTab == 5)
 	{
-		windowheight1 = 481;
-		windowheight2 = 213;
+		windowheight1 = 502;
+		windowheight2 = 289;
 	}
 	if (MenuTab == 6)
 	{
@@ -2114,6 +2121,7 @@ void DrawMenuWindow()
 		ImGui::SetWindowFocus("keywindow");
 		ImGui::SetWindowFocus("child1");
 		ImGui::SetWindowFocus("child2");
+		ImGui::SetWindowFocus("child3");
 		changewindowfocus = false;
 	}
 }

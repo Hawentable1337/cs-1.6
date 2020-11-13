@@ -22,7 +22,13 @@ DWORD HudRedraw;
 void HUD_Redraw(float time, int intermission)
 {
 	g_Client.HUD_Redraw(time, intermission);
+
 	HudRedraw = GetTickCount();
+
+	DrawOverviewLayer();
+	DrawOverviewEntitiesSoundNoIndex();
+	DrawOverviewEntitiesSoundIndex();
+	DrawOverviewEntities();
 	KzFameCount();
 	Snapshot();
 }
@@ -292,8 +298,7 @@ void HUD_Frame(double time)
 	Sky();
 	NoFlash();
 	Lightmap();
-	PlayerAim.deque::clear();;
-	Spawn.deque::clear();
+	PlayerAim.deque::clear();
 	g_Client.HUD_Frame(time);
 }
 

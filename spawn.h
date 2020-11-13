@@ -12,15 +12,9 @@ typedef struct
 	int index;
 	Vector Origin;
 	DWORD Tickcount;
+	char name[MAX_SCOREBOARDNAME];
 } spawndeath_t;
 extern deque<spawndeath_t> SpawnDeath;
-
-typedef struct
-{
-	int index;
-	Vector Origin;
-} spawn_t;
-extern deque<spawn_t> Spawn;
 
 void DrawSpawn();
 void FindSpawn();

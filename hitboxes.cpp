@@ -174,11 +174,6 @@ void GetHitboxes(cl_entity_s* ent)
 
 	if (ent && ent->player)
 	{
-		spawn_t Spawns;
-		Spawns.index = ent->index;
-		Spawns.Origin = ent->origin;
-		Spawn.push_back(Spawns);
-
 		model_t* pModel = g_Studio.SetupPlayerModel(ent->index - 1);
 		if (!pModel)
 			return;

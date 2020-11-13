@@ -2,7 +2,6 @@
 
 deque<spawnorigin_t> SpawnOrigin;
 deque<spawndeath_t> SpawnDeath;
-deque<spawn_t> Spawn;
 
 void ResetSpawn()
 {
@@ -22,44 +21,63 @@ void FindSpawn()
 
 	if (cvar.visual_spawn_scan && cvar.visual_spawn_points)
 	{
-		for (spawn_t Spawns : Spawn)
+		for (unsigned int i = 0; i < SpawnDeath.size(); i++)
 		{
-			for (unsigned int i = 0; i < SpawnDeath.size(); i++)
-			{
-				if (Spawns.index != SpawnDeath[i].index)
-					continue;
+			cl_entity_s* entlocal = g_Engine.GetEntityByIndex(pmove->player_index + 1);
+			cl_entity_s* ent = g_Engine.GetEntityByIndex(SpawnDeath[i].index);
+			if (!ent || !ent->player || !ent->origin || !entlocal)
+				continue;
+			if (ent->curstate.messagenum < entlocal->curstate.messagenum)
+				continue;
+			if (!g_Player[ent->index].bAliveInScoreTab)
+				continue;
+			if (ent->origin == SpawnDeath[i].Origin)
+				continue;
+			if (Cstrike_SequenceInfo[ent->curstate.sequence] == SEQUENCE_DIE)
+				continue;
+			if (ent->index == pmove->player_index + 1)
+				continue;
+			
+			player_info_s* player = g_Studio.PlayerInfo(ent->index - 1);
+			if (!player || !(lstrlenA(player->name) > 0))
+				continue;
+			if (!strstr(SpawnDeath[i].name, player->name))
+				continue;
+			if (g_Player[ent->index].iTeam == 0)
+				continue;
+			if (ent->curstate.mins.IsZero() || ent->curstate.maxs.IsZero())
+				continue;
 
-				if (g_Player[Spawns.index].bAliveInScoreTab && Spawns.Origin != SpawnDeath[i].Origin)
+			Vector vTraceOrigin = ent->origin;
+			vTraceOrigin.z -= 8192;
+			pmtrace_t tr;
+			g_pEngine->pEventAPI->EV_SetTraceHull(2);
+			g_Engine.pEventAPI->EV_PlayerTrace(ent->origin, vTraceOrigin, PM_GLASS_IGNORE | PM_STUDIO_BOX, -1, &tr);
+
+			bool bBadOrigin = false;
+			for (spawnorigin_t SpawnOrigins : SpawnOrigin)
+			{
+				float distance = SpawnOrigins.Origin.Distance(tr.endpos);
+				if (tr.endpos.x == SpawnOrigins.Origin.x && tr.endpos.y == SpawnOrigins.Origin.y)
 				{
-					Vector vGrondOrigin = Spawns.Origin;
-					vGrondOrigin[2] -= 8192;
-					pmtrace_t tr;
-					g_pEngine->pEventAPI->EV_SetTraceHull(2);
-					g_Engine.pEventAPI->EV_PlayerTrace(Spawns.Origin, vGrondOrigin, PM_GLASS_IGNORE | PM_STUDIO_BOX, -1, &tr);
-					bool bBadOrigin = false;
-					for (spawnorigin_t SpawnOrigins : SpawnOrigin)
-					{
-						float distance = SpawnOrigins.Origin.Distance(tr.endpos);
-						if (Spawns.Origin[0] == SpawnOrigins.Origin[0] && Spawns.Origin[1] == SpawnOrigins.Origin[1])
-						{
-							bBadOrigin = true;
-							break;
-						}
-						else if (distance < 10)
-						{
-							bBadOrigin = true;
-							break;
-						}
-					}
-					if (!bBadOrigin)
-					{
-						spawnorigin_t SpawnOrigins;
-						SpawnOrigins.Origin = tr.endpos;
-						SpawnOrigin.push_back(SpawnOrigins);
-					}
-					SpawnDeath.erase(SpawnDeath.begin() + i);
+					bBadOrigin = true;
+					break;
+				}
+				else if (distance < 10)
+				{
+					bBadOrigin = true;
+					break;
 				}
 			}
+			if (!bBadOrigin)
+			{
+				spawnorigin_t SpawnOrigins;
+				SpawnOrigins.Origin.x = tr.endpos.x;
+				SpawnOrigins.Origin.y = tr.endpos.y;
+				SpawnOrigins.Origin.z = tr.endpos.z;
+				SpawnOrigin.push_back(SpawnOrigins);
+			}
+			SpawnDeath.erase(SpawnDeath.begin() + i);
 		}
 	}
 }

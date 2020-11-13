@@ -118,6 +118,7 @@ extern char hldir[256];
 #include "sky.h"
 #include "spawn.h"
 #include "model.h"
+#include "radar.h"
 
 void HookClientFunctions();
 void CL_Move();

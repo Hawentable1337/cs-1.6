@@ -37,6 +37,15 @@ int SetFOV(const char *pszName, int iSize, void *pbuf)
 
 int ResetHUD(const char *pszName, int iSize, void *pbuf)
 {
+	static char currentMap[100];
+	if (strcmp(currentMap, g_Engine.pfnGetLevelName())) 
+	{
+		strcpy(currentMap, g_Engine.pfnGetLevelName());
+		char map_name[100];
+		strcpy(map_name, strrchr(currentMap, '/') + 1);
+		*strchr(map_name, '.') = 0;
+		LoadOverview(map_name);
+	}
 	RunHLCommands();
 	ContinueRoute(); 
 	ResetSpawn();
@@ -61,12 +70,14 @@ int DeathMsg(const char *pszName, int iSize, void *pbuf)
 		g_Player[victim].iHealth = 100;
 	
 	cl_entity_s* ent = g_Engine.GetEntityByIndex(victim);
-	if (ent && victim > 0 && victim <= g_Engine.GetMaxClients() && cvar.visual_spawn_scan)
+	player_info_s* player = g_Studio.PlayerInfo(victim - 1);
+	if (player && lstrlenA(player->name) > 0 && ent && victim > 0 && victim <= g_Engine.GetMaxClients() && cvar.visual_spawn_scan)
 	{
 		spawndeath_t Spawns;
 		Spawns.index = ent->index;
 		Spawns.Origin = ent->origin;
 		Spawns.Tickcount = GetTickCount();
+		strcpy(Spawns.name, player->name);
 		SpawnDeath.push_back(Spawns);
 	}
 	KillSound(victim, killer, headshot);

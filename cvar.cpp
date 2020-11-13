@@ -287,6 +287,10 @@ void CVARlist::init()
 	INITCVAR(id5, 5.0);
 	INITCVAR(id6, 6.0);
 	INITCVAR(id7, 7.0);
+
+	INITCVAR(radar, 0);
+	INITCVAR(radar_zoom, 5);
+	INITCVAR(radar_point_size, 5);
 }
 
 void SaveCvar()
