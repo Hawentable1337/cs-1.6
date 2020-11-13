@@ -1,10 +1,10 @@
 #include "client.h"
 
-int iX, iY, iW, iH;
-int xTiles = 1, yTiles = 1;
-bool mapLoaded = false;
-model_s* m_MapSprite;
 overviewInfo_t m_OverviewData;
+int iX, iY, iW, iH;
+bool MapLoaded = false;
+int xTile = 1, yTile = 1; 
+model_s* m_MapSprites;
 
 bool ParseOverview(char* overview_txt)
 {
@@ -17,35 +17,35 @@ bool ParseOverview(char* overview_txt)
 	m_OverviewData.layersImages[0][0] = 0;
 	char token[1024];
 	char* pfile = (char*)g_Engine.COM_LoadFile(overview_txt, 5, NULL);
-	if (!pfile) 
+	if (!pfile)
 	{
-		mapLoaded = false;
+		MapLoaded = false;
 		return false;
 	}
-	for (;;) 
+	for (;;)
 	{
 		pfile = g_Engine.COM_ParseFile(pfile, token);
 		if (!pfile)
 			break;
-		if (!stricmp(token, "global")) 
+		if (!stricmp(token, "global"))
 		{
 			pfile = g_Engine.COM_ParseFile(pfile, token);
-			if (strcmp(token, "{")) 
+			if (strcmp(token, "{"))
 			{
-				mapLoaded = false;
+				MapLoaded = false;
 				return false;
 			}
 			pfile = g_Engine.COM_ParseFile(pfile, token);
 			if (!pfile)
 				break;
-			while (strcmp(token, "}")) 
+			while (strcmp(token, "}"))
 			{
-				if (!stricmp(token, "zoom")) 
+				if (!stricmp(token, "zoom"))
 				{
 					pfile = g_Engine.COM_ParseFile(pfile, token);
 					m_OverviewData.zoom = (float)atof(token);
 				}
-				else if (!stricmp(token, "origin")) 
+				else if (!stricmp(token, "origin"))
 				{
 					pfile = g_Engine.COM_ParseFile(pfile, token);
 					m_OverviewData.origin[0] = (float)atof(token);
@@ -54,7 +54,7 @@ bool ParseOverview(char* overview_txt)
 					pfile = g_Engine.COM_ParseFile(pfile, token);
 					m_OverviewData.origin[2] = (float)atof(token);
 				}
-				else if (!stricmp(token, "rotated")) 
+				else if (!stricmp(token, "rotated"))
 				{
 					pfile = g_Engine.COM_ParseFile(pfile, token);
 					m_OverviewData.rotated = atoi(token);
@@ -62,23 +62,23 @@ bool ParseOverview(char* overview_txt)
 				pfile = g_Engine.COM_ParseFile(pfile, token);
 			}
 		}
-		else if (!stricmp(token, "layer")) 
+		else if (!stricmp(token, "layer"))
 		{
 			pfile = g_Engine.COM_ParseFile(pfile, token);
-			if (strcmp(token, "{")) 
+			if (strcmp(token, "{"))
 			{
-				mapLoaded = false;
+				MapLoaded = false;
 				return false;
 			}
 			pfile = g_Engine.COM_ParseFile(pfile, token);
-			while (strcmp(token, "}")) 
+			while (strcmp(token, "}"))
 			{
-				if (!stricmp(token, "image")) 
+				if (!stricmp(token, "image"))
 				{
 					pfile = g_Engine.COM_ParseFile(pfile, token);
 					strcpy(m_OverviewData.layersImages[m_OverviewData.layers], token);
 				}
-				else if (!stricmp(token, "height")) 
+				else if (!stricmp(token, "height"))
 				{
 					pfile = g_Engine.COM_ParseFile(pfile, token);
 					float height = (float)atof(token);
@@ -92,7 +92,7 @@ bool ParseOverview(char* overview_txt)
 	return true;
 }
 
-void LoadOverview(char* levelname) 
+void LoadOverview(char* levelname)
 {
 	static char last_levelname[256] = "";
 	char overview_txt[256];
@@ -101,30 +101,30 @@ void LoadOverview(char* levelname)
 	if (levelname[0] == 0)
 		strcpy(levelname, "cs_miltia");
 	sprintf(overview_txt, "overviews/%s.txt", levelname);
-	if (!ParseOverview(overview_txt)) 
+	if (!ParseOverview(overview_txt))
 	{
 		strcpy(last_levelname, levelname);
-		mapLoaded = false;
+		MapLoaded = false;
 		return;
 	}
-	m_MapSprite = g_Engine.LoadMapSprite(m_OverviewData.layersImages[0]);
-	if (!m_MapSprite) 
+	m_MapSprites = g_Engine.LoadMapSprite(m_OverviewData.layersImages[0]);
+	if (!m_MapSprites)
 	{
 		strcpy(last_levelname, levelname);
-		mapLoaded = false;
+		MapLoaded = false;
 		return;
 	}
-	mapLoaded = true;
-	int i = (int)sqrt(m_MapSprite->numframes / (4 * 3));
-	xTiles = i * 4;
-	yTiles = i * 3;
+	MapLoaded = true;
+	int i = (int)sqrt(m_MapSprites->numframes / (4 * 3));
+	xTile = i * 4;
+	yTile = i * 3;
 }
 
 void DrawOverviewLayer()
 {
 	if (!bInitializeImGui)
 		return;
-	if (!mapLoaded)
+	if (!MapLoaded)
 		return;
 	if (!cvar.radar || !bAliveLocal())
 		return;
@@ -135,62 +135,65 @@ void DrawOverviewLayer()
 	g_Engine.GetViewAngles(vAngle);
 
 	glViewport(iX, ImGui::GetIO().DisplaySize.y - (iY + iH), iW, iH);
-	float vStepRight[2], vStepUp[2], inner[2], outer[2];
-	float xStep = (2 * 4096.0f / cvar.radar_zoom) / xTiles;
-	float yStep = -(2 * 4096.0f / (cvar.radar_zoom * (4 / 3))) / yTiles;
-	float angle = (float)((vAngle[1] + 90.0) * (M_PI / 180));
-	if (m_OverviewData.rotated)
-		angle -= float(M_PI / 2);
-	vStepRight[0] = (float)cos(angle) * xStep;
-	vStepRight[1] = (float)sin(angle) * xStep;
-	vStepUp[0] = (float)cos(angle + (M_PI / 2)) * yStep;
-	vStepUp[1] = (float)sin(angle + (M_PI / 2)) * yStep;
-	float tile_x, tile_y;
-	if (m_OverviewData.rotated)
+	if (m_MapSprites) 
 	{
-		float origin_tilex = (float)(-4 + m_OverviewData.zoom * (1.0 / 1024.0) * m_OverviewData.origin[0]);
-		float origin_tiley = (float)(3 + m_OverviewData.zoom * (1.0 / 1024.0) * m_OverviewData.origin[1]);
-		tile_y = -(float)(origin_tilex - (1.0 / 1024) * m_OverviewData.zoom * vEye[0]);
-		tile_x = (float)(origin_tiley - (1.0 / 1024) * m_OverviewData.zoom * vEye[1]);
-	}
-	else
-	{
-		float origin_tilex = (float)(3 + m_OverviewData.zoom * (1.0 / 1024.0) * m_OverviewData.origin[0]);
-		float origin_tiley = (float)(4 + m_OverviewData.zoom * (1.0 / 1024.0) * m_OverviewData.origin[1]);
-		tile_x = (float)(origin_tilex - (1.0 / 1024) * m_OverviewData.zoom * vEye[0]);
-		tile_y = (float)(origin_tiley - (1.0 / 1024) * m_OverviewData.zoom * vEye[1]);
-	}
-	outer[0] = (ImGui::GetIO().DisplaySize.x / 2) - tile_x * vStepRight[0] - tile_y * vStepUp[0];
-	outer[1] = (ImGui::GetIO().DisplaySize.y / 2) - tile_x * vStepRight[1] - tile_y * vStepUp[1];
-	g_Engine.pTriAPI->RenderMode(kRenderTransTexture);
-	g_Engine.pTriAPI->CullFace(TRI_NONE);
-	glEnable(GL_BLEND);
-	glColor4f(1.0f, 1.0f, 1.0f, 0.8f);
-	for (int ix = 0, frame = 0; ix < yTiles; ix++)
-	{
-		inner[0] = outer[0];
-		inner[1] = outer[1];
-		for (int iy = 0; iy < xTiles; iy++)
+		float vStepRight[2], vStepUp[2], inner[2], outer[2];
+		float xStep = (2 * 4096.0f / cvar.radar_zoom) / xTile;
+		float yStep = -(2 * 4096.0f / (cvar.radar_zoom * (4.f / 3.f))) / yTile;
+		float angle = (float)((vAngle[1] + 90.0) * (M_PI / 180));
+		if (m_OverviewData.rotated)
+			angle -= float(M_PI / 2);
+		vStepRight[0] = (float)cos(angle) * xStep;
+		vStepRight[1] = (float)sin(angle) * xStep;
+		vStepUp[0] = (float)cos(angle + (M_PI / 2)) * yStep;
+		vStepUp[1] = (float)sin(angle + (M_PI / 2)) * yStep;
+		float tile_x, tile_y;
+		if (m_OverviewData.rotated) 
 		{
-			g_Engine.pTriAPI->SpriteTexture(m_MapSprite, frame);
-			g_Engine.pTriAPI->Begin(TRI_QUADS);
-			g_Engine.pTriAPI->TexCoord2f(0, 0);
-			glVertex2f(inner[0], inner[1]);
-			g_Engine.pTriAPI->TexCoord2f(0, 1);
-			glVertex2f(inner[0] + vStepRight[0], inner[1] + vStepRight[1]);
-			g_Engine.pTriAPI->TexCoord2f(1, 1);
-			glVertex2f(inner[0] + vStepRight[0] + vStepUp[0], inner[1] + vStepRight[1] + vStepUp[1]);
-			g_Engine.pTriAPI->TexCoord2f(1, 0);
-			glVertex2f(inner[0] + vStepUp[0], inner[1] + vStepUp[1]);
-			g_Engine.pTriAPI->End();
-			frame++;
-			inner[0] += vStepUp[0];
-			inner[1] += vStepUp[1];
+			float origin_tilex = (float)(-4.f + m_OverviewData.zoom * (1.0 / 1024.0) * m_OverviewData.origin[0]);
+			float origin_tiley = (float)(3.f + m_OverviewData.zoom * (1.0 / 1024.0) * m_OverviewData.origin[1]);
+			tile_y = -(float)(origin_tilex - (1.0 / 1024) * m_OverviewData.zoom * vEye[0]);
+			tile_x = (float)(origin_tiley - (1.0 / 1024) * m_OverviewData.zoom * vEye[1]);
 		}
-		outer[0] += vStepRight[0];
-		outer[1] += vStepRight[1];
+		else 
+		{
+			float origin_tilex = (float)(3.f + m_OverviewData.zoom * (1.0 / 1024.0) * m_OverviewData.origin[0]);
+			float origin_tiley = (float)(4.f + m_OverviewData.zoom * (1.0 / 1024.0) * m_OverviewData.origin[1]);
+			tile_x = (float)(origin_tilex - (1.0 / 1024) * m_OverviewData.zoom * vEye[0]);
+			tile_y = (float)(origin_tiley - (1.0 / 1024) * m_OverviewData.zoom * vEye[1]);
+		}
+		outer[0] = (ImGui::GetIO().DisplaySize.x / 2) - tile_x * vStepRight[0] - tile_y * vStepUp[0];
+		outer[1] = (ImGui::GetIO().DisplaySize.y / 2) - tile_x * vStepRight[1] - tile_y * vStepUp[1];
+		g_Engine.pTriAPI->RenderMode(kRenderTransTexture);
+		g_Engine.pTriAPI->CullFace(TRI_NONE);
+		glEnable(GL_BLEND);
+		glColor4f(1.0f, 1.0f, 1.0f, 0.8f);
+		for (int ix = 0, frame = 0; ix < yTile; ix++) 
+		{
+			inner[0] = outer[0];
+			inner[1] = outer[1];
+			for (int iy = 0; iy < xTile; iy++) 
+			{
+				g_Engine.pTriAPI->SpriteTexture(m_MapSprites, frame);
+				g_Engine.pTriAPI->Begin(TRI_QUADS);
+				g_Engine.pTriAPI->TexCoord2f(0, 0);
+				glVertex2f(inner[0], inner[1]);
+				g_Engine.pTriAPI->TexCoord2f(0, 1);
+				glVertex2f(inner[0] + vStepRight[0], inner[1] + vStepRight[1]);
+				g_Engine.pTriAPI->TexCoord2f(1, 1);
+				glVertex2f(inner[0] + vStepRight[0] + vStepUp[0], inner[1] + vStepRight[1] + vStepUp[1]);
+				g_Engine.pTriAPI->TexCoord2f(1, 0);
+				glVertex2f(inner[0] + vStepUp[0], inner[1] + vStepUp[1]);
+				g_Engine.pTriAPI->End();
+				frame++;
+				inner[0] += vStepUp[0];
+				inner[1] += vStepUp[1];
+			}
+			outer[0] += vStepRight[0];
+			outer[1] += vStepRight[1];
+		}
+		glDisable(GL_BLEND);
 	}
-	glDisable(GL_BLEND);
 	glViewport(0, 0, ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y);
 }
 
@@ -229,7 +232,7 @@ void DrawOverviewEntities()
 		if (ent->index == pmove->player_index + 1)
 			continue;
 		if (!g_Player[ent->index].bAliveInScoreTab)
-			continue; 
+			continue;
 		if (ent->curstate.mins.IsZero())
 			continue;
 		if (ent->curstate.maxs.IsZero())
@@ -250,7 +253,7 @@ void DrawOverviewEntities()
 			hSprite = hSpriteBlue;
 
 		int screenx, screeny;
-		int boxsize = (cvar.radar_point_size/2) * 1.4;
+		int boxsize = (cvar.radar_point_size / 2) * 1.4;
 		float aim[3], newaim[3];
 		aim[0] = ent->origin[0] - vEye[0];
 		aim[1] = ent->origin[1] - vEye[1];
@@ -316,7 +319,7 @@ void DrawOverviewEntitiesSoundIndex()
 		return;
 	if (!(DrawVisuals && (!cvar.route_auto || cvar.route_draw_visual)))
 		return;
-	
+
 	static model_s* hSpriteRed = (struct model_s*)g_Engine.GetSpritePointer(g_Engine.pfnSPR_Load("sprites/iplayerred.spr"));
 	static model_s* hSpriteBlue = (struct model_s*)g_Engine.GetSpritePointer(g_Engine.pfnSPR_Load("sprites/iplayerblue.spr"));
 

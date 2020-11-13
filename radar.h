@@ -1,5 +1,5 @@
-#ifndef _RADAR_
-#define _RADAR_
+#ifndef RADAR_H
+#define RADAR_H
 
 typedef struct overviewInfo_s
 {
@@ -12,11 +12,11 @@ typedef struct overviewInfo_s
 }
 overviewInfo_t;
 
+void DrawOverview(); 
 void LoadOverview(char* levelname);
-void DrawOverview();
 void DrawOverviewLayer();
-void DrawOverviewEntities(); 
-void DrawOverviewEntitiesSoundIndex(); 
+void DrawOverviewEntities();
+void DrawOverviewEntitiesSoundIndex();
 void DrawOverviewEntitiesSoundNoIndex();
 
 #endif
