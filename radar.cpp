@@ -138,6 +138,7 @@ void DrawOverviewLayer()
 	if (m_MapSprites) 
 	{
 		float vStepRight[2], vStepUp[2], inner[2], outer[2];
+		float z = ((90.0f - vAngle[0]) / 90.0f) * m_OverviewData.layersHeights[0];
 		float xStep = (2 * 4096.0f / cvar.radar_zoom) / xTile;
 		float yStep = -(2 * 4096.0f / (cvar.radar_zoom * (4.f / 3.f))) / yTile;
 		float angle = (float)((vAngle[1] + 90.0) * (M_PI / 180));
@@ -177,13 +178,13 @@ void DrawOverviewLayer()
 				g_Engine.pTriAPI->SpriteTexture(m_MapSprites, frame);
 				g_Engine.pTriAPI->Begin(TRI_QUADS);
 				g_Engine.pTriAPI->TexCoord2f(0, 0);
-				glVertex2f(inner[0], inner[1]);
+				g_Engine.pTriAPI->Vertex3f(inner[0], inner[1], z);
 				g_Engine.pTriAPI->TexCoord2f(0, 1);
-				glVertex2f(inner[0] + vStepRight[0], inner[1] + vStepRight[1]);
+				g_Engine.pTriAPI->Vertex3f(inner[0] + vStepRight[0], inner[1] + vStepRight[1], z);
 				g_Engine.pTriAPI->TexCoord2f(1, 1);
-				glVertex2f(inner[0] + vStepRight[0] + vStepUp[0], inner[1] + vStepRight[1] + vStepUp[1]);
+				g_Engine.pTriAPI->Vertex3f(inner[0] + vStepRight[0] + vStepUp[0], inner[1] + vStepRight[1] + vStepUp[1], z);
 				g_Engine.pTriAPI->TexCoord2f(1, 0);
-				glVertex2f(inner[0] + vStepUp[0], inner[1] + vStepUp[1]);
+				g_Engine.pTriAPI->Vertex3f(inner[0] + vStepUp[0], inner[1] + vStepUp[1], z);
 				g_Engine.pTriAPI->End();
 				frame++;
 				inner[0] += vStepUp[0];
