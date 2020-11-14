@@ -362,8 +362,8 @@ void DrawOverviewEntitiesSoundIndex()
 		aim[1] = sound_index.origin[1] - vEye[1];
 		aim[2] = sound_index.origin[2] - vEye[2];
 		VectorRotateZ(aim, -vAngle[1], newaim);
-		screenx = iX + iW / 2 - int(newaim[1] / cvar.radar_zoom * m_OverviewData.zoom * 0.3f * iW / 2 / 160);
-		screeny = iY + iH / 2 - int(newaim[0] / cvar.radar_zoom * m_OverviewData.zoom * 0.4f * iH / 2 / 160);
+		screenx = iX + iW / 2 - int(newaim[1] / cvar.radar_zoom * m_OverviewData.zoom * 0.3f * iW / 2 / (ImGui::GetIO().DisplaySize.x / 6.7));
+		screeny = iY + iH / 2 - int(newaim[0] / cvar.radar_zoom * m_OverviewData.zoom * 0.4f * iH / 2 / (ImGui::GetIO().DisplaySize.y / 5.1));
 		if (screenx > iX + iW / 2 + iW / 2 - boxsize - 2)
 			screenx = iX + iW / 2 + iW / 2 - boxsize - 2;
 		if (screenx < iX + iW / 2 - iW / 2 + boxsize + 3)
@@ -440,8 +440,8 @@ void DrawOverviewEntitiesSoundNoIndex()
 		aim[1] = sound_no_index.origin[1] - vEye[1];
 		aim[2] = sound_no_index.origin[2] - vEye[2];
 		VectorRotateZ(aim, -vAngle[1], newaim);
-		screenx = iX + iW / 2 - int(newaim[1] / cvar.radar_zoom * m_OverviewData.zoom * 0.3f * iW / 2 / 160);
-		screeny = iY + iH / 2 - int(newaim[0] / cvar.radar_zoom * m_OverviewData.zoom * 0.4f * iH / 2 / 160);
+		screenx = iX + iW / 2 - int(newaim[1] / cvar.radar_zoom * m_OverviewData.zoom * 0.3f * iW / 2 / (ImGui::GetIO().DisplaySize.x / 6.7));
+		screeny = iY + iH / 2 - int(newaim[0] / cvar.radar_zoom * m_OverviewData.zoom * 0.4f * iH / 2 / (ImGui::GetIO().DisplaySize.y / 5.1));
 		if (screenx > iX + iW / 2 + iW / 2 - boxsize - 2)
 			screenx = iX + iW / 2 + iW / 2 - boxsize - 2;
 		if (screenx < iX + iW / 2 - iW / 2 + boxsize + 3)
