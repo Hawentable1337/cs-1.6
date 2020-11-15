@@ -120,24 +120,18 @@ void LoadOverview(char* levelname)
 	yTile = i * 3;
 }
 
-static int gcd(int a, int b) 
-{
-	return (b == 0) ? a : gcd(b, a % b);
-}
-
 void DrawOverviewLayer()
 {
 	if (!bInitializeImGui)
 		return;
 	if (!MapLoaded)
 		return;
-	if (!cvar.radar || !bAliveLocal())
+	if (!cvar.radar)
 		return;
 	if (!(DrawVisuals && (!cvar.route_auto || cvar.route_draw_visual)))
 		return;
 
-	Vector vAngle, vEye = pmove->origin + pmove->view_ofs;
-	g_Engine.GetViewAngles(vAngle);
+	Vector vAngle = pmove->angles, vEye = pmove->origin + pmove->view_ofs;
 
 	glViewport(iX, ImGui::GetIO().DisplaySize.y - (iY + iH), iW, iH);
 	if (m_MapSprites) 
@@ -173,7 +167,7 @@ void DrawOverviewLayer()
 		g_Engine.pTriAPI->RenderMode(kRenderTransTexture);
 		g_Engine.pTriAPI->CullFace(TRI_NONE);
 		glEnable(GL_BLEND);
-		glColor4f(1.0f, 1.0f, 1.0f, 0.8f);
+		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 		for (int ix = 0, frame = 0; ix < yTile; ix++) 
 		{
 			inner[0] = outer[0];
@@ -205,29 +199,21 @@ void DrawOverviewLayer()
 
 void VectorRotateZ(const float* in, float angle, float* out)
 {
-	float a, c, s;
+	float a, b, c;
 	a = (angle * (M_PI / 180));
-	c = cos(a);
-	s = sin(a);
-	out[0] = c * in[0] - s * in[1];
-	out[1] = s * in[0] + c * in[1];
-	out[2] = in[2];
+	b = cos(a);
+	c = sin(a);
+	out[0] = b * in[0] - c * in[1];
+	out[1] = c * in[0] + b * in[1];
 }
 
 void DrawOverviewEntities()
 {
-	if (!cvar.radar || !bAliveLocal())
-		return;
-	if (!(DrawVisuals && (!cvar.route_auto || cvar.route_draw_visual)))
+	if (!cvar.radar)
 		return;
 
-	static model_s* hSpriteRed = (struct model_s*)g_Engine.GetSpritePointer(g_Engine.pfnSPR_Load("sprites/iplayerred.spr"));
-	static model_s* hSpriteBlue = (struct model_s*)g_Engine.GetSpritePointer(g_Engine.pfnSPR_Load("sprites/iplayerblue.spr"));
+	Vector vAngle = pmove->angles, vEye = pmove->origin + pmove->view_ofs;
 
-	Vector vAngle, vEye = pmove->origin + pmove->view_ofs;
-	g_Engine.GetViewAngles(vAngle);
-
-	g_Engine.pTriAPI->CullFace(TRI_NONE);
 	for (unsigned int i = 1; i <= g_Engine.GetMaxClients(); i++)
 	{
 		cl_entity_s* ent = g_Engine.GetEntityByIndex(i);
@@ -243,7 +229,7 @@ void DrawOverviewEntities()
 			continue;
 		if (ent->curstate.maxs.IsZero())
 			continue;
-		if (g_Engine.GetEntityByIndex(pmove->player_index + 1)->curstate.iuser1 == OBS_IN_EYE && g_Engine.GetEntityByIndex(pmove->player_index + 1)->curstate.iuser2 == ent->index)
+		if (g_Engine.GetEntityByIndex(pmove->player_index + 1)->curstate.iuser2 == ent->index)
 			continue;
 		if (cvar.visual_idhook_only && idhook.FirstKillPlayer[ent->index] != 1)
 			continue;
@@ -252,21 +238,13 @@ void DrawOverviewEntities()
 		if (g_Player[ent->index].iTeam == 0)
 			continue;
 
-		struct model_s* hSprite = 0;
-		if (g_Player[i].iTeam == 1)
-			hSprite = hSpriteRed;
-		if (g_Player[i].iTeam == 2)
-			hSprite = hSpriteBlue;
+		float calcscreen[2];
+		VectorRotateZ(ent->origin - vEye, -vAngle[1], calcscreen);
+		float screenx = iX + iW / 2 - calcscreen[1] / cvar.radar_zoom * m_OverviewData.zoom * 0.3f * iW / 2 / (ImGui::GetIO().DisplaySize.x / 6.7);
+		float screeny = iY + iH / 2 - calcscreen[0] / cvar.radar_zoom * m_OverviewData.zoom * 0.4f * iH / 2 / (ImGui::GetIO().DisplaySize.y / 5.1);
 
-		int screenx, screeny;
 		int boxsize = (cvar.radar_point_size / 2) * 1.4;
-		float aim[3], newaim[3];
-		aim[0] = ent->origin[0] - vEye[0];
-		aim[1] = ent->origin[1] - vEye[1];
-		aim[2] = ent->origin[2] - vEye[2];
-		VectorRotateZ(aim, -vAngle[1], newaim);
-		screenx = iX + iW / 2 - int(newaim[1] / cvar.radar_zoom * m_OverviewData.zoom * 0.3f * iW / 2 / (ImGui::GetIO().DisplaySize.x / 6.7));
-		screeny = iY + iH / 2 - int(newaim[0] / cvar.radar_zoom * m_OverviewData.zoom * 0.4f * iH / 2 / (ImGui::GetIO().DisplaySize.y / 5.1));
+
 		if (screenx > iX + iW / 2 + iW / 2 - boxsize - 2)
 			screenx = iX + iW / 2 + iW / 2 - boxsize - 2;
 		if (screenx < iX + iW / 2 - iW / 2 + boxsize + 3)
@@ -276,65 +254,39 @@ void DrawOverviewEntities()
 		if (screeny < iY + iH / 2 - iH / 2 + boxsize + 3)
 			screeny = iY + iH / 2 - iH / 2 + boxsize + 3;
 
-		g_Engine.pTriAPI->SpriteTexture(hSprite, 0);
-		g_Engine.pTriAPI->RenderMode(kRenderTransTexture);
-
-		Vector vforward, vRight, vAngles = Vector(0, -ent->angles[1] + vAngle[1] - 90, 0);
+		Vector vforward, vRight, vAngles = Vector(0, -ent->angles[1] + vAngle[1] + 90, 0);
 		g_Engine.pfnAngleVectors(vAngles, vforward, vRight, NULL);
 
-		g_Engine.pTriAPI->Begin(TRI_QUADS);
-		g_Engine.pTriAPI->Color4f(1.0, 1.0, 1.0, 1.0);
+		ImVec2 a, b, c, d;
+		int texture = 0;
+		if (g_Player[ent->index].iTeam == 1)
+			texture = REDARROW;
+		if (g_Player[ent->index].iTeam == 2)
+			texture = BLUEARROW;
+		a.x = screenx + cvar.radar_point_size * vRight[0] + cvar.radar_point_size * vforward[0];
+		a.y = screeny + cvar.radar_point_size * vRight[1] + cvar.radar_point_size * vforward[1];
+		b.x = screenx + cvar.radar_point_size * vRight[0] - cvar.radar_point_size * vforward[0];
+		b.y = screeny + cvar.radar_point_size * vRight[1] - cvar.radar_point_size * vforward[1];
+		c.x = screenx - cvar.radar_point_size * vRight[0] - cvar.radar_point_size * vforward[0];
+		c.y = screeny - cvar.radar_point_size * vRight[1] - cvar.radar_point_size * vforward[1];
+		d.x = screenx - cvar.radar_point_size * vRight[0] + cvar.radar_point_size * vforward[0];
+		d.y = screeny - cvar.radar_point_size * vRight[1] + cvar.radar_point_size * vforward[1];
 
-		float flX, flY;
-
-		g_Engine.pTriAPI->TexCoord2f(1, 0);
-		flX = screenx + cvar.radar_point_size * vRight[0];
-		flX = flX + cvar.radar_point_size * vforward[0];
-		flY = screeny + cvar.radar_point_size * vRight[1];
-		flY = flY + cvar.radar_point_size * vforward[1];
-		glVertex2f(flX, flY);
-
-		g_Engine.pTriAPI->TexCoord2f(0, 0);
-		flX = screenx + cvar.radar_point_size * vRight[0];
-		flX = flX - cvar.radar_point_size * vforward[0];
-		flY = screeny + cvar.radar_point_size * vRight[1];
-		flY = flY - cvar.radar_point_size * vforward[1];
-		glVertex2f(flX, flY);
-
-		g_Engine.pTriAPI->TexCoord2f(0, 1);
-		flX = screenx - cvar.radar_point_size * vRight[0];
-		flX = flX - cvar.radar_point_size * vforward[0];
-		flY = screeny - cvar.radar_point_size * vRight[1];
-		flY = flY - cvar.radar_point_size * vforward[1];
-		glVertex2f(flX, flY);
-
-		g_Engine.pTriAPI->TexCoord2f(1, 1);
-		flX = screenx - cvar.radar_point_size * vRight[0];
-		flX = flX + cvar.radar_point_size * vforward[0];
-		flY = screeny - cvar.radar_point_size * vRight[1];
-		flY = flY + cvar.radar_point_size * vforward[1];
-		glVertex2f(flX, flY);
-
-		g_Engine.pTriAPI->End();
+		ImGui::GetWindowDrawList()->AddImageQuad((GLuint*)texture_id[texture], a, b, c, d);
 	}
 }
 
 void DrawOverviewEntitiesSoundIndex()
 {
-	if (!cvar.radar || !bAliveLocal())
-		return;
-	if (!(DrawVisuals && (!cvar.route_auto || cvar.route_draw_visual)))
+	if (!cvar.radar)
 		return;
 
-	static model_s* hSpriteRed = (struct model_s*)g_Engine.GetSpritePointer(g_Engine.pfnSPR_Load("sprites/iplayerred.spr"));
-	static model_s* hSpriteBlue = (struct model_s*)g_Engine.GetSpritePointer(g_Engine.pfnSPR_Load("sprites/iplayerblue.spr"));
+	Vector vAngle = pmove->angles, vEye = pmove->origin + pmove->view_ofs;
 
-	Vector vAngle, vEye = pmove->origin + pmove->view_ofs;
-	g_Engine.GetViewAngles(vAngle);
-
-	g_Engine.pTriAPI->CullFace(TRI_NONE);
 	for (player_sound_index_t sound_index : Sound_Index)
 	{
+		if (GetTickCount() - sound_index.timestamp > 300)
+			continue;
 		cl_entity_s* ent = g_Engine.GetEntityByIndex(sound_index.index);
 		if (!ent)
 			continue;
@@ -349,21 +301,13 @@ void DrawOverviewEntitiesSoundIndex()
 		if (!g_Player[sound_index.index].bAliveInScoreTab)
 			continue;
 
-		struct model_s* hSprite = 0;
-		if (g_Player[sound_index.index].iTeam == 1)
-			hSprite = hSpriteRed;
-		if (g_Player[sound_index.index].iTeam == 2)
-			hSprite = hSpriteBlue;
+		float calcscreen[2];
+		VectorRotateZ(sound_index.origin - vEye, -vAngle[1], calcscreen);
+		float screenx = IM_ROUND(iX + iW / 2 - calcscreen[1] / cvar.radar_zoom * m_OverviewData.zoom * 0.3f * iW / 2 / (ImGui::GetIO().DisplaySize.x / 6.7));
+		float screeny = IM_ROUND(iY + iH / 2 - calcscreen[0] / cvar.radar_zoom * m_OverviewData.zoom * 0.4f * iH / 2 / (ImGui::GetIO().DisplaySize.y / 5.1));
 
-		int screenx, screeny;
 		int boxsize = (cvar.radar_point_size / 2) * 1.4;
-		float aim[3], newaim[3];
-		aim[0] = sound_index.origin[0] - vEye[0];
-		aim[1] = sound_index.origin[1] - vEye[1];
-		aim[2] = sound_index.origin[2] - vEye[2];
-		VectorRotateZ(aim, -vAngle[1], newaim);
-		screenx = iX + iW / 2 - int(newaim[1] / cvar.radar_zoom * m_OverviewData.zoom * 0.3f * iW / 2 / (ImGui::GetIO().DisplaySize.x / 6.7));
-		screeny = iY + iH / 2 - int(newaim[0] / cvar.radar_zoom * m_OverviewData.zoom * 0.4f * iH / 2 / (ImGui::GetIO().DisplaySize.y / 5.1));
+
 		if (screenx > iX + iW / 2 + iW / 2 - boxsize - 2)
 			screenx = iX + iW / 2 + iW / 2 - boxsize - 2;
 		if (screenx < iX + iW / 2 - iW / 2 + boxsize + 3)
@@ -373,75 +317,48 @@ void DrawOverviewEntitiesSoundIndex()
 		if (screeny < iY + iH / 2 - iH / 2 + boxsize + 3)
 			screeny = iY + iH / 2 - iH / 2 + boxsize + 3;
 
-		g_Engine.pTriAPI->SpriteTexture(hSprite, 0);
-		g_Engine.pTriAPI->RenderMode(kRenderTransTexture);
-
 		QAngle QAimAngles;
 		VectorAngles(sound_index.origin - vEye, QAimAngles);
-		Vector vforward, vRight, vAngles = Vector(0, -QAimAngles[1] + vAngle[1] + 90, 0);
+		Vector vforward, vRight, vAngles = Vector(0, -QAimAngles[1] + vAngle[1] - 90, 0);
 		g_Engine.pfnAngleVectors(vAngles, vforward, vRight, NULL);
 
-		g_Engine.pTriAPI->Begin(TRI_QUADS);
-		g_Engine.pTriAPI->Color4f(1.0, 1.0, 1.0, 1.0);
+		ImVec2 a, b, c, d;
+		int texture = 0;
+		if (g_Player[ent->index].iTeam == 1)
+			texture = REDSOUND;
+		if (g_Player[ent->index].iTeam == 2)
+			texture = BLUESOUND;
+		a.x = screenx + cvar.radar_point_size * vRight[0] + cvar.radar_point_size * vforward[0];
+		a.y = screeny + cvar.radar_point_size * vRight[1] + cvar.radar_point_size * vforward[1];
+		b.x = screenx + cvar.radar_point_size * vRight[0] - cvar.radar_point_size * vforward[0];
+		b.y = screeny + cvar.radar_point_size * vRight[1] - cvar.radar_point_size * vforward[1];
+		c.x = screenx - cvar.radar_point_size * vRight[0] - cvar.radar_point_size * vforward[0];
+		c.y = screeny - cvar.radar_point_size * vRight[1] - cvar.radar_point_size * vforward[1];
+		d.x = screenx - cvar.radar_point_size * vRight[0] + cvar.radar_point_size * vforward[0];
+		d.y = screeny - cvar.radar_point_size * vRight[1] + cvar.radar_point_size * vforward[1];
 
-		float flX, flY;
-
-		g_Engine.pTriAPI->TexCoord2f(1, 0);
-		flX = screenx + cvar.radar_point_size * vRight[0];
-		flX = flX + cvar.radar_point_size * vforward[0];
-		flY = screeny + cvar.radar_point_size * vRight[1];
-		flY = flY + cvar.radar_point_size * vforward[1];
-		glVertex2f(flX, flY);
-
-		g_Engine.pTriAPI->TexCoord2f(0, 0);
-		flX = screenx + cvar.radar_point_size * vRight[0];
-		flX = flX - cvar.radar_point_size * vforward[0];
-		flY = screeny + cvar.radar_point_size * vRight[1];
-		flY = flY - cvar.radar_point_size * vforward[1];
-		glVertex2f(flX, flY);
-
-		g_Engine.pTriAPI->TexCoord2f(0, 1);
-		flX = screenx - cvar.radar_point_size * vRight[0];
-		flX = flX - cvar.radar_point_size * vforward[0];
-		flY = screeny - cvar.radar_point_size * vRight[1];
-		flY = flY - cvar.radar_point_size * vforward[1];
-		glVertex2f(flX, flY);
-
-		g_Engine.pTriAPI->TexCoord2f(1, 1);
-		flX = screenx - cvar.radar_point_size * vRight[0];
-		flX = flX + cvar.radar_point_size * vforward[0];
-		flY = screeny - cvar.radar_point_size * vRight[1];
-		flY = flY + cvar.radar_point_size * vforward[1];
-		glVertex2f(flX, flY);
-
-		g_Engine.pTriAPI->End();
+		ImGui::GetWindowDrawList()->AddImageQuad((GLuint*)texture_id[texture], a, b, c, d);
 	}
 }
 
 void DrawOverviewEntitiesSoundNoIndex()
 {
-	if (!cvar.radar || !bAliveLocal())
-		return;
-	if (!(DrawVisuals && (!cvar.route_auto || cvar.route_draw_visual)))
+	if (!cvar.radar)
 		return;
 
-	static struct model_s* hSprite = (struct model_s*)g_Engine.GetSpritePointer(g_Engine.pfnSPR_Load("sprites/iplayer.spr"));
+	Vector vAngle = pmove->angles, vEye = pmove->origin + pmove->view_ofs;
 
-	Vector vAngle, vEye = pmove->origin + pmove->view_ofs;
-	g_Engine.GetViewAngles(vAngle);
-
-	g_Engine.pTriAPI->CullFace(TRI_NONE);
 	for (player_sound_no_index_t sound_no_index : Sound_No_Index)
 	{
-		int screenx, screeny;
+		if (GetTickCount() - sound_no_index.timestamp > 300)
+			continue;
+		float calcscreen[2];
+		VectorRotateZ(sound_no_index.origin - vEye, -vAngle[1], calcscreen);
+		float screenx = IM_ROUND(iX + iW / 2 - calcscreen[1] / cvar.radar_zoom * m_OverviewData.zoom * 0.3f * iW / 2 / (ImGui::GetIO().DisplaySize.x / 6.7));
+		float screeny = IM_ROUND(iY + iH / 2 - calcscreen[0] / cvar.radar_zoom * m_OverviewData.zoom * 0.4f * iH / 2 / (ImGui::GetIO().DisplaySize.y / 5.1));
+
 		int boxsize = (cvar.radar_point_size / 2) * 1.4;
-		float aim[3], newaim[3];
-		aim[0] = sound_no_index.origin[0] - vEye[0];
-		aim[1] = sound_no_index.origin[1] - vEye[1];
-		aim[2] = sound_no_index.origin[2] - vEye[2];
-		VectorRotateZ(aim, -vAngle[1], newaim);
-		screenx = iX + iW / 2 - int(newaim[1] / cvar.radar_zoom * m_OverviewData.zoom * 0.3f * iW / 2 / (ImGui::GetIO().DisplaySize.x / 6.7));
-		screeny = iY + iH / 2 - int(newaim[0] / cvar.radar_zoom * m_OverviewData.zoom * 0.4f * iH / 2 / (ImGui::GetIO().DisplaySize.y / 5.1));
+
 		if (screenx > iX + iW / 2 + iW / 2 - boxsize - 2)
 			screenx = iX + iW / 2 + iW / 2 - boxsize - 2;
 		if (screenx < iX + iW / 2 - iW / 2 + boxsize + 3)
@@ -451,54 +368,41 @@ void DrawOverviewEntitiesSoundNoIndex()
 		if (screeny < iY + iH / 2 - iH / 2 + boxsize + 3)
 			screeny = iY + iH / 2 - iH / 2 + boxsize + 3;
 
-		g_Engine.pTriAPI->SpriteTexture(hSprite, 0);
-		g_Engine.pTriAPI->RenderMode(kRenderTransTexture);
-
 		QAngle QAimAngles;
 		VectorAngles(sound_no_index.origin - vEye, QAimAngles);
-		Vector vforward, vRight, vAngles = Vector(0, -QAimAngles[1] + vAngle[1] + 90, 0);
+		Vector vforward, vRight, vAngles = Vector(0, -QAimAngles[1] + vAngle[1] - 90, 0);
 		g_Engine.pfnAngleVectors(vAngles, vforward, vRight, NULL);
 
-		g_Engine.pTriAPI->Begin(TRI_QUADS);
-		g_Engine.pTriAPI->Color4f(0.0, 1.0, 0.0, 1.0);
+		ImVec2 a, b, c, d;
+		a.x = screenx + cvar.radar_point_size * vRight[0] + cvar.radar_point_size * vforward[0];
+		a.y = screeny + cvar.radar_point_size * vRight[1] + cvar.radar_point_size * vforward[1];
+		b.x = screenx + cvar.radar_point_size * vRight[0] - cvar.radar_point_size * vforward[0];
+		b.y = screeny + cvar.radar_point_size * vRight[1] - cvar.radar_point_size * vforward[1];
+		c.x = screenx - cvar.radar_point_size * vRight[0] - cvar.radar_point_size * vforward[0];
+		c.y = screeny - cvar.radar_point_size * vRight[1] - cvar.radar_point_size * vforward[1];
+		d.x = screenx - cvar.radar_point_size * vRight[0] + cvar.radar_point_size * vforward[0];
+		d.y = screeny - cvar.radar_point_size * vRight[1] + cvar.radar_point_size * vforward[1];
 
-		float flX, flY;
-
-		g_Engine.pTriAPI->TexCoord2f(1, 0);
-		flX = screenx + cvar.radar_point_size * vRight[0];
-		flX = flX + cvar.radar_point_size * vforward[0];
-		flY = screeny + cvar.radar_point_size * vRight[1];
-		flY = flY + cvar.radar_point_size * vforward[1];
-		glVertex2f(flX, flY);
-
-		g_Engine.pTriAPI->TexCoord2f(0, 0);
-		flX = screenx + cvar.radar_point_size * vRight[0];
-		flX = flX - cvar.radar_point_size * vforward[0];
-		flY = screeny + cvar.radar_point_size * vRight[1];
-		flY = flY - cvar.radar_point_size * vforward[1];
-		glVertex2f(flX, flY);
-
-		g_Engine.pTriAPI->TexCoord2f(0, 1);
-		flX = screenx - cvar.radar_point_size * vRight[0];
-		flX = flX - cvar.radar_point_size * vforward[0];
-		flY = screeny - cvar.radar_point_size * vRight[1];
-		flY = flY - cvar.radar_point_size * vforward[1];
-		glVertex2f(flX, flY);
-
-		g_Engine.pTriAPI->TexCoord2f(1, 1);
-		flX = screenx - cvar.radar_point_size * vRight[0];
-		flX = flX + cvar.radar_point_size * vforward[0];
-		flY = screeny - cvar.radar_point_size * vRight[1];
-		flY = flY + cvar.radar_point_size * vforward[1];
-		glVertex2f(flX, flY);
-
-		g_Engine.pTriAPI->End();
+		ImGui::GetWindowDrawList()->AddImageQuad((GLuint*)texture_id[GREENSOUND], a, b, c, d);
 	}
+}
+
+void DrawOverviewMyPos()
+{
+	ImU32 color;
+	if (g_Local.iTeam == 1)
+		color = Red();
+	else if (g_Local.iTeam == 2)
+		color = Blue();
+	else
+		color = White();
+	ImGui::GetCurrentWindow()->DrawList->AddTriangleFilled({ IM_ROUND(iX + iW / 2 - cvar.radar_point_size) , IM_ROUND(iY + iH / 2) }, { IM_ROUND(iX + iW / 2), IM_ROUND(iY + iH / 2 - cvar.radar_point_size / 2) }, { IM_ROUND(iX + iW / 2) , IM_ROUND(iY + iH / 2 - cvar.radar_point_size) }, color);
+	ImGui::GetCurrentWindow()->DrawList->AddTriangleFilled({ IM_ROUND(iX + iW / 2 + cvar.radar_point_size) , IM_ROUND(iY + iH / 2) }, { IM_ROUND(iX + iW / 2), IM_ROUND(iY + iH / 2 - cvar.radar_point_size / 2) }, { IM_ROUND(iX + iW / 2) , IM_ROUND(iY + iH / 2 - cvar.radar_point_size) }, color);
 }
 
 void DrawOverview()
 {
-	if (!cvar.radar || !bAliveLocal())
+	if (!cvar.radar)
 		return;
 
 	ImVec2 WindowMinSize = ImGui::GetStyle().WindowMinSize;
@@ -510,20 +414,16 @@ void DrawOverview()
 	ImGui::SetNextWindowSize(ImVec2(150, 150), ImGuiCond_Once);
 	ImGui::Begin("overview", NULL, ImGuiWindowFlags_NoTitleBar);
 	{
+		if (!MapLoaded)
+			ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f),"MISSING OVERVIEW");
 		iX = ImGui::GetCursorScreenPos().x;
 		iY = ImGui::GetCursorScreenPos().y;
 		iW = ImGui::GetContentRegionAvail().x;
 		iH = ImGui::GetContentRegionAvail().y;
 
-		ImU32 color;
-		if (g_Local.iTeam == 1)
-			color = Red();
-		else if (g_Local.iTeam == 2)
-			color = Blue();
-		else
-			color = White();
-		ImGui::GetCurrentWindow()->DrawList->AddTriangleFilled({ IM_ROUND(iX + iW / 2 - cvar.radar_point_size) , IM_ROUND(iY + iH / 2) }, { IM_ROUND(iX + iW / 2), IM_ROUND(iY + iH / 2) - cvar.radar_point_size / 2 }, { IM_ROUND(iX + iW / 2) , IM_ROUND(iY + iH / 2) - cvar.radar_point_size }, color);
-		ImGui::GetCurrentWindow()->DrawList->AddTriangleFilled({ IM_ROUND(iX + iW / 2 + cvar.radar_point_size) , IM_ROUND(iY + iH / 2) }, { IM_ROUND(iX + iW / 2), IM_ROUND(iY + iH / 2) - cvar.radar_point_size / 2 }, { IM_ROUND(iX + iW / 2) , IM_ROUND(iY + iH / 2) - cvar.radar_point_size }, color);
+		DrawOverviewEntitiesSoundIndex();
+		DrawOverviewEntities();
+		DrawOverviewMyPos();
 	}
 	ImGui::End();
 	ImGui::PopStyleColor();

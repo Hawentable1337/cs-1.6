@@ -26,9 +26,6 @@ void HUD_Redraw(float time, int intermission)
 	HudRedraw = GetTickCount();
 
 	DrawOverviewLayer();
-	DrawOverviewEntitiesSoundNoIndex();
-	DrawOverviewEntitiesSoundIndex();
-	DrawOverviewEntities();
 	KzFameCount();
 	Snapshot();
 }

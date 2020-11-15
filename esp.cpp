@@ -153,7 +153,7 @@ void DrawPlayerSoundIndexEsp()
 					ImGui::GetCurrentWindow()->DrawList->AddLine({ IM_ROUND(vStart[0]), IM_ROUND(vStart[1]) }, { IM_ROUND(vEnd[0]), IM_ROUND(vEnd[1]) }, Team(sound_index.index));
 			}
 		}
-		if (GetTickCount() - sound_index.timestamp >= 300)
+		if (GetTickCount() - sound_index.timestamp > 300)
 			continue;
 
 		Vector vPointTop = Vector(sound_index.origin.x, sound_index.origin.y, sound_index.origin.z + 10);
@@ -190,7 +190,7 @@ void DrawPlayerSoundNoIndexEsp()
 					ImGui::GetCurrentWindow()->DrawList->AddLine({ IM_ROUND(vStart[0]), IM_ROUND(vStart[1]) }, { IM_ROUND(vEnd[0]), IM_ROUND(vEnd[1]) }, Green());
 			}
 		}
-		if (GetTickCount() - sound_no_index.timestamp >= 300)
+		if (GetTickCount() - sound_no_index.timestamp > 300)
 			continue;
 
 		Vector vPointTop = Vector(sound_no_index.origin.x, sound_no_index.origin.y, sound_no_index.origin.z + 10);

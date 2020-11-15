@@ -1931,6 +1931,11 @@ void DrawMenuWindow()
 		GetTextureMenu("settings", settingsmaxindex);
 		GetTextureMenu("key", keymaxindex);
 		LoadTextureImageMenu("texture/menu/vip/vip.png", VIP);
+		LoadTextureImageMenu("texture/radar/redarrow.png", REDARROW);
+		LoadTextureImageMenu("texture/radar/bluearrow.png", BLUEARROW);
+		LoadTextureImageMenu("texture/radar/redsound.png", REDSOUND);
+		LoadTextureImageMenu("texture/radar/bluesound.png", BLUESOUND);
+		LoadTextureImageMenu("texture/radar/greensound.png", GREENSOUND);
 		loadtexturemenu = false;
 	}
 

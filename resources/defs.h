@@ -86,5 +86,10 @@ typedef float BoneMatrix_t[MAXSTUDIOBONES][3][4];
 #define MOD_CS		2
 
 #define VIP			            0
+#define REDSOUND 1
+#define BLUESOUND 2
+#define GREENSOUND 3
+#define REDARROW 4
+#define BLUEARROW 5
 
 #endif

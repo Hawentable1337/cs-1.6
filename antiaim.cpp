@@ -41,25 +41,14 @@ void AntiAim(struct usercmd_s* cmd)
 			FixMoveStart(cmd);
 
 			int target = NULL;
-			float flDist = 8192.f;
 			Vector origin;
 			for (playeraim_t Aim : PlayerAim)
 			{
-				if (Aim.ent->index == pmove->player_index + 1)
+				if (Aim.ent->index != iTargetRage)
 					continue;
 
-				if (!bAlive(Aim.ent))
-					continue;
-
-				if (!cvar.rage_team && g_Player[Aim.ent->index].iTeam == g_Local.iTeam)
-					continue;
-
-				if (Aim.ent->curstate.origin.Distance(pmove->origin) < flDist)
-				{
-					flDist = Aim.ent->curstate.origin.Distance(pmove->origin);
-					origin = Aim.ent->origin;
-					target = Aim.ent->index;
-				}
+				origin = Aim.ent->origin;
+				target = Aim.ent->index;
 			}
 
 			Vector vAngles = cmd->viewangles;
