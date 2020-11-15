@@ -410,8 +410,8 @@ void DrawOverview()
 	float WindowBorderSize = ImGui::GetStyle().WindowBorderSize;
 	ImGui::GetStyle().WindowBorderSize = 1.0f;
 	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
-	ImGui::SetNextWindowPos(ImVec2(100, 100), ImGuiCond_Once);
-	ImGui::SetNextWindowSize(ImVec2(150, 150), ImGuiCond_Once);
+	ImGui::SetNextWindowPos(ImVec2(cvar.radar_pos_x, cvar.radar_pos_y), ImGuiCond_Once);
+	ImGui::SetNextWindowSize(ImVec2(cvar.radar_size_x, cvar.radar_size_x), ImGuiCond_Once);
 	ImGui::Begin("overview", NULL, ImGuiWindowFlags_NoTitleBar);
 	{
 		if (!MapLoaded)
@@ -421,6 +421,31 @@ void DrawOverview()
 		iW = ImGui::GetContentRegionAvail().x;
 		iH = ImGui::GetContentRegionAvail().y;
 
+		static int checkx = ImGui::GetWindowPos().x;
+		static int checky = ImGui::GetWindowPos().y;
+		static int checkw = ImGui::GetWindowSize().x;
+		static int checkh = ImGui::GetWindowSize().y;
+
+		if (!bShowMenu)
+		{
+			if (checkx != ImGui::GetWindowPos().x ||
+				checky != ImGui::GetWindowPos().y ||
+				checkw != ImGui::GetWindowSize().x ||
+				checkh != ImGui::GetWindowSize().y)
+			{
+				checkx = ImGui::GetWindowPos().x;
+				checky = ImGui::GetWindowPos().y;
+				checkw = ImGui::GetWindowSize().x;
+				checkh = ImGui::GetWindowSize().y;
+
+				cvar.radar_pos_x = (int)ImGui::GetWindowPos().x;
+				cvar.radar_pos_y = (int)ImGui::GetWindowPos().y;
+				cvar.radar_size_x = (int)ImGui::GetWindowSize().x;
+				cvar.radar_size_y = (int)ImGui::GetWindowSize().y;
+
+				SaveCvar();
+			}
+		}
 		DrawOverviewEntitiesSoundNoIndex();
 		DrawOverviewEntitiesSoundIndex();
 		DrawOverviewEntities();

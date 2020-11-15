@@ -41,10 +41,7 @@ int ResetHUD(const char *pszName, int iSize, void *pbuf)
 	if (strcmp(currentMap, g_Engine.pfnGetLevelName())) 
 	{
 		strcpy(currentMap, g_Engine.pfnGetLevelName());
-		char map_name[100];
-		strcpy(map_name, strrchr(currentMap, '/') + 1);
-		*strchr(map_name, '.') = 0;
-		LoadOverview(map_name);
+		LoadOverview((char*)getfilename(g_Engine.pfnGetLevelName()).c_str());
 	}
 	RunHLCommands();
 	ContinueRoute(); 

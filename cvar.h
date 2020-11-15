@@ -212,6 +212,10 @@ public:
 	float radar;
 	float radar_zoom;
 	float radar_point_size;
+	float radar_pos_x;
+	float radar_pos_y;
+	float radar_size_x;
+	float radar_size_y;
 };
 
 extern CVARlist cvar;
