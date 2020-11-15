@@ -415,12 +415,13 @@ void DrawOverview()
 	ImGui::Begin("overview", NULL, ImGuiWindowFlags_NoTitleBar);
 	{
 		if (!MapLoaded)
-			ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f),"MISSING OVERVIEW");
+			ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f),"MISSING OVERVIEW!");
 		iX = ImGui::GetCursorScreenPos().x;
 		iY = ImGui::GetCursorScreenPos().y;
 		iW = ImGui::GetContentRegionAvail().x;
 		iH = ImGui::GetContentRegionAvail().y;
 
+		DrawOverviewEntitiesSoundNoIndex();
 		DrawOverviewEntitiesSoundIndex();
 		DrawOverviewEntities();
 		DrawOverviewMyPos();
