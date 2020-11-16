@@ -1338,7 +1338,6 @@ void MenuSettings()
 {
 	ImGui::Text("Settings"), ImGui::Separator();
 
-	ImGui::Text("%.1f", pmove->origin.z);
 	ImGui::Checkbox("Anti Afk", &cvar.afk_anti);
 	ImGui::Text("Anti Afk Time");
 	SliderFloat("Anti Afk Time##1", &cvar.afk_time, 15, 90, "%.0f");
