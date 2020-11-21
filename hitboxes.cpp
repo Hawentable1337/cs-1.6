@@ -93,9 +93,9 @@ void GetHitboxes(cl_entity_s* ent)
 		{
 			if (CheckDrawEngine() && cvar.skeleton_view_model_bone && pBoneMatrix && pbones)
 			{
-				glPushMatrix();
-				glDisable(GL_TEXTURE_2D); 
+				glDisable(GL_TEXTURE_2D);
 				glEnable(GL_BLEND);
+				glEnable(GL_LINE_SMOOTH);
 				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 				for (unsigned int i = 0; i < pStudioHeader->numbones; i++)
 				{
@@ -126,13 +126,14 @@ void GetHitboxes(cl_entity_s* ent)
 					}
 				}
 				glEnable(GL_TEXTURE_2D);
-				glPopMatrix();
+				glDisable(GL_BLEND);
+				glDisable(GL_LINE_SMOOTH);
 			}
 			if (CheckDrawEngine() && cvar.skeleton_view_model_hitbox && pBoneMatrix && pHitbox)
 			{
-				glPushMatrix();
 				glDisable(GL_TEXTURE_2D);
 				glEnable(GL_BLEND);
+				glEnable(GL_LINE_SMOOTH);
 				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 				for (unsigned int i = 0; i < pStudioHeader->numhitboxes; i++)
 				{
@@ -167,7 +168,8 @@ void GetHitboxes(cl_entity_s* ent)
 					glEnd();
 				}
 				glEnable(GL_TEXTURE_2D);
-				glPopMatrix();
+				glDisable(GL_BLEND);
+				glDisable(GL_LINE_SMOOTH);
 			}
 		}
 	}

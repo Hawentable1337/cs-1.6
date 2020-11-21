@@ -92,11 +92,19 @@ unsigned AutoOffset::Absolute(DWORD Addr)
 	return Cardinal(Addr) + *(PCardinal)(Addr)+4;
 }
 
-void AutoOffset::Error(const PCHAR Msg)
+void AutoOffset::Error(char* fmt, ...)
 {
-	MessageBoxA(0, Msg, "Fatal Error", MB_OK | MB_ICONERROR);
+	va_list va_alist;
+	char buf[256];
+	va_start(va_alist, fmt);
+	vsprintf_s(buf, fmt, va_alist);
+	va_end(va_alist);
+
+	MessageBox(0, buf, "Fatal Error", MB_OK | MB_ICONERROR);
+
 	ExitProcess(0);
 }
+
 
 DWORD AutoOffset::GetModuleSize(const DWORD Address)
 {
@@ -217,6 +225,16 @@ DWORD FindPush(DWORD start, DWORD end, PCHAR Message)
 	return Address;
 }
 
+BOOL bCompareMemory(LPBYTE bAddress, LPBYTE bCode, UINT uSize, BOOL bPattern)
+{
+	UINT i;
+	for (i = 0; i < uSize; i++, bCode++, bAddress++) {
+		if ((*bAddress != *bCode) && (!bPattern || *bCode != 0xFF))
+			return FALSE;
+	}
+	return TRUE;
+}
+
 PVOID AutoOffset::ClientFuncs()
 {
 	DWORD Old = NULL;
@@ -225,7 +243,7 @@ PVOID AutoOffset::ClientFuncs()
 	PVOID ClientPtr = (PVOID)*(PDWORD)(FindReference(HwBase, HwEnd, Address) + 0x13); // all patch
 
 	if (FarProc((DWORD)ClientPtr, HwBase, HwEnd))
-		Error("Couldn't find ClientPtr pointer.");
+		Error("Couldn't find %s.",__FUNCTION__);
 
 	VirtualProtect(ClientPtr,sizeof(double),PAGE_READWRITE,&Old);
 
@@ -247,7 +265,7 @@ PVOID AutoOffset::EngineFuncs()
 				EnginePtr = (cl_enginefunc_t*)*(DWORD*)((DWORD)g_pClient->Initialize + 0x37); // hl-steam
 				if (FarProc((DWORD)EnginePtr, ClBase, ClEnd))
 				{
-					Error("Couldn't find EnginePtr pointer.");
+					Error("Couldn't find %s.", __FUNCTION__);
 				}
 			}
 		}
@@ -267,7 +285,7 @@ PVOID AutoOffset::StudioFuncs()
 		StudioPtr = (engine_studio_api_t*)*(DWORD*)((DWORD)g_pClient->HUD_GetStudioModelInterface + 0x1A); // new patch / steam	
 
 		if (FarProc((DWORD)StudioPtr, ClBase, ClEnd))
-			Error("Couldn't find StudioPtr pointer.");
+			Error("Couldn't find %s.", __FUNCTION__);
 	}
 
 	VirtualProtect(StudioPtr,sizeof(double),PAGE_READWRITE,&Old);
@@ -282,12 +300,12 @@ PUserMsg AutoOffset::FindUserMsgBase(void)
 	DWORD UserMsgBase = Absolute(FindPattern("\x52\x50\xE8\xFF\xFF\xFF\xFF\x83", "xxx????x", Address, Address + 0x32, 3));
 
 	if (FarProc(UserMsgBase, HwBase, HwEnd))
-		Error("UserMsg: not found.");
+		Error("Couldn't find %s.", __FUNCTION__);
 
 	UserMsgBase = FindPattern("\xFF\xFF\xFF\x0C\x56\x8B\x35\xFF\xFF\xFF\xFF\x57", "???xxxx????x", UserMsgBase, UserMsgBase + 0x32, 7);
 
 	if (FarProc(UserMsgBase, HwBase, HwEnd))
-		Error("UserMsg: #2 not found.");
+		Error("Couldn't find %s2.", __FUNCTION__);
 
 	return PUserMsg(**(PDWORD*)UserMsgBase);
 }
@@ -297,13 +315,13 @@ DWORD AutoOffset::CL_Move(void)
 	DWORD Address = FindPattern("\x56\x57\x33\xFF\x3B\xC7\x0F\x84\x00\x00\x00\x00\x83\xF8\x01\x0F\x84\x00\x00\x00\x00\x83\xF8\x02\x0F\x84\x00\x00\x00\x00\x83\xF8\x03\x75\x22", "xxxxxxx????xxxxx????xxxxx????xxxxx", HwBase, HwEnd, 0);
 
 	if (FarProc((DWORD)Address, HwBase, HwEnd))
-		Error("CL_Move: not found.");
+		Error("Couldn't find %s.", __FUNCTION__);
 	else 
 	{
 		Address = FindPattern("\xC3\x90", "xx", Address - 0x12, HwEnd, 0x2);
 
 		if (FarProc((DWORD)Address, HwBase, HwEnd))
-			Error("CL_Move: #2 not found.");
+			Error("Couldn't find %s2.", __FUNCTION__);
 	}
 
 	return Address;
@@ -314,7 +332,7 @@ void AutoOffset::GlobalTime()
 	dwSendPacketPointer = FindPattern("\x75\x13\xD9\x05\x00\x00\x00\x00\xD8\x1D\x00\x00\x00\x00\xDF\xE0\xF6\xC4\x00\x00\x00\xD9\x05\x00\x00\x00\x00\xDC\x1D\x00\x00\x00\x00\xDF\xE0\xF6\xC4\x41", "xxxx????xx????xxxx???xx????xx????xxxxx", HwBase, HwEnd, 0x1b) + 2;
 
 	if (FarProc(dwSendPacketPointer, HwBase, HwEnd))
-		Error("dwSendPacket: not found.");
+		Error("Couldn't find %s.", __FUNCTION__);
 
 	dwSendPacketBackup = *((uintptr_t *)(dwSendPacketPointer));
 
@@ -327,7 +345,7 @@ DWORD AutoOffset::FindSpeed(void)
 	PVOID SpeedPtr = (PVOID)*(DWORD*)(FindReference(HwBase, HwEnd, Address) - 7);
 
 	if (FarProc((DWORD)SpeedPtr, HwBase, HwEnd))
-		Error("Speed: not found.");
+		Error("Couldn't find %s.", __FUNCTION__);
 	else
 		EnablePageWrite((DWORD)SpeedPtr, sizeof(double));
 
@@ -340,7 +358,7 @@ PVOID AutoOffset::FindPlayerMove(void)
 	PVOID Ptr = (PVOID)*(PDWORD)(FindReference(HwBase, HwEnd, Address) + 0x18);
 
 	if (FarProc((DWORD)Ptr, HwBase, HwEnd))
-		Error("PlayerMove: not found.");
+		Error("Couldn't find %s.", __FUNCTION__);
 
 	return Ptr;
 }
@@ -349,7 +367,7 @@ DWORD AutoOffset::FindStudioModelRenderer(DWORD StudioDrawModel)
 {
 	PDWORD retAddress = (*(PDWORD*)((DWORD)StudioDrawModel + 0x05));
 	if (retAddress) return *retAddress;
-	Error("StudioModelRenderer: not found.");
+	Error("Couldn't find %s.", __FUNCTION__);
 }
 
 void AutoOffset::PatchInterpolation(void)
@@ -388,7 +406,7 @@ DWORD AutoOffset::PreS_DynamicSound(void)
 		Address = Absolute(FindPush(HwBase, HwEnd, "CL_Parse_Sound: ent = %i, cl.max_edicts %i") - 0x11);
 
 		if (FarProc(Address, HwBase, HwEnd))
-			Error("PreS_DynamicSound: not found.");
+			Error("Couldn't find %s.", __FUNCTION__);
 
 		return Address;
 	}
@@ -406,27 +424,6 @@ DWORD AutoOffset::Steam_GSInitiateGameConnection(void)
 	return Address;
 }
 
-bool CompareMemBlock(BYTE* bAddress, BYTE* bCode, int iCodeLen)
-{
-	for (int j = 0; j < iCodeLen; bAddress++, bCode++, j++)
-	{
-		if ((*bAddress != *bCode) && (*bCode != 0xFF))
-			return false;
-	}
-
-	return true;
-}
-
-DWORD FindCodeSignature(DWORD dwStart, DWORD dwLength, BYTE* bCode, int nCodeLen, int nCodeNum)
-{
-	for (DWORD i = dwStart; (i + nCodeLen) < (dwStart + dwLength); i++)
-	{
-		if (CompareMemBlock((BYTE*)i, bCode, nCodeLen))
-			return (DWORD)(i + nCodeNum);
-	}
-	return 0;
-}
-
 DWORD AutoOffset::FindGameConsole()
 {
 	DWORD PatternAddress = FindPattern("GameConsole003", UiBase, UiEnd, 0);
@@ -434,7 +431,7 @@ DWORD AutoOffset::FindGameConsole()
 
 	if (FarProc(ReferenAddress, UiBase, UiEnd))
 	{
-		Error("Couldn't find GameConsole pointer.");
+		Error("Couldn't find %s.", __FUNCTION__);
 		return 0;
 	}
 
@@ -460,16 +457,6 @@ void AutoOffset::ConsoleColorInitalize()
 	}
 }
 
-BOOL bCompareMemory(LPBYTE bAddress, LPBYTE bCode, UINT uSize, BOOL bPattern) 
-{
-	UINT i;
-	for (i = 0; i < uSize; i++, bCode++, bAddress++) {
-		if ((*bAddress != *bCode) && (!bPattern || *bCode != 0xFF))
-			return FALSE;
-	}
-	return TRUE;
-}
-
 DWORD FindCodeAddress(DWORD dwStart, DWORD dwEnd, LPBYTE bCode, UINT CodeSize, INT OpcodeNum, BOOL bPattern)
 {
 	DWORD i;
@@ -489,7 +476,7 @@ DWORD AutoOffset::FindInterface(DWORD GetStudioModelInterfaceAddress)
 	{
 		return *retAddress;
 	}
-	Error("Interface: not found.");
+	Error("Couldn't find %s.", __FUNCTION__);
 }
 
 int* AutoOffset::FindSkyTexNumber()
@@ -506,7 +493,7 @@ int* AutoOffset::FindSkyTexNumber()
 				"xx????xxx?xxxx????xxxx?x?????xxx????xxx?????x????", HwBase, HwEnd, 0) + 0x27;
 
 			if (FarProc((DWORD)Address, HwBase, HwEnd))
-				Error("Sky texture index not found");
+				Error("Couldn't find %s.", __FUNCTION__);
 		}
 	}
 

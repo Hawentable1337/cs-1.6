@@ -62,7 +62,7 @@ void StrafeHack(struct usercmd_s* cmd)
 			Vector ViewAngles;
 			g_Engine.GetViewAngles(ViewAngles);
 			ViewAngles.y += dir;
-			float vspeed[3] = { pmove->velocity.x / pmove->velocity.Length(),pmove->velocity.y / pmove->velocity.Length(), 0.0f };
+			Vector vspeed = Vector(pmove->velocity.x / pmove->velocity.Length(), pmove->velocity.y / pmove->velocity.Length(), 0.0f);
 			float va_speed = YawForVec(vspeed);
 			float adif = va_speed - ViewAngles.y;
 			while (adif < -180)adif += 360;

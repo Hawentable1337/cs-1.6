@@ -26,11 +26,10 @@ public:
 	DWORD FarProc(const DWORD Address, DWORD LB, DWORD HB);
 	BYTE HLType;
 
-	void GlobalTime();
-	void Error(const PCHAR Msg);
+	void GlobalTime(); 
+	void Error(char* fmt, ...);
 	void PatchInterpolation(void);
 	void ConsoleColorInitalize();
-
 	unsigned Absolute(DWORD Addr);
 
 	bool GetRendererInfo();
