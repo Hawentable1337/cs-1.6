@@ -109,9 +109,9 @@ void ClearHudKeys()
 
 void ClearSound()
 {
-	if (Sound_No_Index.size() && GetTickCount() - Sound_No_Index.front().timestamp >= 900)
+	if (Sound_No_Index.size() && GetTickCount() - Sound_No_Index.front().timestamp > 900)
 		Sound_No_Index.pop_front();
-	if (Sound_Index.size() && GetTickCount() - Sound_Index.front().timestamp >= 900)
+	if (Sound_Index.size() && GetTickCount() - Sound_Index.front().timestamp > 900)
 		Sound_Index.pop_front();
 }
 

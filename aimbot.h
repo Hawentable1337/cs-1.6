@@ -40,6 +40,7 @@ extern deque<playeraimlegit_t> PlayerAimLegit;
 static BYTE SkeletonHitboxMatrix[12][2] = { {0,1},{1,2},{2,3},{2,4},{4,5},{5,6},{6,7},{1,5},{0,6},{3,7},{7,4},{0,3}, };
 extern DWORD dwReactionTime;
 extern bool TriggerKeyStatus;
+extern bool LegitKeyStatus;
 extern bool RageKeyStatus;
 
 extern int iTargetTrigger;

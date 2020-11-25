@@ -178,7 +178,6 @@ extern engine_studio_api_t *g_pStudio;
 extern r_studio_interface_t* g_pInterface;
 extern StudioModelRenderer_t* g_pStudioModelRenderer;
 extern playermove_t* pmove;
-extern net_status_s Status;
 typedef void(*CL_Move_t)();
 
 extern CL_Move_t CL_Move_s;

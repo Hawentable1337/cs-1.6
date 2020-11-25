@@ -68,6 +68,7 @@ void CVARlist::init()
 	INITCVAR(rage_auto_fire_key, -1.0);
 	INITCVAR(rage_team, 0.0);
 	INITCVAR(rage_always_fire, 0.0);
+	INITCVAR(rage_draw_aim, 1.0);
 
 	INITCVAR(aim_id_mode, 1.0);
 
@@ -138,8 +139,11 @@ void CVARlist::init()
 	INITCVAR(legit_trigger_only_zoom, 0.0);
 	INITCVAR(legit_trigger_team, 0.0);
 	INITCVAR(legit_trigger_key, -1.0);
+	INITCVAR(legit_trigger_draw_aim, 1.0);
 
 	INITCVAR(legit_team, 0.0);
+	INITCVAR(legit_key, -1.0);
+	INITCVAR(legit_draw_aim, 1.0);
 
 	INITCVAR(menu_legit_global_section, 0.0);
 	INITCVAR(menu_legit_sub_section, 0.0);
@@ -154,6 +158,7 @@ void CVARlist::init()
 	INITCVAR(knifebot_perfect_silent, 0.0);
 	INITCVAR(knifebot_fov, 45.0);
 	INITCVAR(knifebot_team, 0.0);
+	INITCVAR(knifebot_draw_aim, 1.0);
 
 	INITCVAR(bypass_trace_rage, 1.0);
 	INITCVAR(bypass_trace_legit, 1.0);
@@ -288,13 +293,13 @@ void CVARlist::init()
 	INITCVAR(id6, 6.0);
 	INITCVAR(id7, 7.0);
 
-	INITCVAR(radar, 0);
-	INITCVAR(radar_zoom, 5);
-	INITCVAR(radar_point_size, 5);
-	INITCVAR(radar_pos_x, 100);
-	INITCVAR(radar_pos_y, 100);
-	INITCVAR(radar_size_x, 150);
-	INITCVAR(radar_size_y, 150);
+	INITCVAR(radar, 0.0);
+	INITCVAR(radar_zoom, 5.0);
+	INITCVAR(radar_point_size, 5.0);
+	INITCVAR(radar_pos_x, 100.0);
+	INITCVAR(radar_pos_y, 100.0);
+	INITCVAR(radar_size_x, 150.0);
+	INITCVAR(radar_size_y, 150.0);
 }
 
 void SaveCvar()

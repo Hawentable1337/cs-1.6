@@ -349,9 +349,10 @@ void MenuRage1()
 
 	ImGui::Checkbox("Activate", &cvar.rage_active);
 	ImGui::Checkbox("Aim Team", &cvar.rage_team);
-	ImGui::Checkbox("Always Fire", &cvar.rage_always_fire);
+	ImGui::Checkbox("Always Fire Manual", &cvar.rage_always_fire);
 	if(!cvar.rage_always_fire)ImGui::Checkbox("Auto Fire", &cvar.rage_auto_fire);
 	ImGui::Checkbox("Bypass Trace", &cvar.bypass_trace_rage);
+	ImGui::Checkbox("Draw Aim", &cvar.rage_draw_aim);
 	if (!cvar.rage_always_fire)ImGui::Checkbox("Perfect Silent", &cvar.rage_perfect_silent);
 	ImGui::Checkbox("Silent Aim", &cvar.rage_silent);
 	ImGui::Checkbox("Shield Attack", &cvar.rage_shield_attack);
@@ -436,9 +437,12 @@ void MenuLegit1()
 		ImGui::Checkbox("Activate", &cvar.legit[CheckWeapon(cvar.menu_legit_global_section, cvar.menu_legit_sub_section)].active);
 		ImGui::Checkbox("Aim Team", &cvar.legit_team);
 		ImGui::Checkbox("Bypass Trace", &cvar.bypass_trace_legit);
+		ImGui::Checkbox("Draw Aim", &cvar.legit_draw_aim);
 		ImGui::Checkbox("Draw Fov", &cvar.legit[CheckWeapon(cvar.menu_legit_global_section, cvar.menu_legit_sub_section)].drawfov);
 		ImGui::Checkbox("Humanize", &cvar.legit[CheckWeapon(cvar.menu_legit_global_section, cvar.menu_legit_sub_section)].humanize);
 		
+		HudKeyBind(cvar.legit_key, "Fire Key");
+
 		ImGui::Text("Auto Aim Lock Speed");
 		SliderFloat("Auto Aim Lock Speed##1", &cvar.legit[CheckWeapon(cvar.menu_legit_global_section, cvar.menu_legit_sub_section)].speed, 0.f, 100.f, "%.0f");
 		
@@ -518,6 +522,7 @@ void MenuLegit2()
 		ImGui::Checkbox("Activate", &cvar.legit[CheckWeapon(cvar.menu_legit_global_section, cvar.menu_legit_sub_section)].trigger_active);
 		ImGui::Checkbox("Aim Team", &cvar.legit_trigger_team);
 		ImGui::Checkbox("Bypass Trace", &cvar.bypass_trace_trigger);
+		ImGui::Checkbox("Draw Aim", &cvar.legit_trigger_draw_aim);
 		ImGui::Checkbox("Only Zoom", &cvar.legit_trigger_only_zoom);
 		ImGui::Checkbox("Wall", &cvar.legit[CheckWeapon(cvar.menu_legit_global_section, cvar.menu_legit_sub_section)].trigger_wall);
 		HudKeyBind(cvar.legit_trigger_key, "Trigger Key");
@@ -547,6 +552,7 @@ void MenuLegit2()
 		ImGui::Checkbox("Activate##2", &cvar.knifebot_active);
 		ImGui::Checkbox("Aim Team##2", &cvar.knifebot_team);
 		ImGui::Checkbox("Bypass Trace##2", &cvar.bypass_trace_knife);
+		ImGui::Checkbox("Draw Aim##2", &cvar.knifebot_draw_aim);
 		ImGui::Checkbox("Silent", &cvar.knifebot_silent);
 		ImGui::Checkbox("Perfect Silent", &cvar.knifebot_perfect_silent);
 
@@ -617,7 +623,6 @@ void MenuLegit3()
 			}
 		}
 	}
-
 }
 
 void MenuModelAim1()
@@ -1398,15 +1403,15 @@ void DrawMenuChild(int total)
 	if (MenuTab == 0)
 	{
 		if (cvar.rage_always_fire)
-			windowheight1 = 322;
+			windowheight1 = 343;
 		else
-			windowheight1 = 516;
+			windowheight1 = 537;
 		windowheight2 = 428;
 	}
 	if (MenuTab == 1)
 	{
-		windowheight1 = 588;
-		windowheight2 = 600;
+		windowheight1 = 647;
+		windowheight2 = 642;
 		windowheight3 = 23;
 		for (model_aim_select_t Model_Selected : Model_Aim_Select)
 			windowheight3 += 21;

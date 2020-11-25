@@ -411,11 +411,11 @@ void DrawOverview()
 	ImGui::GetStyle().WindowBorderSize = 1.0f;
 	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
 	ImGui::SetNextWindowPos(ImVec2(cvar.radar_pos_x, cvar.radar_pos_y), ImGuiCond_Once);
-	ImGui::SetNextWindowSize(ImVec2(cvar.radar_size_x, cvar.radar_size_x), ImGuiCond_Once);
+	ImGui::SetNextWindowSize(ImVec2(cvar.radar_size_x, cvar.radar_size_y), ImGuiCond_Once);
 	ImGui::Begin("overview", NULL, ImGuiWindowFlags_NoTitleBar);
 	{
 		if (!MapLoaded)
-			ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f),"MISSING OVERVIEW!");
+			ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f),"Missing overview!");
 		iX = ImGui::GetCursorScreenPos().x;
 		iY = ImGui::GetCursorScreenPos().y;
 		iW = ImGui::GetContentRegionAvail().x;

@@ -19,6 +19,7 @@ public:
 	float rage_auto_fire_key;
 	float rage_team;
 	float rage_always_fire;
+	float rage_draw_aim;
 
 	float aim_id_mode;
 
@@ -59,8 +60,11 @@ public:
 	float legit_trigger_only_zoom;
 	float legit_trigger_team;
 	float legit_trigger_key;
+	float legit_trigger_draw_aim;
 
+	float legit_key;
 	float legit_team;
+	float legit_draw_aim;
 
 	float menu_legit_global_section;
 	float menu_legit_sub_section;
@@ -75,6 +79,7 @@ public:
 	float knifebot_perfect_silent;
 	float knifebot_fov;
 	float knifebot_team;
+	float knifebot_draw_aim;
 
 	float bypass_trace_rage;
 	float bypass_trace_legit;

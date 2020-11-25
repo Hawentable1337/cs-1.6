@@ -1,15 +1,14 @@
 #include "client.h"
 
-cl_clientfunc_t *g_pClient = NULL;
-cl_enginefunc_t *g_pEngine = NULL;
-engine_studio_api_t *g_pStudio = NULL;
-r_studio_interface_t* g_pInterface = NULL;
-StudioModelRenderer_t* g_pStudioModelRenderer = NULL;
-playermove_t* pmove = NULL;
-net_status_s Status;
+cl_clientfunc_t *g_pClient;
+cl_enginefunc_t *g_pEngine;
+engine_studio_api_t *g_pStudio;
+r_studio_interface_t* g_pInterface;
+StudioModelRenderer_t* g_pStudioModelRenderer;
+playermove_t* pmove;
 
-CL_Move_t CL_Move_s = NULL;
-PreS_DynamicSound_t PreS_DynamicSound_s = NULL;
+CL_Move_t CL_Move_s;
+PreS_DynamicSound_t PreS_DynamicSound_s;
 cl_clientfunc_t g_Client;
 cl_enginefunc_t g_Engine;
 engine_studio_api_t g_Studio;
@@ -41,7 +40,8 @@ int HUD_Key_Event(int down, int keynum, const char* pszCurrentBinding)
 	bool keybhop = cvar.kz_bhop && keynum == cvar.kz_bhop_key;
 	bool keyjump = cvar.kz_jump_bug && keynum == cvar.kz_jumpbug_key;
 	bool keyrage = cvar.rage_active && !cvar.rage_auto_fire && !cvar.rage_always_fire && keynum == cvar.rage_auto_fire_key;
-	bool keylegit = !cvar.rage_active && cvar.legit[g_Local.weapon.m_iWeaponID].trigger_active && !cvar.legit[g_Local.weapon.m_iWeaponID].active && IsCurWeaponGun() && keynum == cvar.legit_trigger_key;
+	bool keylegit = !cvar.rage_active && cvar.legit[g_Local.weapon.m_iWeaponID].active && IsCurWeaponGun() && keynum == cvar.legit_key;
+	bool keylegittrigger = !cvar.rage_active && cvar.legit[g_Local.weapon.m_iWeaponID].trigger_active && !cvar.legit[g_Local.weapon.m_iWeaponID].active && IsCurWeaponGun() && keynum == cvar.legit_trigger_key;
 	bool keychat = cvar.gui_chat && keynum == cvar.gui_chat_key;
 	bool keychatteam = cvar.gui_chat && keynum == cvar.gui_chat_key_team;
 	bool keymenu = keynum == cvar.gui_key;
@@ -122,11 +122,13 @@ int HUD_Key_Event(int down, int keynum, const char* pszCurrentBinding)
 			Jumpbug = down;
 		if (keyrage)
 			RageKeyStatus = down;
-		if (keylegit && down)
+		if (keylegit)
+			LegitKeyStatus = down;
+		if (keylegittrigger && down)
 			TriggerKeyStatus = !TriggerKeyStatus;
 		
 		//return game bind for function bind
-		if ((keystrafe || keyfast || keygstrafe || keybhop || keyjump || keyrage || keylegit || keyquick || keyrush) && down)
+		if ((keystrafe || keyfast || keygstrafe || keybhop || keyjump || keyrage || keylegittrigger || keylegit || keyquick || keyrush) && down)
 			return false;
 	}
 	
@@ -289,7 +291,6 @@ int CL_IsThirdPerson(void)
 
 void HUD_Frame(double time)
 {
-	g_Engine.pNetAPI->Status(&(Status));
 	FindSpawn();
 	LoadWall();
 	Sky();

@@ -7,6 +7,7 @@ deque<playeraimlegit_t> PlayerAimLegit;
 DWORD dwReactionTime;
 
 bool TriggerKeyStatus;
+bool LegitKeyStatus;
 bool RageKeyStatus;
 
 Vector vAimOriginKnife;
@@ -417,6 +418,12 @@ void LegitAimbot(struct usercmd_s* cmd)
 	static float flSpeedSpiralX = 1.3;
 	static float flSpeedSpiralY = 3.7;
 
+	bool Attacking;
+	if (cvar.legit_key == -1)
+		Attacking = cmd->buttons & IN_ATTACK;
+	else
+		Attacking = LegitKeyStatus;
+
 	m_flCurrentFOV = 0;
 
 	if (!IsCurWeaponGun() || g_Local.weapon.m_iInReload || g_Local.weapon.m_iClip < 1 || g_Local.weapon.m_flNextAttack > 0.0)
@@ -677,7 +684,7 @@ void LegitAimbot(struct usercmd_s* cmd)
 	}
 }
 
-void KnifeSelect(playeraim_t Aim, float flDist)
+void KnifeSelect(playeraim_t Aim, float& flDist)
 {
 	bool hitboxselected = false;
 	for (model_aim_select_t Model_Selected : Model_Aim_Select)
@@ -1200,7 +1207,7 @@ void AimBot(struct usercmd_s* cmd)
 
 void KnifeDraw()
 {
-	if (!cvar.knifebot_active || !IsCurWeaponKnife() || !bAliveLocal())
+	if (!cvar.knifebot_active || !IsCurWeaponKnife() || !bAliveLocal() || !cvar.knifebot_draw_aim)
 		return;
 
 	if (iTargetKnife)
@@ -1221,7 +1228,7 @@ void KnifeDraw()
 
 void RageDraw()
 {
-	if (IsCurWeaponNonAttack() || !bAliveLocal())
+	if (IsCurWeaponNonAttack() || !bAliveLocal() || !cvar.rage_draw_aim)
 		return;
 
 	if (iTargetRage)
@@ -1242,7 +1249,7 @@ void RageDraw()
 
 void LegitDraw()
 {
-	if (!IsCurWeaponGun() || !bAliveLocal())
+	if (!IsCurWeaponGun() || !bAliveLocal() || !cvar.legit_draw_aim)
 		return;
 
 	if (iTargetLegit)
@@ -1413,6 +1420,9 @@ void TriggerDraw()
 			}
 		}
 	}
+
+	if (!cvar.legit_trigger_draw_aim)
+		return;
 
 	for (playeraim_t Aim : PlayerAim)
 	{
