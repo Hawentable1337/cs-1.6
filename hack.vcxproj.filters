@@ -211,6 +211,9 @@
     <ClCompile Include="radar.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="resources\interface.cpp">
+      <Filter>resources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="autoroute.h">
@@ -422,6 +425,9 @@
     </ClInclude>
     <ClInclude Include="radar.h">
       <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="resources\interface.h">
+      <Filter>resources</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

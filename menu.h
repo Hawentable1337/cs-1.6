@@ -23,7 +23,6 @@ extern bool bShowMenu;
 char* KeyEventChar(int Key);
 void DrawMenuWindow();
 void EaseMenu(float& menuspeed, int index, float windowsize, int speed, bool showmenu);
-void LoadHitbox();
 bool SliderFloat(const char* label, float* v, float v_min, float v_max, const char* format = "%.1f");
 
 #endif

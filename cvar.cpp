@@ -180,11 +180,10 @@ void CVARlist::init()
 
 	INITCVAR(snapshot, 0.0);
 	INITCVAR(snapshot_time, 10.0);
+
 	INITCVAR(misc_quick_change, 0.0);
 	INITCVAR(misc_quick_change_key, -1.0);
 	INITCVAR(misc_wav_speed, 1.0);
-
-	INITCVAR(steamid, 0.0);
 
 	INITCVAR(chams_view_model, 0.0);
 	INITCVAR(chams_view_model_glow, 0.0);
@@ -195,7 +194,7 @@ void CVARlist::init()
 	INITCVAR(chams_world_wall, 0.0);
 	INITCVAR(chams_world_glow, 0.0);
 
-	INITCVAR(kz_strafe_silent, 0.0);
+	INITCVAR(kz_strafe_psilent, 0.0);
 	INITCVAR(kz_strafe, 0.0);
 	INITCVAR(kz_fast_run, 0.0);
 	INITCVAR(kz_ground_strafe, 0.0);
@@ -285,6 +284,7 @@ void CVARlist::init()
 	INITCVAR(afk_anti, 0.0);
 	INITCVAR(afk_time, 89.0);
 
+	INITCVAR(steamid, 0.0); 
 	INITCVAR(id1, 1.0);
 	INITCVAR(id2, 2.0);
 	INITCVAR(id3, 3.0);

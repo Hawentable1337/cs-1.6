@@ -77,6 +77,7 @@ extern char hldir[256];
 #include "resources/parsemsg.h"
 #include "resources/keydefs.h"
 #include "resources/gl3winit.h"
+#include "resources/interface.h"
 
 #include "opengl.h"
 #include "usermsg.h"

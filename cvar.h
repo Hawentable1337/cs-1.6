@@ -101,11 +101,10 @@ public:
 
 	float snapshot;
 	float snapshot_time;
+
 	float misc_quick_change;
 	float misc_quick_change_key;
 	float misc_wav_speed;
-
-	float steamid;
 
 	float chams_view_model;
 	float chams_view_model_glow;
@@ -117,7 +116,7 @@ public:
 	float chams_world_glow;
 
 	float kz_strafe;
-	float kz_strafe_silent;
+	float kz_strafe_psilent;
 	float kz_fast_run;
 	float kz_ground_strafe;
 	float kz_bhop;
@@ -206,6 +205,7 @@ public:
 	float afk_anti;
 	float afk_time;
 
+	float steamid;
 	float id1;
 	float id2;
 	float id3;

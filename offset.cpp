@@ -105,7 +105,6 @@ void AutoOffset::Error(char* fmt, ...)
 	ExitProcess(0);
 }
 
-
 DWORD AutoOffset::GetModuleSize(const DWORD Address)
 {
 	return PIMAGE_NT_HEADERS(Address + (DWORD)PIMAGE_DOS_HEADER(Address)->e_lfanew)->OptionalHeader.SizeOfImage;

@@ -45,9 +45,9 @@ void StrafeHack(struct usercmd_s* cmd)
 	static bool packet = false;
 	if (Strafe && !(pmove->flags & FL_ONGROUND) && (pmove->movetype != MOVETYPE_FLY) && !(cmd->buttons & IN_ATTACK) && !(cmd->buttons & IN_ATTACK2 && IsCurWeaponKnife()))
 	{
-		if (cvar.kz_strafe_silent?!packet:1)
+		if (cvar.kz_strafe_psilent?!packet:1)
 		{
-			if(cvar.kz_strafe_silent)bSendpacket(false);
+			if(cvar.kz_strafe_psilent)bSendpacket(false);
 			if (sqrt(POW(pmove->velocity[0]) + POW(pmove->velocity[1])) < 15)
 				cmd->forwardmove = 400, cmd->sidemove = 0;
 
@@ -81,7 +81,7 @@ void StrafeHack(struct usercmd_s* cmd)
 			if (cmd->buttons & IN_MOVELEFT)
 				cmd->forwardmove = sdmw, cmd->sidemove = -fdmw;
 		}
-		if (cvar.kz_strafe_silent)packet = !packet;
+		if (cvar.kz_strafe_psilent)packet = !packet;
 	}
 	else
 		packet = false;

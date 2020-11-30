@@ -20,9 +20,9 @@ DWORD WINAPI Hook()
 
 	glReadPixels_s = (glReadPixels_t)DetourFunction((PBYTE)GetProcAddress(GetModuleHandle("opengl32.dll"), "glReadPixels"), (PBYTE)m_glReadPixels);
 
-	PreS_DynamicSound_s = (PreS_DynamicSound_t)DetourFunction((LPBYTE)c_Offset.PreS_DynamicSound(), (LPBYTE)& PreS_DynamicSound);
+	PreS_DynamicSound_s = (PreS_DynamicSound_t)DetourFunction((LPBYTE)c_Offset.PreS_DynamicSound(), (LPBYTE)&PreS_DynamicSound);
 
-	CL_Move_s = (CL_Move_t)DetourFunction((LPBYTE)c_Offset.CL_Move(), (LPBYTE)& CL_Move);
+	CL_Move_s = (CL_Move_t)DetourFunction((LPBYTE)c_Offset.CL_Move(), (LPBYTE)&CL_Move);
 
 	c_Offset.GlobalTime();
 
@@ -60,7 +60,7 @@ DWORD WINAPI Hook()
 	if (c_Offset.HLType != RENDERTYPE_UNDEFINED)
 	{
 		g_pfnSteam_GSInitiateGameConnection = (decltype(g_pfnSteam_GSInitiateGameConnection))GetDestination(c_Offset.Steam_GSInitiateGameConnection());
-		SetDestination(c_Offset.Steam_GSInitiateGameConnection(), (uintptr_t)& Steam_GSInitiateGameConnection_Hooked);
+		SetDestination(c_Offset.Steam_GSInitiateGameConnection(), (uintptr_t)&Steam_GSInitiateGameConnection_Hooked);
 	}
 
 	HookClientFunctions();

@@ -695,7 +695,7 @@ void MenuModelAim1()
 			ImVec4 prevColor = ImGui::GetStyle().Colors[ImGuiCol_Text];
 			ImGui::GetStyle().Colors[ImGuiCol_Text] = ImVec4(0.0f, 1.0f, 0.0f, 1.0f);
 			ImGui::SameLine();
-			if (ImGui::Button("Push To Front"))
+			if (ImGui::Button("Push One"))
 			{
 				bool saved = false;
 				for (model_aim_select_t Model_Selected : Model_Aim_Select)
@@ -712,6 +712,27 @@ void MenuModelAim1()
 					Model_Aim_Select.push_front(Model_Select);
 				}
 			}
+			ImGui::SameLine();
+			if (ImGui::Button("Push All"))
+			{
+				for (int x = Model_Aim[i].numhitboxes - 1; x >= 0; x--)
+				{
+					bool saved = false;
+					for (model_aim_select_t Model_Selected : Model_Aim_Select)
+					{
+						if (strstr(Model_Selected.checkmodel, Model_Aim[i].checkmodel) && Model_Selected.numhitbox == x)
+							saved = true;
+					}
+					if (!saved)
+					{
+						model_aim_select_t Model_Select;
+						sprintf(Model_Select.displaymodel, Model_Aim[i].displaymodel);
+						sprintf(Model_Select.checkmodel, Model_Aim[i].checkmodel);
+						Model_Select.numhitbox = x;
+						Model_Aim_Select.push_front(Model_Select);
+					}
+				}
+			}
 			ImGui::GetStyle().Colors[ImGuiCol_Text] = prevColor;
 		}
 	}
@@ -724,6 +745,12 @@ void MenuModelAim2()
 	if (ImGui::Button("Load Hitbox"))LoadHitbox();
 	ImGui::SameLine();
 	if (ImGui::Button("Save Hitbox"))SaveHitbox();
+	ImGui::SameLine();
+	ImVec4 prevColor = ImGui::GetStyle().Colors[ImGuiCol_Text];
+	ImGui::GetStyle().Colors[ImGuiCol_Text] = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+	if (ImGui::Button("Clear All"))Model_Aim_Select.deque::clear();
+	ImGui::GetStyle().Colors[ImGuiCol_Text] = prevColor;
+	
 
 	for (unsigned int i = 0; i < Model_Aim_Select.size(); i++)
 	{
@@ -738,34 +765,6 @@ void MenuModelAim2()
 		ImGui::SameLine();
 
 		char str[256];
-		sprintf(str, "-##%d", i);
-		if (ImGui::ArrowButton(str, ImGuiDir_Down))
-		{
-			if (i + 1 < Model_Aim_Select.size())
-			{
-				if (strstr(Model_Aim_Select[i].checkmodel, Model_Aim_Select[i + 1].checkmodel))
-					swap(Model_Aim_Select[i], Model_Aim_Select[i + 1]);
-				else
-				{
-					if (i + 2 < Model_Aim_Select.size())
-					{
-						for (unsigned int x = i + 2; x < Model_Aim_Select.size(); x++)
-						{
-							if (strstr(Model_Aim_Select[i].checkmodel, Model_Aim_Select[x].checkmodel))
-							{
-								for (unsigned int z = i; z < x - 1; z++)
-								{
-									swap(Model_Aim_Select[z], Model_Aim_Select[z + 1]);
-								}
-								break;
-							}
-						}
-					}
-				}
-			}
-		}
-
-		ImGui::SameLine();
 
 		sprintf(str, "+##%d", i);
 		if (ImGui::ArrowButton(str, ImGuiDir_Up))
@@ -793,14 +792,60 @@ void MenuModelAim2()
 				}
 			}
 		}
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::BeginTooltip();
+			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+			ImGui::TextUnformatted("Push Priority Front");
+			ImGui::PopTextWrapPos();
+			ImGui::EndTooltip();
+		}
 
 		ImGui::SameLine();
 
-		sprintf(str, "Clear##%d", i);
+		sprintf(str, "-##%d", i);
+		if (ImGui::ArrowButton(str, ImGuiDir_Down))
+		{
+			if (i + 1 < Model_Aim_Select.size())
+			{
+				if (strstr(Model_Aim_Select[i].checkmodel, Model_Aim_Select[i + 1].checkmodel))
+					swap(Model_Aim_Select[i], Model_Aim_Select[i + 1]);
+				else
+				{
+					if (i + 2 < Model_Aim_Select.size())
+					{
+						for (unsigned int x = i + 2; x < Model_Aim_Select.size(); x++)
+						{
+							if (strstr(Model_Aim_Select[i].checkmodel, Model_Aim_Select[x].checkmodel))
+							{
+								for (unsigned int z = i; z < x - 1; z++)
+								{
+									swap(Model_Aim_Select[z], Model_Aim_Select[z + 1]);
+								}
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::BeginTooltip();
+			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+			ImGui::TextUnformatted("Push Priority Back");
+			ImGui::PopTextWrapPos();
+			ImGui::EndTooltip();
+		}
+		ImGui::SameLine();
+
 		ImVec4 prevColor = ImGui::GetStyle().Colors[ImGuiCol_Text];
 		ImGui::GetStyle().Colors[ImGuiCol_Text] = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+		sprintf(str, "Clear##%d", i);
 		if (ImGui::Button(str))
 			Model_Aim_Select.erase(Model_Aim_Select.begin() + i);
+
 		ImGui::GetStyle().Colors[ImGuiCol_Text] = prevColor;
 	}
 }
@@ -1226,7 +1271,7 @@ void MenuKz1()
 	ImGui::Checkbox("Jump Bug", &cvar.kz_jump_bug);
 	ImGui::Checkbox("Jump Bug Auto", &cvar.kz_jump_bug_auto);
 	ImGui::Checkbox("Strafe", &cvar.kz_strafe);
-	ImGui::Checkbox("Strafe Perfect Silent", &cvar.kz_strafe_silent);
+	ImGui::Checkbox("Strafe Perfect Silent", &cvar.kz_strafe_psilent);
 	ImGui::Checkbox("Window", &cvar.kz_show_kz);
 	ImGui::Text("Display Time");
 	SliderFloat("Display Time##1", &cvar.kz_display_time, 1, 20);

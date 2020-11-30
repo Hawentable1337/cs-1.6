@@ -1424,11 +1424,15 @@ void TriggerDraw()
 	if (!cvar.legit_trigger_draw_aim)
 		return;
 
-	for (playeraim_t Aim : PlayerAim)
+	if (iTargetTrigger)
 	{
-		if (!bAlive(Aim.ent))
-			continue;
-		TriggerDrawTarget(Aim);
+		for (playeraim_t Aim : PlayerAim)
+		{
+			if (Aim.ent->index != iTargetTrigger)
+				continue;
+
+			TriggerDrawTarget(Aim);
+		}
 	}
 }
 
