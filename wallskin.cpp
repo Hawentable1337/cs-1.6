@@ -15,9 +15,8 @@ bool loadwall;
 bool savewall;
 int saveindex[1024];
 bool autoloadwall;
-bool gamerunning;
 bool menurunning;
-bool checkgame;
+bool gamerunning = false;
 
 void Savefile()
 {
@@ -127,7 +126,10 @@ void LoadTextureImageWall(char* image, int index)
 	sprintf(filename, "%s%s", hackdir, image);
 	GLint last_texture;
 	glGetIntegerv(GL_TEXTURE_BINDING_2D, &last_texture);
-	glGenTextures(1, &texture_id[index]);
+	if (texture_id[index])glDeleteTextures(1, &texture_id[index]);
+	GLuint glindex;
+	glGenTextures(1, &glindex);
+	texture_id[index] = glindex + 20000;
 	glBindTexture(GL_TEXTURE_2D, texture_id[index]);
 	unsigned char* soilimage = SOIL_load_image(filename, &width, &height, 0, SOIL_LOAD_RGBA);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -142,53 +144,46 @@ void LoadTextureImageWall(char* image, int index)
 
 void GetTextureWall()
 {
-	if (loadtexturewall)
+	for (unsigned int i = 0; i < 1024; i++)
 	{
-		for (unsigned int i = 500; i < 1024; i++)
-			glDeleteTextures(1, &texture_id[i]);
+		imagenamenew[i][0] = (char)0;
+		imagewidthnew[i] = 0;
+		imageheightnew[i] = 0;
+	}
 
-		for (unsigned int i = 0; i < 1024; i++)
+	char filedir[256];
+	sprintf(filedir, "%s%s", hackdir, "texture/wall\\*");
+	WIN32_FIND_DATA fd;
+	HANDLE hFind = ::FindFirstFile(filedir, &fd);
+	int index = 501;
+	if (hFind != INVALID_HANDLE_VALUE)
+	{
+		do
 		{
-			imagenamenew[i][0] = (char)0;
-			imagewidthnew[i] = 0;
-			imageheightnew[i] = 0;
-		}
-
-		char filedir[256];
-		sprintf(filedir, "%s%s", hackdir, "texture/wall\\*");
-		WIN32_FIND_DATA fd;
-		HANDLE hFind = ::FindFirstFile(filedir, &fd);
-		int index = 501;
-		if (hFind != INVALID_HANDLE_VALUE)
-		{
-			do
+			if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
 			{
-				if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
+				if (index < 1024)
 				{
-					if(index < 1024)
-					{
-						char filename[256];
-						sprintf(filename, "texture/wall/%s", fd.cFileName);
-						char name[256];
-						sprintf(name, "%s", fd.cFileName);
-						int len = strlen(name);
-						if (len > 4)name[len - 4] = (char)0;
-						sprintf(imagenamenew[index], "%s", name);
-						LoadTextureImageWall(filename, index);
-						index++;
-					}
+					char filename[256];
+					sprintf(filename, "texture/wall/%s", fd.cFileName);
+					char name[256];
+					sprintf(name, "%s", fd.cFileName);
+					int len = strlen(name);
+					if (len > 4)name[len - 4] = (char)0;
+					sprintf(imagenamenew[index], "%s", name);
+					LoadTextureImageWall(filename, index);
+					index++;
 				}
-			} while (::FindNextFile(hFind, &fd));
-			::FindClose(hFind);
-		}
-		loadtexturewall = false;
+			}
+		} while (::FindNextFile(hFind, &fd));
+		::FindClose(hFind);
 	}
 }
 
-void LoadWall()
+void LoadTextureWall()
 {
 	cl_entity_s* ent = g_Engine.GetEntityByIndex(0);
-
+	static bool checkgame = false;
 	if (ent && ent->model && g_Engine.GetMaxClients())
 		gamerunning = true;
 	else
@@ -204,7 +199,8 @@ void LoadWall()
 
 void WallRun()
 {
-	GetTextureWall();
+	if(loadtexturewall) 
+		GetTextureWall(), loadtexturewall = false;
 
 	if (menurunning != bShowMenu)
 	{

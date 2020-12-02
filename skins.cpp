@@ -266,8 +266,10 @@ void LoadTextureImage(char* image, int index)
 	sprintf(filename, "%s%s", hackdir, image);
 	GLint last_texture;
 	glGetIntegerv(GL_TEXTURE_BINDING_2D, &last_texture);
-	glDeleteTextures(1, &texture_id[index]);
-	glGenTextures(1, &texture_id[index]);
+	if (texture_id[index])glDeleteTextures(1, &texture_id[index]);
+	GLuint glindex;
+	glGenTextures(1, &glindex);
+	texture_id[index] = glindex + 20000;
 	glBindTexture(GL_TEXTURE_2D, texture_id[index]);
 	unsigned char* soilimage = SOIL_load_image(filename, &width, &height, 0, SOIL_LOAD_RGBA);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -279,258 +281,253 @@ void LoadTextureImage(char* image, int index)
 
 void GetTextureModel()
 {
-	if (loadtexturemodel)
-	{
-		LoadTextureImage("texture/player/arctic/ARTIC_Working1.bmp", PLAYER1);
-		LoadTextureImage("texture/player/gign/GIGN_DMBASE2.bmp", PLAYER2);
-		LoadTextureImage("texture/player/gsg9/GSG9_Working1.bmp", PLAYER3);
-		LoadTextureImage("texture/player/guerilla/GUERILLA_DMBASE.bmp", PLAYER4);
-		LoadTextureImage("texture/player/leet/Arab_dmbase1.bmp", PLAYER5);
-		LoadTextureImage("texture/player/sas/SAS_DMBASE1.bmp", PLAYER6);
-		LoadTextureImage("texture/player/terror/Terrorist_Working1.bmp", PLAYER7);
-		LoadTextureImage("texture/player/urban/SEAL_Working1.bmp", PLAYER8);
+	LoadTextureImage("texture/player/arctic/ARTIC_Working1.bmp", PLAYER1);
+	LoadTextureImage("texture/player/gign/GIGN_DMBASE2.bmp", PLAYER2);
+	LoadTextureImage("texture/player/gsg9/GSG9_Working1.bmp", PLAYER3);
+	LoadTextureImage("texture/player/guerilla/GUERILLA_DMBASE.bmp", PLAYER4);
+	LoadTextureImage("texture/player/leet/Arab_dmbase1.bmp", PLAYER5);
+	LoadTextureImage("texture/player/sas/SAS_DMBASE1.bmp", PLAYER6);
+	LoadTextureImage("texture/player/terror/Terrorist_Working1.bmp", PLAYER7);
+	LoadTextureImage("texture/player/urban/SEAL_Working1.bmp", PLAYER8);
 
-		LoadTextureImage("texture/player/backpack/Backpack1.bmp", BACKPACK1);
-		LoadTextureImage("texture/player/backpack/Backpack2.bmp", THIGHPACK1);
+	LoadTextureImage("texture/player/backpack/Backpack1.bmp", BACKPACK1);
+	LoadTextureImage("texture/player/backpack/Backpack2.bmp", THIGHPACK1);
 
-		LoadTextureImage("texture/weapon/ak47/barrel.bmp", AK471);
-		LoadTextureImage("texture/weapon/ak47/forearm.bmp", AK472);
-		LoadTextureImage("texture/weapon/ak47/handle.bmp", AK473);
-		LoadTextureImage("texture/weapon/ak47/lower_body.bmp", AK474);
-		LoadTextureImage("texture/weapon/ak47/magazine.bmp", AK475);
-		LoadTextureImage("texture/weapon/ak47/reticle.bmp", AK476);
-		LoadTextureImage("texture/weapon/ak47/upper_body.bmp", AK477);
-		LoadTextureImage("texture/weapon/ak47/wood.bmp", AK478);
-		LoadTextureImage("texture/weapon/ak47/ak47_skin.bmp", AK479);
+	LoadTextureImage("texture/weapon/ak47/barrel.bmp", AK471);
+	LoadTextureImage("texture/weapon/ak47/forearm.bmp", AK472);
+	LoadTextureImage("texture/weapon/ak47/handle.bmp", AK473);
+	LoadTextureImage("texture/weapon/ak47/lower_body.bmp", AK474);
+	LoadTextureImage("texture/weapon/ak47/magazine.bmp", AK475);
+	LoadTextureImage("texture/weapon/ak47/reticle.bmp", AK476);
+	LoadTextureImage("texture/weapon/ak47/upper_body.bmp", AK477);
+	LoadTextureImage("texture/weapon/ak47/wood.bmp", AK478);
+	LoadTextureImage("texture/weapon/ak47/ak47_skin.bmp", AK479);
 
-		LoadTextureImage("texture/weapon/assault/kevlar_vest.bmp", KEVLAR);
+	LoadTextureImage("texture/weapon/assault/kevlar_vest.bmp", KEVLAR);
 
-		LoadTextureImage("texture/weapon/aug/barrel.bmp", AUG1);
-		LoadTextureImage("texture/weapon/aug/body.bmp", AUG2);
-		LoadTextureImage("texture/weapon/aug/magazine.bmp", AUG3);
-		LoadTextureImage("texture/weapon/aug/w_aug.bmp", AUG4);
+	LoadTextureImage("texture/weapon/aug/barrel.bmp", AUG1);
+	LoadTextureImage("texture/weapon/aug/body.bmp", AUG2);
+	LoadTextureImage("texture/weapon/aug/magazine.bmp", AUG3);
+	LoadTextureImage("texture/weapon/aug/w_aug.bmp", AUG4);
 
-		LoadTextureImage("texture/weapon/awp/barrel.bmp", AWP1);
-		LoadTextureImage("texture/weapon/awp/base.bmp", AWP2);
-		LoadTextureImage("texture/weapon/awp/bolt_handle.bmp", AWP3);
-		LoadTextureImage("texture/weapon/awp/buttstock.bmp", AWP4);
-		LoadTextureImage("texture/weapon/awp/ejector_port.bmp", AWP5);
-		LoadTextureImage("texture/weapon/awp/magazine.bmp", AWP6);
-		LoadTextureImage("texture/weapon/awp/newparts.bmp", AWP7);
-		LoadTextureImage("texture/weapon/awp/newparts2.bmp", AWP8);
-		LoadTextureImage("texture/weapon/awp/scope.bmp", AWP9);
-		LoadTextureImage("texture/weapon/awp/scope_clamps.bmp", AWP10);
-		LoadTextureImage("texture/weapon/awp/w_awp.bmp", AWP11);
+	LoadTextureImage("texture/weapon/awp/barrel.bmp", AWP1);
+	LoadTextureImage("texture/weapon/awp/base.bmp", AWP2);
+	LoadTextureImage("texture/weapon/awp/bolt_handle.bmp", AWP3);
+	LoadTextureImage("texture/weapon/awp/buttstock.bmp", AWP4);
+	LoadTextureImage("texture/weapon/awp/ejector_port.bmp", AWP5);
+	LoadTextureImage("texture/weapon/awp/magazine.bmp", AWP6);
+	LoadTextureImage("texture/weapon/awp/newparts.bmp", AWP7);
+	LoadTextureImage("texture/weapon/awp/newparts2.bmp", AWP8);
+	LoadTextureImage("texture/weapon/awp/scope.bmp", AWP9);
+	LoadTextureImage("texture/weapon/awp/scope_clamps.bmp", AWP10);
+	LoadTextureImage("texture/weapon/awp/w_awp.bmp", AWP11);
 
-		LoadTextureImage("texture/weapon/c4/c4base.bmp", C41);
-		LoadTextureImage("texture/weapon/c4/c4buttons.bmp", C42);
-		LoadTextureImage("texture/weapon/c4/c4timer.bmp", C43);
-		LoadTextureImage("texture/weapon/c4/c4wires.bmp", C44);
-		LoadTextureImage("texture/weapon/c4/cbase_front.bmp", C45);
+	LoadTextureImage("texture/weapon/c4/c4base.bmp", C41);
+	LoadTextureImage("texture/weapon/c4/c4buttons.bmp", C42);
+	LoadTextureImage("texture/weapon/c4/c4timer.bmp", C43);
+	LoadTextureImage("texture/weapon/c4/c4wires.bmp", C44);
+	LoadTextureImage("texture/weapon/c4/cbase_front.bmp", C45);
 
-		LoadTextureImage("texture/weapon/deagle/DE_handle.bmp", DEAGLE1);
-		LoadTextureImage("texture/weapon/deagle/DE_slide1.bmp", DEAGLE2);
-		LoadTextureImage("texture/weapon/deagle/DE_slide2_eagle.bmp", DEAGLE3);
-		LoadTextureImage("texture/weapon/deagle/deserteagle_skin.bmp", DEAGLE4);
+	LoadTextureImage("texture/weapon/deagle/DE_handle.bmp", DEAGLE1);
+	LoadTextureImage("texture/weapon/deagle/DE_slide1.bmp", DEAGLE2);
+	LoadTextureImage("texture/weapon/deagle/DE_slide2_eagle.bmp", DEAGLE3);
+	LoadTextureImage("texture/weapon/deagle/deserteagle_skin.bmp", DEAGLE4);
 
-		LoadTextureImage("texture/weapon/elite/barrel.bmp", ELITE1);
-		LoadTextureImage("texture/weapon/elite/handle.bmp", ELITE2);
-		LoadTextureImage("texture/weapon/elite/magazine.bmp", ELITE3);
-		LoadTextureImage("texture/weapon/elite/slide.bmp", ELITE4);
-		LoadTextureImage("texture/weapon/elite/w_elite.bmp", ELITE5);
+	LoadTextureImage("texture/weapon/elite/barrel.bmp", ELITE1);
+	LoadTextureImage("texture/weapon/elite/handle.bmp", ELITE2);
+	LoadTextureImage("texture/weapon/elite/magazine.bmp", ELITE3);
+	LoadTextureImage("texture/weapon/elite/slide.bmp", ELITE4);
+	LoadTextureImage("texture/weapon/elite/w_elite.bmp", ELITE5);
 
-		LoadTextureImage("texture/weapon/famas/v_famas.bmp", FAMAS1);
-		LoadTextureImage("texture/weapon/famas/p_famas.bmp", FAMAS2);
+	LoadTextureImage("texture/weapon/famas/v_famas.bmp", FAMAS1);
+	LoadTextureImage("texture/weapon/famas/p_famas.bmp", FAMAS2);
 
-		LoadTextureImage("texture/weapon/fiveseven/fs1.bmp", FIVESEVEN1);
-		LoadTextureImage("texture/weapon/fiveseven/fs2.bmp", FIVESEVEN2);
-		LoadTextureImage("texture/weapon/fiveseven/57_profile.bmp", FIVESEVEN3);
+	LoadTextureImage("texture/weapon/fiveseven/fs1.bmp", FIVESEVEN1);
+	LoadTextureImage("texture/weapon/fiveseven/fs2.bmp", FIVESEVEN2);
+	LoadTextureImage("texture/weapon/fiveseven/57_profile.bmp", FIVESEVEN3);
 
-		LoadTextureImage("texture/weapon/flashbang/v_flash_body.bmp", FLASHBANG1);
-		LoadTextureImage("texture/weapon/flashbang/flash_spoon.bmp", FLASHBANG2);
-		LoadTextureImage("texture/weapon/flashbang/flash_top.bmp", FLASHBANG3);
-		LoadTextureImage("texture/weapon/flashbang/f_body.bmp", FLASHBANG4);
-		LoadTextureImage("texture/weapon/flashbang/f_top.bmp", FLASHBANG5);
-		LoadTextureImage("texture/weapon/flashbang/flash_body.bmp", FLASHBANG10);
+	LoadTextureImage("texture/weapon/flashbang/v_flash_body.bmp", FLASHBANG1);
+	LoadTextureImage("texture/weapon/flashbang/flash_spoon.bmp", FLASHBANG2);
+	LoadTextureImage("texture/weapon/flashbang/flash_top.bmp", FLASHBANG3);
+	LoadTextureImage("texture/weapon/flashbang/f_body.bmp", FLASHBANG4);
+	LoadTextureImage("texture/weapon/flashbang/f_top.bmp", FLASHBANG5);
+	LoadTextureImage("texture/weapon/flashbang/flash_body.bmp", FLASHBANG10);
 
-		LoadTextureImage("texture/weapon/g3sg1/barrel.bmp", G3SG11);
-		LoadTextureImage("texture/weapon/g3sg1/body.bmp", G3SG12);
-		LoadTextureImage("texture/weapon/g3sg1/buttstock.bmp", G3SG13);
-		LoadTextureImage("texture/weapon/g3sg1/forearm.bmp", G3SG14);
-		LoadTextureImage("texture/weapon/g3sg1/lowerbody.bmp", G3SG15);
-		LoadTextureImage("texture/weapon/g3sg1/scope.bmp", G3SG16);
-		LoadTextureImage("texture/weapon/g3sg1/scope_hold.bmp", G3SG17);
-		LoadTextureImage("texture/weapon/g3sg1/scope_knob.bmp", G3SG18);
-		LoadTextureImage("texture/weapon/g3sg1/w_g3sg1.bmp", G3SG19);
+	LoadTextureImage("texture/weapon/g3sg1/barrel.bmp", G3SG11);
+	LoadTextureImage("texture/weapon/g3sg1/body.bmp", G3SG12);
+	LoadTextureImage("texture/weapon/g3sg1/buttstock.bmp", G3SG13);
+	LoadTextureImage("texture/weapon/g3sg1/forearm.bmp", G3SG14);
+	LoadTextureImage("texture/weapon/g3sg1/lowerbody.bmp", G3SG15);
+	LoadTextureImage("texture/weapon/g3sg1/scope.bmp", G3SG16);
+	LoadTextureImage("texture/weapon/g3sg1/scope_hold.bmp", G3SG17);
+	LoadTextureImage("texture/weapon/g3sg1/scope_knob.bmp", G3SG18);
+	LoadTextureImage("texture/weapon/g3sg1/w_g3sg1.bmp", G3SG19);
 
-		LoadTextureImage("texture/weapon/galil/galil.bmp", GALIL1);
-		LoadTextureImage("texture/weapon/galil/p_galil.bmp", GALIL2);
+	LoadTextureImage("texture/weapon/galil/galil.bmp", GALIL1);
+	LoadTextureImage("texture/weapon/galil/p_galil.bmp", GALIL2);
 
-		LoadTextureImage("texture/weapon/glock18/glock_barrel.bmp", GLOCK181);
-		LoadTextureImage("texture/weapon/glock18/glock_base.bmp", GLOCK182);
-		LoadTextureImage("texture/weapon/glock18/glock_mag.bmp", GLOCK183);
-		LoadTextureImage("texture/weapon/glock18/glock_slide.bmp", GLOCK184);
-		LoadTextureImage("texture/weapon/glock18/w_glock18.bmp", GLOCK185);
+	LoadTextureImage("texture/weapon/glock18/glock_barrel.bmp", GLOCK181);
+	LoadTextureImage("texture/weapon/glock18/glock_base.bmp", GLOCK182);
+	LoadTextureImage("texture/weapon/glock18/glock_mag.bmp", GLOCK183);
+	LoadTextureImage("texture/weapon/glock18/glock_slide.bmp", GLOCK184);
+	LoadTextureImage("texture/weapon/glock18/w_glock18.bmp", GLOCK185);
 
-		LoadTextureImage("texture/weapon/hegrenade/v_he_body.bmp", HEGRENADE1);
-		LoadTextureImage("texture/weapon/hegrenade/he_spoon.bmp", HEGRENADE2);
-		LoadTextureImage("texture/weapon/hegrenade/he_top.bmp", HEGRENADE3);
-		LoadTextureImage("texture/weapon/hegrenade/f_body.bmp", HEGRENADE4);
-		LoadTextureImage("texture/weapon/hegrenade/f_top.bmp", HEGRENADE5);
-		LoadTextureImage("texture/weapon/hegrenade/he_body.bmp", HEGRENADE10);
+	LoadTextureImage("texture/weapon/hegrenade/v_he_body.bmp", HEGRENADE1);
+	LoadTextureImage("texture/weapon/hegrenade/he_spoon.bmp", HEGRENADE2);
+	LoadTextureImage("texture/weapon/hegrenade/he_top.bmp", HEGRENADE3);
+	LoadTextureImage("texture/weapon/hegrenade/f_body.bmp", HEGRENADE4);
+	LoadTextureImage("texture/weapon/hegrenade/f_top.bmp", HEGRENADE5);
+	LoadTextureImage("texture/weapon/hegrenade/he_body.bmp", HEGRENADE10);
 
-		LoadTextureImage("texture/weapon/knife/knifeskin.bmp", KNIFE1);
-		LoadTextureImage("texture/weapon/knife/pknifeskin.bmp", KNIFE2);
+	LoadTextureImage("texture/weapon/knife/knifeskin.bmp", KNIFE1);
+	LoadTextureImage("texture/weapon/knife/pknifeskin.bmp", KNIFE2);
 
-		LoadTextureImage("texture/weapon/m3/barrel.bmp", M31);
-		LoadTextureImage("texture/weapon/m3/forearm.bmp", M32);
-		LoadTextureImage("texture/weapon/m3/handle.bmp", M33);
-		LoadTextureImage("texture/weapon/m3/sights.bmp", M34);
-		LoadTextureImage("texture/weapon/m3/w_m3super90.bmp", M35);
+	LoadTextureImage("texture/weapon/m3/barrel.bmp", M31);
+	LoadTextureImage("texture/weapon/m3/forearm.bmp", M32);
+	LoadTextureImage("texture/weapon/m3/handle.bmp", M33);
+	LoadTextureImage("texture/weapon/m3/sights.bmp", M34);
+	LoadTextureImage("texture/weapon/m3/w_m3super90.bmp", M35);
 
-		LoadTextureImage("texture/weapon/m4a1/barrel.bmp", M4A11);
-		LoadTextureImage("texture/weapon/m4a1/buttstock.bmp", M4A12);
-		LoadTextureImage("texture/weapon/m4a1/handle.bmp", M4A13);
-		LoadTextureImage("texture/weapon/m4a1/magazine.bmp", M4A14);
-		LoadTextureImage("texture/weapon/m4a1/receiver.bmp", M4A15);
-		LoadTextureImage("texture/weapon/m4a1/silencer.bmp", M4A16);
-		LoadTextureImage("texture/weapon/m4a1/m4a1_skin.bmp", M4A17);
+	LoadTextureImage("texture/weapon/m4a1/barrel.bmp", M4A11);
+	LoadTextureImage("texture/weapon/m4a1/buttstock.bmp", M4A12);
+	LoadTextureImage("texture/weapon/m4a1/handle.bmp", M4A13);
+	LoadTextureImage("texture/weapon/m4a1/magazine.bmp", M4A14);
+	LoadTextureImage("texture/weapon/m4a1/receiver.bmp", M4A15);
+	LoadTextureImage("texture/weapon/m4a1/silencer.bmp", M4A16);
+	LoadTextureImage("texture/weapon/m4a1/m4a1_skin.bmp", M4A17);
 
-		LoadTextureImage("texture/weapon/m249/ammobox.bmp", M2491);
-		LoadTextureImage("texture/weapon/m249/barrel.bmp", M2492);
-		LoadTextureImage("texture/weapon/m249/body.bmp", M2493);
-		LoadTextureImage("texture/weapon/m249/bullet.bmp", M2494);
-		LoadTextureImage("texture/weapon/m249/buttstock.bmp", M2495);
-		LoadTextureImage("texture/weapon/m249/cover.bmp", M2496);
-		LoadTextureImage("texture/weapon/m249/forearm.bmp", M2497);
-		LoadTextureImage("texture/weapon/m249/handle.bmp", M2498);
-		LoadTextureImage("texture/weapon/m249/sight.bmp", M2499);
-		LoadTextureImage("texture/weapon/m249/w_m249.bmp", M24910);
+	LoadTextureImage("texture/weapon/m249/ammobox.bmp", M2491);
+	LoadTextureImage("texture/weapon/m249/barrel.bmp", M2492);
+	LoadTextureImage("texture/weapon/m249/body.bmp", M2493);
+	LoadTextureImage("texture/weapon/m249/bullet.bmp", M2494);
+	LoadTextureImage("texture/weapon/m249/buttstock.bmp", M2495);
+	LoadTextureImage("texture/weapon/m249/cover.bmp", M2496);
+	LoadTextureImage("texture/weapon/m249/forearm.bmp", M2497);
+	LoadTextureImage("texture/weapon/m249/handle.bmp", M2498);
+	LoadTextureImage("texture/weapon/m249/sight.bmp", M2499);
+	LoadTextureImage("texture/weapon/m249/w_m249.bmp", M24910);
 
-		LoadTextureImage("texture/weapon/mac10/body.bmp", MAC101);
-		LoadTextureImage("texture/weapon/mac10/buttstock.bmp", MAC102);
-		LoadTextureImage("texture/weapon/mac10/handle.bmp", MAC103);
-		LoadTextureImage("texture/weapon/mac10/w_mac10.bmp", MAC104);
+	LoadTextureImage("texture/weapon/mac10/body.bmp", MAC101);
+	LoadTextureImage("texture/weapon/mac10/buttstock.bmp", MAC102);
+	LoadTextureImage("texture/weapon/mac10/handle.bmp", MAC103);
+	LoadTextureImage("texture/weapon/mac10/w_mac10.bmp", MAC104);
 
-		LoadTextureImage("texture/weapon/mp5/barrel.bmp", MP51);
-		LoadTextureImage("texture/weapon/mp5/buttstock.bmp", MP52);
-		LoadTextureImage("texture/weapon/mp5/clip.bmp", MP53);
-		LoadTextureImage("texture/weapon/mp5/forearm.bmp", MP54);
-		LoadTextureImage("texture/weapon/mp5/handle.bmp", MP55);
-		LoadTextureImage("texture/weapon/mp5/lowerrec.bmp", MP56);
-		LoadTextureImage("texture/weapon/mp5/rearsight.bmp", MP57);
-		LoadTextureImage("texture/weapon/mp5/w_mp5.bmp", MP58);
+	LoadTextureImage("texture/weapon/mp5/barrel.bmp", MP51);
+	LoadTextureImage("texture/weapon/mp5/buttstock.bmp", MP52);
+	LoadTextureImage("texture/weapon/mp5/clip.bmp", MP53);
+	LoadTextureImage("texture/weapon/mp5/forearm.bmp", MP54);
+	LoadTextureImage("texture/weapon/mp5/handle.bmp", MP55);
+	LoadTextureImage("texture/weapon/mp5/lowerrec.bmp", MP56);
+	LoadTextureImage("texture/weapon/mp5/rearsight.bmp", MP57);
+	LoadTextureImage("texture/weapon/mp5/w_mp5.bmp", MP58);
 
-		LoadTextureImage("texture/weapon/p90/buttstock.bmp", P901);
-		LoadTextureImage("texture/weapon/p90/handle-1.bmp", P902);
-		LoadTextureImage("texture/weapon/p90/handles.bmp", P903);
-		LoadTextureImage("texture/weapon/p90/magazine.bmp", P904);
-		LoadTextureImage("texture/weapon/p90/sights-1.bmp", P905);
-		LoadTextureImage("texture/weapon/p90/w_p90.bmp", P906);
+	LoadTextureImage("texture/weapon/p90/buttstock.bmp", P901);
+	LoadTextureImage("texture/weapon/p90/handle-1.bmp", P902);
+	LoadTextureImage("texture/weapon/p90/handles.bmp", P903);
+	LoadTextureImage("texture/weapon/p90/magazine.bmp", P904);
+	LoadTextureImage("texture/weapon/p90/sights-1.bmp", P905);
+	LoadTextureImage("texture/weapon/p90/w_p90.bmp", P906);
 
-		LoadTextureImage("texture/weapon/p228/p228_handle.bmp", P2281);
-		LoadTextureImage("texture/weapon/p228/p228_mag.bmp", P2282);
-		LoadTextureImage("texture/weapon/p228/p228_slide.bmp", P2283);
-		LoadTextureImage("texture/weapon/p228/w_p228.bmp", P2284);
+	LoadTextureImage("texture/weapon/p228/p228_handle.bmp", P2281);
+	LoadTextureImage("texture/weapon/p228/p228_mag.bmp", P2282);
+	LoadTextureImage("texture/weapon/p228/p228_slide.bmp", P2283);
+	LoadTextureImage("texture/weapon/p228/w_p228.bmp", P2284);
 
-		LoadTextureImage("texture/weapon/scout/base.bmp", SCOUT1);
-		LoadTextureImage("texture/weapon/scout/magazine.bmp", SCOUT2);
-		LoadTextureImage("texture/weapon/scout/rail.bmp", SCOUT3);
-		LoadTextureImage("texture/weapon/scout/scope.bmp", SCOUT4);
-		LoadTextureImage("texture/weapon/scout/scope_clamps.bmp", SCOUT5);
-		LoadTextureImage("texture/weapon/scout/w_scout.bmp", SCOUT6);
+	LoadTextureImage("texture/weapon/scout/base.bmp", SCOUT1);
+	LoadTextureImage("texture/weapon/scout/magazine.bmp", SCOUT2);
+	LoadTextureImage("texture/weapon/scout/rail.bmp", SCOUT3);
+	LoadTextureImage("texture/weapon/scout/scope.bmp", SCOUT4);
+	LoadTextureImage("texture/weapon/scout/scope_clamps.bmp", SCOUT5);
+	LoadTextureImage("texture/weapon/scout/w_scout.bmp", SCOUT6);
 
-		LoadTextureImage("texture/weapon/sg550/buttstock.bmp", SG5501);
-		LoadTextureImage("texture/weapon/sg550/forearm.bmp", SG5502);
-		LoadTextureImage("texture/weapon/sg550/handle.bmp", SG5503);
-		LoadTextureImage("texture/weapon/sg550/magazine_transp.bmp", SG5504);
-		LoadTextureImage("texture/weapon/sg550/receiver.bmp", SG5505);
-		LoadTextureImage("texture/weapon/sg550/scope.bmp", SG5506);
-		LoadTextureImage("texture/weapon/sg550/sg550_profile.bmp", SG5507);
+	LoadTextureImage("texture/weapon/sg550/buttstock.bmp", SG5501);
+	LoadTextureImage("texture/weapon/sg550/forearm.bmp", SG5502);
+	LoadTextureImage("texture/weapon/sg550/handle.bmp", SG5503);
+	LoadTextureImage("texture/weapon/sg550/magazine_transp.bmp", SG5504);
+	LoadTextureImage("texture/weapon/sg550/receiver.bmp", SG5505);
+	LoadTextureImage("texture/weapon/sg550/scope.bmp", SG5506);
+	LoadTextureImage("texture/weapon/sg550/sg550_profile.bmp", SG5507);
 
-		LoadTextureImage("texture/weapon/sg552/acog.bmp", SG5521);
-		LoadTextureImage("texture/weapon/sg552/buttstock.bmp", SG5522);
-		LoadTextureImage("texture/weapon/sg552/forearm.bmp", SG5523);
-		LoadTextureImage("texture/weapon/sg552/handle.bmp", SG5524);
-		LoadTextureImage("texture/weapon/sg552/magazine_transp.bmp", SG5525);
-		LoadTextureImage("texture/weapon/sg552/sg552_skin.bmp", SG5526);
+	LoadTextureImage("texture/weapon/sg552/acog.bmp", SG5521);
+	LoadTextureImage("texture/weapon/sg552/buttstock.bmp", SG5522);
+	LoadTextureImage("texture/weapon/sg552/forearm.bmp", SG5523);
+	LoadTextureImage("texture/weapon/sg552/handle.bmp", SG5524);
+	LoadTextureImage("texture/weapon/sg552/magazine_transp.bmp", SG5525);
+	LoadTextureImage("texture/weapon/sg552/sg552_skin.bmp", SG5526);
 
-		LoadTextureImage("texture/weapon/shield/shield_back.bmp", SHIELD1);
-		LoadTextureImage("texture/weapon/shield/shield_front.bmp", SHIELD2);
-		LoadTextureImage("texture/weapon/shield/shield_glass.bmp", SHIELD3);
-		LoadTextureImage("texture/weapon/shield/shield.bmp", SHIELD31);
+	LoadTextureImage("texture/weapon/shield/shield_back.bmp", SHIELD1);
+	LoadTextureImage("texture/weapon/shield/shield_front.bmp", SHIELD2);
+	LoadTextureImage("texture/weapon/shield/shield_glass.bmp", SHIELD3);
+	LoadTextureImage("texture/weapon/shield/shield.bmp", SHIELD31);
 
-		LoadTextureImage("texture/weapon/smokegrenade/v_smoke_body.bmp", SMOKEGRENADE1);
-		LoadTextureImage("texture/weapon/smokegrenade/smoke_spoon.bmp", SMOKEGRENADE2);
-		LoadTextureImage("texture/weapon/smokegrenade/smoke_top.bmp", SMOKEGRENADE3);
-		LoadTextureImage("texture/weapon/smokegrenade/f_body.bmp", SMOKEGRENADE4);
-		LoadTextureImage("texture/weapon/smokegrenade/f_top.bmp", SMOKEGRENADE5);
-		LoadTextureImage("texture/weapon/smokegrenade/smoke_body.bmp", SMOKEGRENADE10);
+	LoadTextureImage("texture/weapon/smokegrenade/v_smoke_body.bmp", SMOKEGRENADE1);
+	LoadTextureImage("texture/weapon/smokegrenade/smoke_spoon.bmp", SMOKEGRENADE2);
+	LoadTextureImage("texture/weapon/smokegrenade/smoke_top.bmp", SMOKEGRENADE3);
+	LoadTextureImage("texture/weapon/smokegrenade/f_body.bmp", SMOKEGRENADE4);
+	LoadTextureImage("texture/weapon/smokegrenade/f_top.bmp", SMOKEGRENADE5);
+	LoadTextureImage("texture/weapon/smokegrenade/smoke_body.bmp", SMOKEGRENADE10);
 
-		LoadTextureImage("texture/weapon/tmp/barrel.bmp", TMP1);
-		LoadTextureImage("texture/weapon/tmp/body.bmp", TMP2);
-		LoadTextureImage("texture/weapon/tmp/ejector.bmp", TMP3);
-		LoadTextureImage("texture/weapon/tmp/forearm.bmp", TMP4);
-		LoadTextureImage("texture/weapon/tmp/handle.bmp", TMP5);
-		LoadTextureImage("texture/weapon/tmp/magazine.bmp", TMP6);
-		LoadTextureImage("texture/weapon/tmp/misc.bmp", TMP7);
-		LoadTextureImage("texture/weapon/tmp/silencer.bmp", TMP8);
-		LoadTextureImage("texture/weapon/tmp/top.bmp", TMP9);
-		LoadTextureImage("texture/weapon/tmp/w_tmp.bmp", TMP10);
+	LoadTextureImage("texture/weapon/tmp/barrel.bmp", TMP1);
+	LoadTextureImage("texture/weapon/tmp/body.bmp", TMP2);
+	LoadTextureImage("texture/weapon/tmp/ejector.bmp", TMP3);
+	LoadTextureImage("texture/weapon/tmp/forearm.bmp", TMP4);
+	LoadTextureImage("texture/weapon/tmp/handle.bmp", TMP5);
+	LoadTextureImage("texture/weapon/tmp/magazine.bmp", TMP6);
+	LoadTextureImage("texture/weapon/tmp/misc.bmp", TMP7);
+	LoadTextureImage("texture/weapon/tmp/silencer.bmp", TMP8);
+	LoadTextureImage("texture/weapon/tmp/top.bmp", TMP9);
+	LoadTextureImage("texture/weapon/tmp/w_tmp.bmp", TMP10);
 
-		LoadTextureImage("texture/weapon/ump45/buttstock.bmp", UMP451);
-		LoadTextureImage("texture/weapon/ump45/handle.bmp", UMP452);
-		LoadTextureImage("texture/weapon/ump45/receiver.bmp", UMP453);
-		LoadTextureImage("texture/weapon/ump45/ump_profile.bmp", UMP454);
+	LoadTextureImage("texture/weapon/ump45/buttstock.bmp", UMP451);
+	LoadTextureImage("texture/weapon/ump45/handle.bmp", UMP452);
+	LoadTextureImage("texture/weapon/ump45/receiver.bmp", UMP453);
+	LoadTextureImage("texture/weapon/ump45/ump_profile.bmp", UMP454);
 
-		LoadTextureImage("texture/weapon/usp/handle.bmp", USP1);
-		LoadTextureImage("texture/weapon/usp/magazine.bmp", USP2);
-		LoadTextureImage("texture/weapon/usp/silencer.bmp", USP3);
-		LoadTextureImage("texture/weapon/usp/slide.bmp", USP4);
-		LoadTextureImage("texture/weapon/usp/usp_skin.bmp", USP5);
+	LoadTextureImage("texture/weapon/usp/handle.bmp", USP1);
+	LoadTextureImage("texture/weapon/usp/magazine.bmp", USP2);
+	LoadTextureImage("texture/weapon/usp/silencer.bmp", USP3);
+	LoadTextureImage("texture/weapon/usp/slide.bmp", USP4);
+	LoadTextureImage("texture/weapon/usp/usp_skin.bmp", USP5);
 
-		LoadTextureImage("texture/weapon/xm1014/barrel.bmp", XM10141);
-		LoadTextureImage("texture/weapon/xm1014/body.bmp", XM10142);
-		LoadTextureImage("texture/weapon/xm1014/buttstock.bmp", XM10143);
-		LoadTextureImage("texture/weapon/xm1014/forearm.bmp", XM10144);
-		LoadTextureImage("texture/weapon/xm1014/rear_sight.bmp", XM10145);
-		LoadTextureImage("texture/weapon/xm1014/shell.bmp", XM10146);
-		LoadTextureImage("texture/weapon/xm1014/xm1014.bmp", XM10147);
+	LoadTextureImage("texture/weapon/xm1014/barrel.bmp", XM10141);
+	LoadTextureImage("texture/weapon/xm1014/body.bmp", XM10142);
+	LoadTextureImage("texture/weapon/xm1014/buttstock.bmp", XM10143);
+	LoadTextureImage("texture/weapon/xm1014/forearm.bmp", XM10144);
+	LoadTextureImage("texture/weapon/xm1014/rear_sight.bmp", XM10145);
+	LoadTextureImage("texture/weapon/xm1014/shell.bmp", XM10146);
+	LoadTextureImage("texture/weapon/xm1014/xm1014.bmp", XM10147);
 
-		LoadTextureImage("texture/weapon/hands/view_glove.bmp", HANDS1);
-		LoadTextureImage("texture/weapon/hands/view_finger.bmp", HANDS39);
-		LoadTextureImage("texture/weapon/hands/view_skin.bmp", HANDS77);
+	LoadTextureImage("texture/weapon/hands/view_glove.bmp", HANDS1);
+	LoadTextureImage("texture/weapon/hands/view_finger.bmp", HANDS39);
+	LoadTextureImage("texture/weapon/hands/view_skin.bmp", HANDS77);
 
-		LoadTextureImage("texture/weapon/shell/rifle_goldshell.bmp", SHELL1);
-		LoadTextureImage("texture/weapon/shell/pistol_goldshell.bmp", SHELL2);
-		LoadTextureImage("texture/weapon/shell/shell.bmp", SHELL3);
+	LoadTextureImage("texture/weapon/shell/rifle_goldshell.bmp", SHELL1);
+	LoadTextureImage("texture/weapon/shell/pistol_goldshell.bmp", SHELL2);
+	LoadTextureImage("texture/weapon/shell/shell.bmp", SHELL3);
 
-		LoadTextureImage("texture/player/vip/newsvip.bmp", VIPBODY);
-		LoadTextureImage("texture/player/vip/head2.bmp", VIPHEAD);
-		LoadTextureImage("texture/player/vip/vip_militant_body.bmp", VIPBODY2);
-		LoadTextureImage("texture/player/vip/vip_militant_head.bmp", VIPHEAD2);
-		LoadTextureImage("texture/player/arctic/arctic_body.bmp", ARCTICBODY);
-		LoadTextureImage("texture/player/arctic/arctic_head2.bmp", ARCTICHEAD);
-		LoadTextureImage("texture/player/gign/body.bmp", GIGNBODY);
-		LoadTextureImage("texture/player/gign/helmet.bmp", GIGNHEAD);
-		LoadTextureImage("texture/player/gsg9/gsg9_body.bmp", GSG9BODY);
-		LoadTextureImage("texture/player/gsg9/gsg9_head.bmp", GSG9HEAD);
-		LoadTextureImage("texture/player/guerilla/guerilla_body.bmp", GUERILLABODY);
-		LoadTextureImage("texture/player/guerilla/guerilla_head.bmp", GUERILLAHEAD);
-		LoadTextureImage("texture/player/leet/leet_body5.bmp", LEETBODY);
-		LoadTextureImage("texture/player/leet/guerilla_head3.bmp", LEETHEAD);
-		LoadTextureImage("texture/player/sas/SAS_body.bmp", SASBODY);
-		LoadTextureImage("texture/player/sas/SAS_head.bmp", SASHEAD);
-		LoadTextureImage("texture/player/terror/terror_body.bmp", TERRORBODY);
-		LoadTextureImage("texture/player/terror/terror_head3.bmp", TERRORHEAD);
-		LoadTextureImage("texture/player/urban/seal_body.bmp", URBANBODY);
-		LoadTextureImage("texture/player/urban/seal_head.bmp", URBANHEAD);
-		LoadTextureImage("texture/player/urban/seal_chrome.bmp", URBANCHROME);
+	LoadTextureImage("texture/player/vip/newsvip.bmp", VIPBODY);
+	LoadTextureImage("texture/player/vip/head2.bmp", VIPHEAD);
+	LoadTextureImage("texture/player/vip/vip_militant_body.bmp", VIPBODY2);
+	LoadTextureImage("texture/player/vip/vip_militant_head.bmp", VIPHEAD2);
+	LoadTextureImage("texture/player/arctic/arctic_body.bmp", ARCTICBODY);
+	LoadTextureImage("texture/player/arctic/arctic_head2.bmp", ARCTICHEAD);
+	LoadTextureImage("texture/player/gign/body.bmp", GIGNBODY);
+	LoadTextureImage("texture/player/gign/helmet.bmp", GIGNHEAD);
+	LoadTextureImage("texture/player/gsg9/gsg9_body.bmp", GSG9BODY);
+	LoadTextureImage("texture/player/gsg9/gsg9_head.bmp", GSG9HEAD);
+	LoadTextureImage("texture/player/guerilla/guerilla_body.bmp", GUERILLABODY);
+	LoadTextureImage("texture/player/guerilla/guerilla_head.bmp", GUERILLAHEAD);
+	LoadTextureImage("texture/player/leet/leet_body5.bmp", LEETBODY);
+	LoadTextureImage("texture/player/leet/guerilla_head3.bmp", LEETHEAD);
+	LoadTextureImage("texture/player/sas/SAS_body.bmp", SASBODY);
+	LoadTextureImage("texture/player/sas/SAS_head.bmp", SASHEAD);
+	LoadTextureImage("texture/player/terror/terror_body.bmp", TERRORBODY);
+	LoadTextureImage("texture/player/terror/terror_head3.bmp", TERRORHEAD);
+	LoadTextureImage("texture/player/urban/seal_body.bmp", URBANBODY);
+	LoadTextureImage("texture/player/urban/seal_head.bmp", URBANHEAD);
+	LoadTextureImage("texture/player/urban/seal_chrome.bmp", URBANCHROME);
 
-		LoadTextureImage("texture/chicken/skin.bmp", CHICKEN);
-
-		loadtexturemodel = false;
-	}
+	LoadTextureImage("texture/chicken/skin.bmp", CHICKEN);
 }
 
 int iHDmodel = -1;
@@ -626,7 +623,7 @@ void SetSkins(struct cl_entity_s* ent)
 		strcpy(CurrentMap, g_Engine.pfnGetLevelName());
 	}
 
-	GetTextureModel();
+	if (loadtexturemodel)GetTextureModel(), loadtexturemodel = false;
 
 	ScanForTextureIndex(ent, "view_glove", TexHandsIndex[0]);
 	ScanForTextureIndex(ent, "view_finger", TexHandsIndex[1]);

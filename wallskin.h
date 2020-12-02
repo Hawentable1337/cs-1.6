@@ -12,11 +12,12 @@ extern char imagenameengine[1024][256];
 extern char imagenamenew[1024][256];
 extern int imagewidthnew[1024];
 extern int imageheightnew[1024];
+extern bool autoloadwall;
 extern bool loadwall;
 extern bool savewall;
 extern bool loadfile;
 
-void LoadWall();
-void WallRun();
+void WallRun(); 
+void LoadTextureWall();
 
 #endif

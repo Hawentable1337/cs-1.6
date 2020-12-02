@@ -124,9 +124,6 @@
     <ClCompile Include="skins.cpp">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="radio.cpp">
-      <Filter>source</Filter>
-    </ClCompile>
     <ClCompile Include="studiomodelrender.cpp">
       <Filter>source</Filter>
     </ClCompile>
@@ -187,23 +184,11 @@
     <ClCompile Include="imgui\imgui_widgets.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
-    <ClCompile Include="sound.cpp">
-      <Filter>source</Filter>
-    </ClCompile>
     <ClCompile Include="spawn.cpp">
       <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="model.cpp">
       <Filter>source</Filter>
-    </ClCompile>
-    <ClCompile Include="resources\gl3winit.cpp">
-      <Filter>resources</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui\gl3w.cpp">
-      <Filter>imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui\imgui_impl_opengl3.cpp">
-      <Filter>imgui</Filter>
     </ClCompile>
     <ClCompile Include="hitboxes.cpp">
       <Filter>source</Filter>
@@ -211,8 +196,20 @@
     <ClCompile Include="radar.cpp">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="resources\interface.cpp">
+    <ClCompile Include="sound.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="resources\gl3winit.cpp">
       <Filter>resources</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_impl_opengl3.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\gl3w.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="string.cpp">
+      <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -339,9 +336,6 @@
     <ClInclude Include="skins.h">
       <Filter>source</Filter>
     </ClInclude>
-    <ClInclude Include="radio.h">
-      <Filter>source</Filter>
-    </ClInclude>
     <ClInclude Include="studiomodelrender.h">
       <Filter>source</Filter>
     </ClInclude>
@@ -402,23 +396,11 @@
     <ClInclude Include="imgui\imgui_impl_opengl2.h">
       <Filter>imgui</Filter>
     </ClInclude>
-    <ClInclude Include="sound.h">
-      <Filter>source</Filter>
-    </ClInclude>
     <ClInclude Include="spawn.h">
       <Filter>source</Filter>
     </ClInclude>
     <ClInclude Include="model.h">
       <Filter>source</Filter>
-    </ClInclude>
-    <ClInclude Include="resources\gl3winit.h">
-      <Filter>resources</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\gl3w.h">
-      <Filter>imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imgui_impl_opengl3.h">
-      <Filter>imgui</Filter>
     </ClInclude>
     <ClInclude Include="hitboxes.h">
       <Filter>source</Filter>
@@ -426,8 +408,20 @@
     <ClInclude Include="radar.h">
       <Filter>source</Filter>
     </ClInclude>
-    <ClInclude Include="resources\interface.h">
+    <ClInclude Include="sound.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="resources\gl3winit.h">
       <Filter>resources</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui_impl_opengl3.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\gl3w.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="string.h">
+      <Filter>source</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

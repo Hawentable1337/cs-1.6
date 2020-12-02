@@ -73,7 +73,7 @@ DWORD WINAPI Hook()
 
 	HookOpenGL();
 
-	InitRadio();
+	InitBass();
 
 	return NULL;
 }

@@ -9,8 +9,10 @@ void LoadTextureImageSky(char* image, int index)
 	sprintf(filename, "%s%s", hackdir, image);
 	GLint last_texture;
 	glGetIntegerv(GL_TEXTURE_BINDING_2D, &last_texture);
-	glDeleteTextures(1, &texture_id[index]);
-	glGenTextures(1, &texture_id[index]);
+	if (texture_id[index])glDeleteTextures(1, &texture_id[index]);
+	GLuint glindex;
+	glGenTextures(1, &glindex);
+	texture_id[index] = glindex + 20000;
 	glBindTexture(GL_TEXTURE_2D, texture_id[index]);
 	unsigned char* soilimage = SOIL_load_image(filename, &width, &height, 0, SOIL_LOAD_RGBA);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);

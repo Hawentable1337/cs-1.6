@@ -77,7 +77,6 @@ extern char hldir[256];
 #include "resources/parsemsg.h"
 #include "resources/keydefs.h"
 #include "resources/gl3winit.h"
-#include "resources/interface.h"
 
 #include "opengl.h"
 #include "usermsg.h"
@@ -98,9 +97,8 @@ extern char hldir[256];
 #include "norecoil.h"
 #include "nospread.h"
 #include "studiomodelrender.h"
-#include "sound.h"
 #include "skins.h"
-#include "radio.h"
+#include "sound.h"
 #include "hitboxes.h"
 #include "fov.h"
 #include "crosshair.h"
@@ -120,6 +118,7 @@ extern char hldir[256];
 #include "spawn.h"
 #include "model.h"
 #include "radar.h"
+#include "string.h"
 
 void HookClientFunctions();
 void CL_Move();

@@ -292,7 +292,7 @@ int CL_IsThirdPerson(void)
 void HUD_Frame(double time)
 {
 	FindSpawn();
-	LoadWall();
+	LoadTextureWall();
 	Sky();
 	NoFlash();
 	Lightmap();

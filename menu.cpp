@@ -1172,6 +1172,7 @@ void MenuVisual4Window1()
 					ImGui::GetStyle().Colors[ImGuiCol_ButtonHovered] = Green();
 					ImGui::GetStyle().Colors[ImGuiCol_Button] = Green();
 				}
+
 				if (ImGui::ImageButtonID(textures + 1, (GLuint*)ent->model->textures[i]->gl_texturenum, ImVec2(60, 60)))
 				{
 					if (resetindex[i])
@@ -1709,7 +1710,10 @@ void LoadTextureImageMenu(char* image, int index)
 	sprintf(filename, "%s%s", hackdir, image);
 	GLint last_texture;
 	glGetIntegerv(GL_TEXTURE_BINDING_2D, &last_texture);
-	glGenTextures(1, &texture_id[index]);
+	if(texture_id[index])glDeleteTextures(1, &texture_id[index]);
+	GLuint glindex;
+	glGenTextures(1, &glindex);
+	texture_id[index] = glindex + 20000;
 	glBindTexture(GL_TEXTURE_2D, texture_id[index]);
 	unsigned char* soilimage = SOIL_load_image(filename, &width, &height, 0, SOIL_LOAD_RGBA);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -1945,48 +1949,50 @@ void DrawMenuButton(int posx, int posy, int sizex, int sizey, int index, int but
 	}
 }
 
+void GetTextureMenu()
+{
+	ragemaxindex = 1050;
+	legitmaxindex = 1100;
+	modelmaxindex = 1150;
+	playerlistmaxindex = 1200;
+	spawnmaxindex = 1250;
+	visual1maxindex = 1300;
+	visual2maxindex = 1350;
+	visual3maxindex = 1400;
+	visual4maxindex = 1450;
+	kzmaxindex = 1500;
+	routemaxindex = 1550;
+	snapshotmaxindex = 1600;
+	steammaxindex = 1650;
+	settingsmaxindex = 1700;
+	keymaxindex = 1750;
+	GetTextureMenu("rage", ragemaxindex);
+	GetTextureMenu("legit", legitmaxindex);
+	GetTextureMenu("model", modelmaxindex);
+	GetTextureMenu("playerlist", playerlistmaxindex);
+	GetTextureMenu("spawn", spawnmaxindex);
+	GetTextureMenu("visual1", visual1maxindex);
+	GetTextureMenu("visual2", visual2maxindex);
+	GetTextureMenu("visual3", visual3maxindex);
+	GetTextureMenu("visual4", visual4maxindex);
+	GetTextureMenu("kz", kzmaxindex);
+	GetTextureMenu("route", routemaxindex);
+	GetTextureMenu("snapshot", snapshotmaxindex);
+	GetTextureMenu("steam", steammaxindex);
+	GetTextureMenu("settings", settingsmaxindex);
+	GetTextureMenu("key", keymaxindex);
+	LoadTextureImageMenu("texture/menu/vip/vip.png", VIP);
+	LoadTextureImageMenu("texture/radar/redarrow.png", REDARROW);
+	LoadTextureImageMenu("texture/radar/bluearrow.png", BLUEARROW);
+	LoadTextureImageMenu("texture/radar/redsound.png", REDSOUND);
+	LoadTextureImageMenu("texture/radar/bluesound.png", BLUESOUND);
+	LoadTextureImageMenu("texture/radar/greensound.png", GREENSOUND);
+}
+
 void DrawMenuWindow()
 {
 	if (loadtexturemenu)
-	{
-		ragemaxindex = 1050;
-		legitmaxindex = 1100;
-		modelmaxindex = 1150;
-		playerlistmaxindex = 1200;
-		spawnmaxindex = 1250;
-		visual1maxindex = 1300;
-		visual2maxindex = 1350;
-		visual3maxindex = 1400;
-		visual4maxindex = 1450;
-		kzmaxindex = 1500;
-		routemaxindex = 1550;
-		snapshotmaxindex = 1600;
-		steammaxindex = 1650;
-		settingsmaxindex = 1700;
-		keymaxindex = 1750;
-		GetTextureMenu("rage", ragemaxindex);
-		GetTextureMenu("legit", legitmaxindex);
-		GetTextureMenu("model", modelmaxindex);
-		GetTextureMenu("playerlist", playerlistmaxindex);
-		GetTextureMenu("spawn", spawnmaxindex);
-		GetTextureMenu("visual1", visual1maxindex);
-		GetTextureMenu("visual2", visual2maxindex);
-		GetTextureMenu("visual3", visual3maxindex);
-		GetTextureMenu("visual4", visual4maxindex);
-		GetTextureMenu("kz", kzmaxindex);
-		GetTextureMenu("route", routemaxindex);
-		GetTextureMenu("snapshot", snapshotmaxindex);
-		GetTextureMenu("steam", steammaxindex);
-		GetTextureMenu("settings", settingsmaxindex);
-		GetTextureMenu("key", keymaxindex);
-		LoadTextureImageMenu("texture/menu/vip/vip.png", VIP);
-		LoadTextureImageMenu("texture/radar/redarrow.png", REDARROW);
-		LoadTextureImageMenu("texture/radar/bluearrow.png", BLUEARROW);
-		LoadTextureImageMenu("texture/radar/redsound.png", REDSOUND);
-		LoadTextureImageMenu("texture/radar/bluesound.png", BLUESOUND);
-		LoadTextureImageMenu("texture/radar/greensound.png", GREENSOUND);
-		loadtexturemenu = false;
-	}
+		GetTextureMenu(), loadtexturemenu = false;
 
 	char windowname[15][256];
 

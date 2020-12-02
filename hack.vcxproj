@@ -173,9 +173,6 @@
     <ClCompile Include="imgui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="model.cpp" />
     <ClCompile Include="radar.cpp" />
-    <ClCompile Include="resources\gl3winit.cpp" />
-    <ClCompile Include="resources\interface.cpp" />
-    <ClCompile Include="sound.cpp" />
     <ClCompile Include="client.cpp" />
     <ClCompile Include="color.cpp" />
     <ClCompile Include="chatinput.cpp" />
@@ -208,7 +205,8 @@
     <ClCompile Include="offset.cpp" />
     <ClCompile Include="opengl.cpp" />
     <ClCompile Include="player.cpp" />
-    <ClCompile Include="radio.cpp" />
+    <ClCompile Include="resources\gl3winit.cpp" />
+    <ClCompile Include="sound.cpp" />
     <ClCompile Include="resources\parsemsg.cpp" />
     <ClCompile Include="resources\stringfinder.cpp" />
     <ClCompile Include="resources\textures.cpp" />
@@ -221,6 +219,7 @@
     <ClCompile Include="spawn.cpp" />
     <ClCompile Include="steamid.cpp" />
     <ClCompile Include="strafe.cpp" />
+    <ClCompile Include="string.cpp" />
     <ClCompile Include="studio.cpp" />
     <ClCompile Include="studiomodelrender.cpp" />
     <ClCompile Include="tracegrenade.cpp" />
@@ -240,9 +239,6 @@
     <ClInclude Include="imgui\imgui_impl_opengl3.h" />
     <ClInclude Include="model.h" />
     <ClInclude Include="radar.h" />
-    <ClInclude Include="resources\gl3winit.h" />
-    <ClInclude Include="resources\interface.h" />
-    <ClInclude Include="sound.h" />
     <ClInclude Include="client.h" />
     <ClInclude Include="color.h" />
     <ClInclude Include="chatinput.h" />
@@ -278,7 +274,8 @@
     <ClInclude Include="offset.h" />
     <ClInclude Include="opengl.h" />
     <ClInclude Include="player.h" />
-    <ClInclude Include="radio.h" />
+    <ClInclude Include="resources\gl3winit.h" />
+    <ClInclude Include="sound.h" />
     <ClInclude Include="resources\defs.h" />
     <ClInclude Include="resources\detours.h" />
     <ClInclude Include="resources\keydefs.h" />
@@ -294,6 +291,7 @@
     <ClInclude Include="spawn.h" />
     <ClInclude Include="steamid.h" />
     <ClInclude Include="strafe.h" />
+    <ClInclude Include="string.h" />
     <ClInclude Include="studio.h" />
     <ClInclude Include="studiomodelrender.h" />
     <ClInclude Include="tracegrenade.h" />

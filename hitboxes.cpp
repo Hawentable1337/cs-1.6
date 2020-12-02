@@ -29,13 +29,6 @@ bool IsSHield(Vector origin[8])
 	return true;
 }
 
-string getfilename(string path)
-{
-	path = path.substr(path.find_last_of("/\\") + 1);
-	size_t dot_i = path.find_last_of('.');
-	return path.substr(0, dot_i);
-}
-
 void GetHitboxes(cl_entity_s* ent)
 {
 	if (ent && ent->model && ent->model->name)

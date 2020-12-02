@@ -44,6 +44,5 @@ void DrawSkeletonPlayer();
 void DrawSkeletonWorld();
 void VectorTransform(Vector in1, float in2[3][4], float* out);
 bool IsSHield(Vector origin[8]);
-string getfilename(string path);
 
 #endif
