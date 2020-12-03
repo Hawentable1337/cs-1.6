@@ -219,7 +219,7 @@
     <ClCompile Include="spawn.cpp" />
     <ClCompile Include="steamid.cpp" />
     <ClCompile Include="strafe.cpp" />
-    <ClCompile Include="string.cpp" />
+    <ClCompile Include="strings.cpp" />
     <ClCompile Include="studio.cpp" />
     <ClCompile Include="studiomodelrender.cpp" />
     <ClCompile Include="tracegrenade.cpp" />
@@ -291,7 +291,7 @@
     <ClInclude Include="spawn.h" />
     <ClInclude Include="steamid.h" />
     <ClInclude Include="strafe.h" />
-    <ClInclude Include="string.h" />
+    <ClInclude Include="strings.h" />
     <ClInclude Include="studio.h" />
     <ClInclude Include="studiomodelrender.h" />
     <ClInclude Include="tracegrenade.h" />

@@ -14,7 +14,7 @@ using namespace std;
 #include <GLFW/glfw3native.h>
 #include "bass/dll.h"
 #include "bass/bass.h"
-#include "Injector.h"
+#include "injector.h"
 #include "image.h"
 #include "color.h"
 #include "radio.h"

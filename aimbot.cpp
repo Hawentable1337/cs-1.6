@@ -439,7 +439,7 @@ void LegitAimbot(struct usercmd_s* cmd)
 	if (cvar.legit[g_Local.weapon.m_iWeaponID].speed_in_attack)
 		flSpeed = 101 - cvar.legit[g_Local.weapon.m_iWeaponID].speed_in_attack;
 
-	if (cvar.legit[g_Local.weapon.m_iWeaponID].speed && !(cmd->buttons & IN_ATTACK))
+	if (cvar.legit[g_Local.weapon.m_iWeaponID].speed && !(Attacking))
 		flSpeed = 101 - cvar.legit[g_Local.weapon.m_iWeaponID].speed;
 
 	if (!flSpeed)
@@ -651,7 +651,7 @@ void LegitAimbot(struct usercmd_s* cmd)
 			}
 		}
 
-		if (cmd->buttons & IN_ATTACK)
+		if (Attacking)
 			bAttack = true;
 		else if (cvar.legit[g_Local.weapon.m_iWeaponID].speed)
 		{
@@ -668,10 +668,8 @@ void LegitAimbot(struct usercmd_s* cmd)
 			g_Engine.SetViewAngles(QSmoothAngles);
 
 			if (!bBlock)
-			{
 				cmd->buttons |= IN_ATTACK;
-			}
-			else if (cmd->buttons & IN_ATTACK)
+			else if (Attacking)
 				cmd->buttons &= ~IN_ATTACK;
 
 			if (!g_Local.vPunchangle.IsZero2D())

@@ -30,11 +30,11 @@ DWORD WINAPI Hook()
 
 	c_Offset.PatchInterpolation();
 
+	c_Offset.ConsoleColorInitalize();
+
 	LoadCvar();
 
 	LoadHitbox();
-
-	InitConsoleColor();
 
 	while (!g_Client.V_CalcRefdef)
 		RtlCopyMemory(&g_Client, g_pClient, sizeof(cl_clientfunc_t));

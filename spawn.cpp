@@ -51,7 +51,7 @@ void FindSpawn()
 			Vector vTraceOrigin = ent->origin;
 			vTraceOrigin.z -= 8192;
 			pmtrace_t tr;
-			g_pEngine->pEventAPI->EV_SetTraceHull(2);
+			g_Engine.pEventAPI->EV_SetTraceHull(2);
 			g_Engine.pEventAPI->EV_PlayerTrace(ent->origin, vTraceOrigin, PM_GLASS_IGNORE | PM_STUDIO_BOX, -1, &tr);
 
 			bool bBadOrigin = false;

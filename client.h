@@ -118,7 +118,7 @@ extern char hldir[256];
 #include "spawn.h"
 #include "model.h"
 #include "radar.h"
-#include "string.h"
+#include "strings.h"
 
 void HookClientFunctions();
 void CL_Move();

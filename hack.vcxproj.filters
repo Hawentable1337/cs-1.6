@@ -208,7 +208,7 @@
     <ClCompile Include="imgui\gl3w.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
-    <ClCompile Include="string.cpp">
+    <ClCompile Include="strings.cpp">
       <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>
@@ -420,7 +420,7 @@
     <ClInclude Include="imgui\gl3w.h">
       <Filter>imgui</Filter>
     </ClInclude>
-    <ClInclude Include="string.h">
+    <ClInclude Include="strings.h">
       <Filter>source</Filter>
     </ClInclude>
   </ItemGroup>

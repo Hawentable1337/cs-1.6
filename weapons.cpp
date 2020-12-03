@@ -509,8 +509,6 @@ void Simulate(float &m_flAccuracy, float &m_flSpread)
 {
     bool m_bDelayFire = g_Local.weapon.m_bDelayFire;
     int m_iShotsFired = g_Local.weapon.m_iShotsFired;
-    // m_flAccuracy = m_flAccuracy;
-    // m_flSpread = m_flSpread;
 
     switch (g_Local.weapon.m_iWeaponID)
     {

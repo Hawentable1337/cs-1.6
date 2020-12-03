@@ -1879,7 +1879,6 @@ void DrawMenuButton(int posx, int posy, int sizex, int sizey, int index, int but
 	}
 
 	int paddings = 1 + (2 * ImGui::GetIO().DisplaySize.y / 768);
-	int paddingbot = paddings + 3;
 	static int padding[15] = { 6, 6, 5, 5, 4, 4, 3, 3, 3, 3, 4, 4, 5, 5, 6 };;
 	if (posx == x[0] && posy == y[0] || posx == x[1] && posy == y[1] || posx == x[14] && posy == y[14])
 		padding[index] = paddings + 3;

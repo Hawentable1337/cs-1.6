@@ -17,7 +17,6 @@ ImColor Team(int i);
 
 void ColorChange();
 void ConsolePrintColor(BYTE R, BYTE G, BYTE B, char* fmt, ...);
-void InitConsoleColor();
 
 typedef struct Color24
 {

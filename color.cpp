@@ -42,12 +42,6 @@ void ColorChange()
 	ImGui::ColorConvertHSVtoRGB(Color[0], Color[1], Color[2], color_red, color_green, color_blue);
 }
 
-void InitConsoleColor()
-{
-	static bool init = false;
-	if (!init) c_Offset.ConsoleColorInitalize(), init = true;
-}
-
 void ConsolePrintColor(BYTE R, BYTE G, BYTE B, char* fmt, ...)
 {
 	va_list va_alist;
