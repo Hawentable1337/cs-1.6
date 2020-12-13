@@ -12,13 +12,11 @@ wglSwapBuffers_t pwglSwapBuffers = NULL;
 glViewport_t pglViewport = NULL;
 glClear_t pglClear = NULL;
 
-int TexHandsIndex[4];
-
 void APIENTRY Hooked_glBegin(GLenum mode)
 {
 	cl_entity_s* ent = g_Studio.GetCurrentEntity();
 	bool Player = ent && ent->player;
-	bool Weapon = ent && ent->model && (strstr(ent->model->name, "p_") || strstr(ent->model->name, "w_"));
+	bool Weapon = ent && ent->model && strstr(ent->model->name, "w_");
 	bool View_Model = ent && ent->model && strstr(ent->model->name, "v_");
 	
 	if (cvar.visual_wall && CheckDrawEngine())
@@ -33,17 +31,6 @@ void APIENTRY Hooked_glBegin(GLenum mode)
 	{
 		if (mode == GL_TRIANGLE_STRIP)
 			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
-	}
-	if (cvar.visual_skins_viewmodel_nohands && CheckDrawEngine() && View_Model)
-	{
-		GLint last_texture;
-		glGetIntegerv(GL_TEXTURE_BINDING_2D, &last_texture);
-		
-		for (unsigned int i = 0; i < 4; i++)
-		{
-			if (TexHandsIndex[i] && last_texture == TexHandsIndex[i])
-				return;
-		}
 	}
 	pglBegin(mode);
 }
