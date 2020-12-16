@@ -16,5 +16,4 @@ using namespace std;
 #include "bass/bass.h"
 #include "injector.h"
 #include "image.h"
-#include "color.h"
 #include "radio.h"
