@@ -26,7 +26,6 @@ void HUD_Redraw(float time, int intermission)
 
 	DrawOverviewLayer();
 	KzFameCount();
-	Snapshot();
 }
 
 int HUD_Key_Event(int down, int keynum, const char* pszCurrentBinding)
@@ -61,18 +60,18 @@ int HUD_Key_Event(int down, int keynum, const char* pszCurrentBinding)
 		return false;
 	}
 	//return game bind if chat active
-	if (bInputActive && CheckDraw())
+	if (bInputActive && GetTickCount() - HudRedraw <= 100)
 		return false;
 
 	//return game bind for chat bind
 	if (keychat && down)
 	{
-		bInputActive = true, iInputMode = 1, SetKeyboardFocus = true;
+		bInputActive = true, iInputMode = 1;
 		return false;
 	}
 	if (keychatteam && down)
 	{
-		bInputActive = true, iInputMode = 2, SetKeyboardFocus = true;
+		bInputActive = true, iInputMode = 2;
 		return false;
 	}
 	
@@ -85,7 +84,7 @@ int HUD_Key_Event(int down, int keynum, const char* pszCurrentBinding)
 	}
 
 	//return game bind if menu active
-	if (bShowMenu && CheckDraw())
+	if (bShowMenu && GetTickCount() - HudRedraw <= 100)
 		return false;
 
 	//check if alive
@@ -201,7 +200,7 @@ void PreV_CalcRefdef(struct ref_params_s* pparams)
 void PostV_CalcRefdef(struct ref_params_s* pparams)
 {
 	TraceGrenade(pparams);
-	if (CheckDrawEngine())
+	if (DrawVisuals && (!cvar.route_auto || cvar.route_draw_visual) && GetTickCount() - HudRedraw <= 100)
 	{
 		cl_entity_s* vm = g_Engine.GetViewModel();
 		if (vm)
@@ -284,13 +283,14 @@ int HUD_AddEntity(int type, struct cl_entity_s* ent, const char* modelname)
 
 int CL_IsThirdPerson(void)
 {
-	if (cvar.visual_chase_cam && bAliveLocal() && CheckDrawEngine())
+	if (cvar.visual_chase_cam && bAliveLocal() && DrawVisuals && (!cvar.route_auto || cvar.route_draw_visual) && GetTickCount() - HudRedraw <= 100)
 		return 1;
 	return g_Client.CL_IsThirdPerson();
 }
 
 void HUD_Frame(double time)
 {
+	Snapshot();
 	FindSpawn();
 	LoadTextureWall();
 	Sky();

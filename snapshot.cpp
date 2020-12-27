@@ -41,7 +41,7 @@ void Snapshot()
 			DrawVisuals = false;
 			temp++;
 
-			if (temp > 10)
+			if (temp > 4)
 			{
 				bAntiSSTemp = true;
 				ScreenFirst = true;
@@ -51,7 +51,6 @@ void Snapshot()
 				glReadPixels(0, 0, ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y, GL_RGB, GL_UNSIGNED_BYTE, buf);
 				free((PBYTE)buf);
 			}
-
 		}
 	}
 	if (FirstFrame)

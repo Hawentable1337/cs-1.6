@@ -2109,13 +2109,6 @@ void DrawMenuWindow()
 	DrawkeyBind(sizebot);
 	DrawChatInputWindow(sizebot);
 
-	static bool menu = bShowMenu;
-	if (menu != bShowMenu)
-	{
-		if (!bShowMenu)
-			changewindowfocus = true;
-		menu = bShowMenu;
-	}
 	if (changewindowfocus && bShowMenu && showspeed < total)
 	{
 		for (unsigned int i = 0; i < 15; i++)

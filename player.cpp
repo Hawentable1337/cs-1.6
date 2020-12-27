@@ -31,7 +31,7 @@ bool bAliveLocal()
 
 void ThirdPerson(struct ref_params_s* pparams)
 {
-	if (cvar.visual_chase_cam && bAliveLocal() && CheckDrawEngine())
+	if (cvar.visual_chase_cam && bAliveLocal() && DrawVisuals && (!cvar.route_auto || cvar.route_draw_visual) && GetTickCount() - HudRedraw <= 100)
 	{
 		Vector Offset(0, 0, 0);
 		Vector r, u, b;

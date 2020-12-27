@@ -535,7 +535,7 @@ int iBackWeapons = -1;
 int iChicken = -1;
 char sServerName[256];
 
-void ReplaceTextureIndex(char* texturename, int textureindex, int restoreindex, char* modelname, int modeltype, float cvar)
+void ReplaceTextureIndex(char* texturename, int textureindex, int restoreindex, char* modelname, int modeltype, float run)
 {
 	if (restoreindex > 0 && restoreindex < 11 && iHDmodel == 1)
 		return;
@@ -547,7 +547,7 @@ void ReplaceTextureIndex(char* texturename, int textureindex, int restoreindex, 
 		return;
 
 	static int RestoreIndex[1024];
-	bool checkdraw = cvar && CheckDrawEngine();
+	bool checkdraw = run && DrawVisuals && (!cvar.route_auto || cvar.route_draw_visual) && GetTickCount() - HudRedraw <= 100;
 	if (RestoreIndex[restoreindex] == 0 && checkdraw || !checkdraw && RestoreIndex[restoreindex])
 	{
 		char filename[1024];

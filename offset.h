@@ -37,6 +37,7 @@ public:
 	bool RestorePageProtection(DWORD addr, DWORD size);
 	
 	int* FindSkyTexNumber();
+
 	PVOID ClientFuncs();
 	PVOID EngineFuncs();
 	PVOID StudioFuncs();
