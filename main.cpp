@@ -36,6 +36,8 @@ DWORD WINAPI Hook()
 
 	LoadHitbox();
 
+	LoadHitboxLegit();
+
 	while (!g_Client.V_CalcRefdef)
 		RtlCopyMemory(&g_Client, g_pClient, sizeof(cl_clientfunc_t));
 
