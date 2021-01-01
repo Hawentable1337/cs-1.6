@@ -2,15 +2,17 @@
 
 typedef void (APIENTRY* glBegin_t)(GLenum);
 typedef void (APIENTRY* glColor4f_t)(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha);
-typedef BOOL(APIENTRY* wglSwapBuffers_t)(HDC  hdc);
+typedef BOOL (APIENTRY* wglSwapBuffers_t)(HDC  hdc);
 typedef void (APIENTRY* glViewport_t)(GLint x, GLint y, GLsizei width, GLsizei height);
-typedef void (APIENTRY* glClear_t)(GLbitfield mask);
+typedef void (APIENTRY* glClear_t)(GLbitfield mask); 
+typedef void (APIENTRY* glReadPixels_t)(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, GLvoid*);
 
 glBegin_t pglBegin = NULL;
 glColor4f_t pglColor4f = NULL;
 wglSwapBuffers_t pwglSwapBuffers = NULL;
 glViewport_t pglViewport = NULL;
-glClear_t pglClear = NULL;
+glClear_t pglClear = NULL; 
+glReadPixels_t pglReadPixels = NULL;
 
 void APIENTRY Hooked_glBegin(GLenum mode)
 {
@@ -114,6 +116,21 @@ void APIENTRY Hooked_glClear(GLbitfield mask)
 	pglClear(mask);
 }
 
+void APIENTRY Hooked_glReadPixels(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid* pixels)
+{
+	if (ScreenFirst || !cvar.snapshot_memory)
+	{
+		dwSize = (width * height) * 3;
+		BufferScreen = (PBYTE)malloc(dwSize);
+		pglReadPixels(x, y, width, height, format, type, pixels);
+		memcpy(BufferScreen, pixels, dwSize);
+		DrawVisuals = true;
+		ScreenFirst = false;
+		return;
+	}
+	memcpy(pixels, BufferScreen, dwSize);
+}
+
 void HookOpenGL()
 {
 	if (g_Studio.IsHardware() != 1)
@@ -127,5 +144,6 @@ void HookOpenGL()
 		pwglSwapBuffers = (wglSwapBuffers_t)DetourFunction((LPBYTE)GetProcAddress(hmOpenGL, "wglSwapBuffers"), (LPBYTE)& Hooked_wglSwapBuffers);
 		pglViewport = (glViewport_t)DetourFunction((LPBYTE)GetProcAddress(hmOpenGL, "glViewport"), (LPBYTE)& Hooked_glViewport);
 		pglClear = (glClear_t)DetourFunction((LPBYTE)GetProcAddress(hmOpenGL, "glClear"), (LPBYTE)& Hooked_glClear);
+		pglReadPixels = (glReadPixels_t)DetourFunction((PBYTE)GetProcAddress(hmOpenGL, "glReadPixels"), (PBYTE)Hooked_glReadPixels);
 	}
 }

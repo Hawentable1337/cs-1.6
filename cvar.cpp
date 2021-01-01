@@ -179,7 +179,6 @@ void CVARlist::init()
 	INITCVAR(fakelag_variance, 0.0);
 
 	INITCVAR(snapshot_memory, 0.0);
-	INITCVAR(snapshot_game, 0.0);
 	INITCVAR(snapshot_time, 10.0);
 
 	INITCVAR(misc_quick_change, 0.0);
