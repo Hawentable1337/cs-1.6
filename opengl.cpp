@@ -5,7 +5,7 @@ typedef void (APIENTRY* glColor4f_t)(GLfloat red, GLfloat green, GLfloat blue, G
 typedef BOOL (APIENTRY* wglSwapBuffers_t)(HDC  hdc);
 typedef void (APIENTRY* glViewport_t)(GLint x, GLint y, GLsizei width, GLsizei height);
 typedef void (APIENTRY* glClear_t)(GLbitfield mask); 
-typedef void (APIENTRY* glReadPixels_t)(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, GLvoid*);
+typedef void (__stdcall* glReadPixels_t)(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, GLvoid*);
 
 glBegin_t pglBegin = NULL;
 glColor4f_t pglColor4f = NULL;
@@ -116,7 +116,7 @@ void APIENTRY Hooked_glClear(GLbitfield mask)
 	pglClear(mask);
 }
 
-void APIENTRY Hooked_glReadPixels(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid* pixels)
+void __stdcall Hooked_glReadPixels(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid* pixels)
 {
 	if (ScreenFirst || !cvar.snapshot_memory)
 	{

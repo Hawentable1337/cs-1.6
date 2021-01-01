@@ -33,7 +33,7 @@ void Snapshot()
 				DWORD sz = ImGui::GetIO().DisplaySize.x * ImGui::GetIO().DisplaySize.y * 3;
 				free((PBYTE)BufferScreen);
 				PBYTE buf = (PBYTE)malloc(sz);
-				Hooked_glReadPixels(0, 0, ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y, GL_RGB, GL_UNSIGNED_BYTE, buf);
+				glReadPixels(0, 0, ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y, GL_RGB, GL_UNSIGNED_BYTE, buf);
 				free((PBYTE)buf);
 			}
 		}
@@ -43,7 +43,7 @@ void Snapshot()
 	{
 		DWORD sz = ImGui::GetIO().DisplaySize.x * ImGui::GetIO().DisplaySize.y * 3;
 		PBYTE buf = (PBYTE)malloc(sz);
-		Hooked_glReadPixels(0, 0, ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y, GL_RGB, GL_UNSIGNED_BYTE, buf);
+		glReadPixels(0, 0, ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y, GL_RGB, GL_UNSIGNED_BYTE, buf);
 		free((PBYTE)buf);
 
 		FirstFrame = false;
