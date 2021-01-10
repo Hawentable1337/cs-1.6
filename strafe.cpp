@@ -48,38 +48,40 @@ void StrafeHack(struct usercmd_s* cmd)
 		if (cvar.kz_strafe_psilent?!packet:1)
 		{
 			if(cvar.kz_strafe_psilent)bSendpacket(false);
-			if (sqrt(POW(pmove->velocity[0]) + POW(pmove->velocity[1])) < 15)
+			if (pmove->velocity.Length2D() < 15)
 				cmd->forwardmove = 400, cmd->sidemove = 0;
+			else
+			{
+				float dir = 0;
+				if (cmd->buttons & IN_MOVERIGHT)
+					dir = 90;
+				if (cmd->buttons & IN_BACK)
+					dir = 180;
+				if (cmd->buttons & IN_MOVELEFT)
+					dir = -90;
 
-			float dir = 0;
-			if (cmd->buttons & IN_MOVERIGHT)
-				dir = 90;
-			if (cmd->buttons & IN_BACK)
-				dir = 180;
-			if (cmd->buttons & IN_MOVELEFT)
-				dir = -90;
+				Vector ViewAngles;
+				g_Engine.GetViewAngles(ViewAngles);
+				ViewAngles.y += dir;
+				Vector vspeed = Vector(pmove->velocity.x / pmove->velocity.Length(), pmove->velocity.y / pmove->velocity.Length(), 0.0f);
+				float va_speed = YawForVec(vspeed);
+				float adif = va_speed - ViewAngles.y;
+				while (adif < -180)adif += 360;
+				while (adif > 180)adif -= 360;
+				cmd->sidemove = (437.8928) * (adif > 0 ? 1 : -1);
+				cmd->forwardmove = 0;
+				cmd->viewangles.y -= (-adif);
 
-			Vector ViewAngles;
-			g_Engine.GetViewAngles(ViewAngles);
-			ViewAngles.y += dir;
-			Vector vspeed = Vector(pmove->velocity.x / pmove->velocity.Length(), pmove->velocity.y / pmove->velocity.Length(), 0.0f);
-			float va_speed = YawForVec(vspeed);
-			float adif = va_speed - ViewAngles.y;
-			while (adif < -180)adif += 360;
-			while (adif > 180)adif -= 360;
-			cmd->sidemove = (437.8928) * (adif > 0 ? 1 : -1);
-			cmd->forwardmove = 0;
-			cmd->viewangles.y -= (-adif);
+				float sdmw = cmd->sidemove;
+				float fdmw = cmd->forwardmove;
 
-			float sdmw = cmd->sidemove;
-			float fdmw = cmd->forwardmove;
-
-			if (cmd->buttons & IN_MOVERIGHT)
-				cmd->forwardmove = -sdmw, cmd->sidemove = fdmw;
-			if (cmd->buttons & IN_BACK)
-				cmd->forwardmove = -fdmw, cmd->sidemove = -sdmw;
-			if (cmd->buttons & IN_MOVELEFT)
-				cmd->forwardmove = sdmw, cmd->sidemove = -fdmw;
+				if (cmd->buttons & IN_MOVERIGHT)
+					cmd->forwardmove = -sdmw, cmd->sidemove = fdmw;
+				if (cmd->buttons & IN_BACK)
+					cmd->forwardmove = -fdmw, cmd->sidemove = -sdmw;
+				if (cmd->buttons & IN_MOVELEFT)
+					cmd->forwardmove = sdmw, cmd->sidemove = -fdmw;
+			}
 		}
 		if (cvar.kz_strafe_psilent)packet = !packet;
 	}
@@ -89,7 +91,7 @@ void StrafeHack(struct usercmd_s* cmd)
 
 void FastRun(struct usercmd_s *cmd)
 {
-	if(Fastrun && sqrt(POW(pmove->velocity[0]) + POW(pmove->velocity[1])) && pmove->flFallVelocity == 0 && !Gstrafe && pmove->flags&FL_ONGROUND)
+	if(Fastrun && pmove->velocity.Length2D() && pmove->flFallVelocity == 0 && !Gstrafe && pmove->flags&FL_ONGROUND)
 	{
 		static bool Run = false;
 		if((cmd->buttons&IN_FORWARD && cmd->buttons&IN_MOVELEFT) || (cmd->buttons&IN_BACK && cmd->buttons&IN_MOVERIGHT))
@@ -299,12 +301,9 @@ void JumpBug(float frametime, struct usercmd_s *cmd)
 	bool autojb = false;
 
 	if (cvar.kz_jump_bug_auto && pmove->flFallVelocity >= 404.8f)
-	{
-		if (HeightOrigin() - (pmove->flFallVelocity * frametime / cvar.misc_wav_speed * 15) <= 0)
-			autojb = true;
-	}
+		autojb = true;
 
-	if ((Jumpbug || autojb) && pmove->flFallVelocity > 0)
+	if (Jumpbug && pmove->flFallVelocity > 0|| autojb)
 	{
 		bool curveang = false;
 		float fpheight = 0;
@@ -317,7 +316,6 @@ void JumpBug(float frametime, struct usercmd_s *cmd)
 			fpheight = abs(pmove->origin.z - trace->endpos.z - (pmove->usehull == 1 ? 18.0f : 36.0f));
 		}
 		else fpheight = HeightOrigin();
-
 
 		static float last_h = 0.0f;
 		float cur_frame_zdist = abs((pmove->flFallVelocity + (800 * frametime)) * frametime);
@@ -385,16 +383,16 @@ void Kz(float frametime, struct usercmd_s *cmd)
 {
 	if (bAliveLocal())
 	{
-		if (cvar.kz_strafe)
-			StrafeHack(cmd);
-		if (cvar.kz_fast_run)
-			FastRun(cmd);
-		if (cvar.kz_ground_strafe)
-			GroundStrafe(cmd);
 		if (cvar.kz_bhop)
 			BHop(cmd);
 		if (cvar.kz_jump_bug || cvar.kz_jump_bug_auto)
 			JumpBug(frametime, cmd);
+		if (cvar.kz_ground_strafe)
+			GroundStrafe(cmd);
+		if (cvar.kz_fast_run)
+			FastRun(cmd);
+		if (cvar.kz_strafe)
+			StrafeHack(cmd);
 		if (cvar.kz_show_kz)
 			LongJump();
 	}
@@ -420,7 +418,7 @@ void Kz(float frametime, struct usercmd_s *cmd)
 	}
 	if (!bJumped && (pmove->flags & FL_ONGROUND) && cmd->buttons & IN_JUMP)
 	{
-		PreStrafe = sqrt(POW(pmove->velocity[0]) + POW(pmove->velocity[1]));
+		PreStrafe = pmove->velocity.Length2D();
 		if (EdgeDistance() != 250)
 			JumpOff = EdgeDistance();
 		else JumpOff = 0;
@@ -496,10 +494,10 @@ void DrawKzWindows()
 			ImVec4 col = col_default_text;
 			ImVec4 col2 = col_default_text;
 			static float fMaxPspeed = 0.f;
-			if (sqrt(POW(pmove->velocity[0]) + POW(pmove->velocity[1])) == 0)
+			if (pmove->velocity.Length2D() == 0)
 				fMaxPspeed = 0.0;
-			if (sqrt(POW(pmove->velocity[0]) + POW(pmove->velocity[1])) > fMaxPspeed)
-				fMaxPspeed = sqrt(POW(pmove->velocity[0]) + POW(pmove->velocity[1]));
+			if (pmove->velocity.Length2D() > fMaxPspeed)
+				fMaxPspeed = pmove->velocity.Length2D();
 			if (Damage() >= g_Local.iPostHealth)
 				col = ImColor(1.f, 0.f, 0.f, 1.0f);
 			if (Damage2() >= g_Local.iPostHealth)
@@ -518,7 +516,7 @@ void DrawKzWindows()
 			ImGui::TextColored(col2, "Damage In Fall: %.1f", Damage2());
 			ImGui::Text("Height:         %.1f", HeightOrigin());
 			ImGui::Text("Ground Angle:   %.1f", GroundAngle());
-			ImGui::Text("Speed:          %.1f", sqrt(POW(pmove->velocity[0]) + POW(pmove->velocity[1])));
+			ImGui::Text("Speed:          %.1f", pmove->velocity.Length2D());
 			ImGui::Text("Speed Max:      %.1f", fMaxPspeed);
 			ImGui::Text("Speed In Fall:  %.1f", pmove->flFallVelocity);
 			ImGui::TextColored(ImVec4(1.f, 0.f, EdgeDistance(), 1.f), "Edge Distance:  %.1f", EdgeDistance());

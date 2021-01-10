@@ -78,143 +78,146 @@ void Menu()
 		static int fail = 0;
 		if (sucess)sucess--;
 		if (fail)fail--;
-		GLuint texture = texture_id[INJECTOR];
-		if (sucess) texture = texture_id[CHECKMARK];
-		if (fail) texture = texture_id[WRONG];
-		ImVec2 LastSapcing = ImGui::GetStyle().ItemSpacing;
-		ImGui::GetStyle().ItemSpacing.x = 0;
-		if (ImGui::ImageButton((GLuint*)texture, ImVec2(142, 144)))
+		if (ImGui::IsMouseHoveringRect({ 0, 0 }, { 312, 277 }))
 		{
-			bool foundfile = true;
-			bool foundprocess = true;
-			char moduleName[32] = "hack.dll";
-			char modulePath[MAX_PATH];
-			GetModuleFileName(NULL, modulePath, MAX_PATH);
-			char* index = strrchr(modulePath, '\\');
-			modulePath[index - modulePath + 1] = 0;
-			strcat_s(modulePath, MAX_PATH, moduleName);
-			WIN32_FIND_DATA WFD;
-			if (FindFirstFile(modulePath, &WFD) == INVALID_HANDLE_VALUE)
+			GLuint texture = texture_id[INJECTOR];
+			if (sucess) texture = texture_id[CHECKMARK];
+			if (fail) texture = texture_id[WRONG];
+			ImVec2 LastSapcing = ImGui::GetStyle().ItemSpacing;
+			ImGui::GetStyle().ItemSpacing.x = 0;
+			if (ImGui::ImageButton((GLuint*)texture, ImVec2(142, 144)))
 			{
-				char msg[512];
-				strcpy_s(msg, 512, "File ");
-				strcat_s(msg, 512, moduleName);
-				strcat_s(msg, 512, " was not found!");
-				MessageBox(NULL, msg, "Error", MB_OK | MB_ICONERROR);
-				foundfile = false;
+				bool foundfile = true;
+				bool foundprocess = true;
+				char moduleName[32] = "hack.dll";
+				char modulePath[MAX_PATH];
+				GetModuleFileName(NULL, modulePath, MAX_PATH);
+				char* index = strrchr(modulePath, '\\');
+				modulePath[index - modulePath + 1] = 0;
+				strcat_s(modulePath, MAX_PATH, moduleName);
+				WIN32_FIND_DATA WFD;
+				if (FindFirstFile(modulePath, &WFD) == INVALID_HANDLE_VALUE)
+				{
+					char msg[512];
+					strcpy_s(msg, 512, "File ");
+					strcat_s(msg, 512, moduleName);
+					strcat_s(msg, 512, " was not found!");
+					MessageBox(NULL, msg, "Error", MB_OK | MB_ICONERROR);
+					foundfile = false;
+				}
+				PROCESS_INFORMATION processInfo;
+				if (Injector::GetProcessInfo("cstrike.exe", &processInfo) == false && Injector::GetProcessInfo("hl.exe", &processInfo) == false)
+				{
+					MessageBox(NULL, "Process hl.exe or cstrike.exe is not running!", "Error", MB_OK | MB_ICONERROR);
+					foundprocess = false;
+				}
+				if ((Injector::InjectModule("cstrike.exe", modulePath) == true || Injector::InjectModule("hl.exe", modulePath) == true) && foundfile && foundprocess)
+					sucess = 25;
+				else
+					fail = 5;
 			}
-			PROCESS_INFORMATION processInfo;
-			if (Injector::GetProcessInfo("cstrike.exe", &processInfo) == false && Injector::GetProcessInfo("hl.exe", &processInfo) == false)
+			if (ImGui::IsItemHovered())
 			{
-				MessageBox(NULL, "Process hl.exe or cstrike.exe is not running!", "Error", MB_OK | MB_ICONERROR);
-				foundprocess = false;
+				hovered = true;
+				ImGui::BeginTooltip();
+				ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+				ImGui::TextUnformatted("Inject DLL To Process");
+				ImGui::PopTextWrapPos();
+				ImGui::EndTooltip();
 			}
-			if ((Injector::InjectModule("cstrike.exe", modulePath) == true || Injector::InjectModule("hl.exe", modulePath) == true) && foundfile && foundprocess)
-				sucess = 25;
+			ImGui::SameLine();
+			if (ImGui::ImageButton((GLuint*)texture_id[FACEBOOK], ImVec2(142, 144)))
+			{
+				ShellExecute(NULL, "open", "https://www.facebook.com/groups/1628540544084700/", NULL, NULL, SW_HIDE);
+			}
+			if (ImGui::IsItemHovered())
+			{
+				hovered = true;
+				ImGui::BeginTooltip();
+				ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+				ImGui::TextUnformatted("Visit Facebook Group");
+				ImGui::PopTextWrapPos();
+				ImGui::EndTooltip();
+			}
+			if (ImGui::ArrowButtonDouble("##left", ImGuiDir_Left, 90))
+				backwards = true;
+			if (ImGui::IsItemHovered())
+			{
+				hovered = true;
+				ImGui::BeginTooltip();
+				ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+				ImGui::TextUnformatted("Radio Channel Back");
+				ImGui::PopTextWrapPos();
+				ImGui::EndTooltip();
+			}
+			ImGui::SameLine();
+			if (gui_radio)
+			{
+				if (ImGui::SquareButton("##square", 120))
+					gui_radio = !gui_radio;
+			}
 			else
-				fail = 5;
-		}
-		if (ImGui::IsItemHovered())
-		{
-			hovered = true;
-			ImGui::BeginTooltip();
-			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-			ImGui::TextUnformatted("Inject DLL To Process");
-			ImGui::PopTextWrapPos();
-			ImGui::EndTooltip();
-		}
-		ImGui::SameLine();
-		if (ImGui::ImageButton((GLuint*)texture_id[FACEBOOK], ImVec2(142, 144)))
-		{
-			ShellExecute(NULL, "open", "https://www.facebook.com/groups/1628540544084700/", NULL, NULL, SW_HIDE);
-		}
-		if (ImGui::IsItemHovered())
-		{
-			hovered = true;
-			ImGui::BeginTooltip();
-			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-			ImGui::TextUnformatted("Visit Facebook Group");
-			ImGui::PopTextWrapPos();
-			ImGui::EndTooltip();
-		}
-		if (ImGui::ArrowButtonDouble("##left", ImGuiDir_Left, 90))
-			backwards = true;
-		if (ImGui::IsItemHovered())
-		{
-			hovered = true;
-			ImGui::BeginTooltip();
-			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-			ImGui::TextUnformatted("Radio Channel Back");
-			ImGui::PopTextWrapPos();
-			ImGui::EndTooltip();
-		}
-		ImGui::SameLine();
-		if (gui_radio)
-		{
-			if (ImGui::SquareButton("##square", 120))
-				gui_radio = !gui_radio;
-		}
-		else
-		{
-			if (ImGui::ArrowButton("##right", ImGuiDir_Right, 120))
-				gui_radio = !gui_radio;
-		}
+			{
+				if (ImGui::ArrowButton("##right", ImGuiDir_Right, 120))
+					gui_radio = !gui_radio;
+			}
 
-		if (ImGui::IsItemHovered())
-		{
-			hovered = true;
-			ImGui::BeginTooltip();
-			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-			ImGui::TextUnformatted("Radio Channel Play/Pause");
-			ImGui::PopTextWrapPos();
-			ImGui::EndTooltip();
+			if (ImGui::IsItemHovered())
+			{
+				hovered = true;
+				ImGui::BeginTooltip();
+				ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+				ImGui::TextUnformatted("Radio Channel Play/Pause");
+				ImGui::PopTextWrapPos();
+				ImGui::EndTooltip();
+			}
+			ImGui::SameLine();
+			if (ImGui::ArrowButtonDouble("##right", ImGuiDir_Right, 90))
+				forwards = true;
+			if (ImGui::IsItemHovered())
+			{
+				hovered = true;
+				ImGui::BeginTooltip();
+				ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+				ImGui::TextUnformatted("Radio Channel Forward");
+				ImGui::PopTextWrapPos();
+				ImGui::EndTooltip();
+			}
+			ImGui::GetStyle().ItemSpacing = LastSapcing;
+			ImGui::PushItemWidth(-1);
+			const char* listbox_radio[] = { "PulseEDM Dance Music", "Hard Style", "Big Fm", "Big Fm Deutsch Rap", "Radio Record", "Record Dubstep", "Record Hardstyle", "Record Dancecore", "Anison FM", "Nrk MP3" };
+			if (ImGui::Combo("Radio Channel", &gui_radio_channel, listbox_radio, IM_ARRAYSIZE(listbox_radio), 10))channelchange = true;
+			if (ImGui::IsItemHovered())
+			{
+				hovered = true;
+				ImGui::BeginTooltip();
+				ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+				ImGui::TextUnformatted("Select Radio Channel");
+				ImGui::PopTextWrapPos();
+				ImGui::EndTooltip();
+			}
+			ImGui::SliderFloat("Radio Volume", &gui_radio_volume, 0.f, 100.f, "Radio Volume: %.f");
+			if (ImGui::IsItemHovered())
+			{
+				hovered = true;
+				ImGui::BeginTooltip();
+				ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+				ImGui::TextUnformatted("Adjust Radio Volume");
+				ImGui::PopTextWrapPos();
+				ImGui::EndTooltip();
+			}
+			if (ImGui::InputText("Input Text", zstationstype, IM_ARRAYSIZE(zstationstype), ImGuiInputTextFlags_EnterReturnsTrue))channeltype = true;
+			if (ImGui::IsItemHovered())
+			{
+				hovered = true;
+				ImGui::BeginTooltip();
+				ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+				ImGui::TextUnformatted("Input Link To Radio Stream");
+				ImGui::PopTextWrapPos();
+				ImGui::EndTooltip();
+			}
+			ImGui::PopItemWidth();
 		}
-		ImGui::SameLine();
-		if (ImGui::ArrowButtonDouble("##right", ImGuiDir_Right, 90))
-			forwards = true;
-		if (ImGui::IsItemHovered())
-		{
-			hovered = true;
-			ImGui::BeginTooltip();
-			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-			ImGui::TextUnformatted("Radio Channel Forward");
-			ImGui::PopTextWrapPos();
-			ImGui::EndTooltip();
-		}
-		ImGui::GetStyle().ItemSpacing = LastSapcing;
-		ImGui::PushItemWidth(-1);
-		const char* listbox_radio[] = { "PulseEDM Dance Music", "Hard Style", "Big Fm", "Big Fm Deutsch Rap", "Radio Record", "Record Dubstep", "Record Hardstyle", "Record Dancecore", "Anison FM", "Nrk MP3" };
-		if (ImGui::Combo("Radio Channel", &gui_radio_channel, listbox_radio, IM_ARRAYSIZE(listbox_radio), 10))channelchange = true;
-		if (ImGui::IsItemHovered())
-		{
-			hovered = true;
-			ImGui::BeginTooltip();
-			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-			ImGui::TextUnformatted("Select Radio Channel");
-			ImGui::PopTextWrapPos();
-			ImGui::EndTooltip();
-		}
-		ImGui::SliderFloat("Radio Volume", &gui_radio_volume, 0.f, 100.f, "Radio Volume: %.f");
-		if (ImGui::IsItemHovered())
-		{
-			hovered = true;
-			ImGui::BeginTooltip();
-			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-			ImGui::TextUnformatted("Adjust Radio Volume");
-			ImGui::PopTextWrapPos();
-			ImGui::EndTooltip();
-		}
-		if (ImGui::InputText("Input Text", zstationstype, IM_ARRAYSIZE(zstationstype), ImGuiInputTextFlags_EnterReturnsTrue))channeltype = true;
-		if (ImGui::IsItemHovered())
-		{
-			hovered = true;
-			ImGui::BeginTooltip();
-			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-			ImGui::TextUnformatted("Input Link To Radio Stream");
-			ImGui::PopTextWrapPos();
-			ImGui::EndTooltip();
-		}
-		ImGui::PopItemWidth();
 	}
 	ImGui::End();
 	if (!bShowMenu)
