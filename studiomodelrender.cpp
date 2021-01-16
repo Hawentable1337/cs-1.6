@@ -3,30 +3,15 @@
 // This pointer to CStudioModelRenderer class !
 StudioModelRenderer_d pThis;
 
-float chams_viewmodel_r;
-float chams_viewmodel_g;
-float chams_viewmodel_b;
-float chams_viewmodel;
-
-float chams_player_r;
-float chams_player_g;
-float chams_player_b;
-float chams_player;
-
-float chams_world_r;
-float chams_world_g;
-float chams_world_b;
-float chams_world;
-
 //=========================
 // StudioDrawModel
 //=========================
 int (*pStudioDrawModel)(int flags);
 int	StudioDrawModel(int flags)
 {
-	//Call Client!
-	int studioret = pStudioDrawModel(flags);
-	//restore status
+	cl_entity_t* ent = g_Studio.GetCurrentEntity();
+	
+	int studioret = pStudioDrawModel(flags); 
 	return studioret;
 }
 //=========================
@@ -35,9 +20,8 @@ int	StudioDrawModel(int flags)
 int (*pStudioDrawPlayer)(int flags, entity_state_s* pplayer);
 int StudioDrawPlayer(int flags, entity_state_s* pplayer)
 {
-	//Call Client!
-	int ret = pStudioDrawPlayer(flags, pplayer);
-	//restore status
+
+	int ret = pStudioDrawPlayer(flags, pplayer); // original
 	return ret;
 }
 //=========================
@@ -171,99 +155,14 @@ void StudioCalcRotations(float pos[][3], vec4_t *q, mstudioseqdesc_t *pseqdesc, 
 // Send bones and verts to renderer
 //=========================
 
-void Glow(cl_entity_s* ent, bool valident, float glow, float chams, float r, float g, float b, int width)
-{
-	if (valident && glow && DrawVisuals && (!cvar.route_auto || cvar.route_draw_visual) && GetTickCount() - HudRedraw <= 100)
-	{
-		glDepthFunc(GL_GREATER);
-		glDisable(GL_DEPTH_TEST);
-		g_Studio.SetForceFaceFlags(STUDIO_NF_CHROME);
-		ent->curstate.renderfx = kRenderFxGlowShell;
-		ent->curstate.renderamt = width;
-		ent->curstate.rendermode = 0;
-
-		ent->curstate.rendercolor.r = r * 255.0f;
-		ent->curstate.rendercolor.g = g * 255.0f;
-		ent->curstate.rendercolor.b = b * 255.0f;
-
-		oStudioRenderFinal();
-		glEnable(GL_DEPTH_TEST);
-
-		if (!chams)
-		{
-			glDisable(GL_DEPTH_TEST);
-			g_Studio.SetForceFaceFlags(0);
-			ent->curstate.renderfx = 0;
-			oStudioRenderFinal();
-			glEnable(GL_DEPTH_TEST);
-			glDepthFunc(GL_LESS);
-			oStudioRenderFinal();
-		}
-	}
-}
-
-void Chams(cl_entity_s* ent, bool valident, float chams, float chamswall, float chams_r, float chams_g, float chams_b, float chamswall_r, float chamswall_g, float chamswall_b, float& coloring, float& coloring_r, float& coloring_g, float& coloring_b)
-{
-	if (valident && chams && DrawVisuals && (!cvar.route_auto || cvar.route_draw_visual) && GetTickCount() - HudRedraw <= 100)
-	{
-		coloring = true;
-		
-		ent->curstate.rendermode = 0;
-		ent->curstate.renderfx = 0;
-		ent->curstate.renderamt = 0;
-		g_Studio.SetForceFaceFlags(0);
-
-		if (chams > 1) glDisable(GL_TEXTURE_2D);
-		if (chams > 1) glBindTexture(GL_TEXTURE_2D, 0);
-
-		ent->curstate.rendermode = 0;
-		ent->curstate.renderfx = 0;
-		ent->curstate.renderamt = 0;
-		g_Studio.SetForceFaceFlags(0);
-
-		if (chamswall)
-		{
-			glDepthFunc(GL_GREATER);
-			glDisable(GL_DEPTH_TEST);
-			coloring_r = chamswall_r;
-			coloring_g = chamswall_g;
-			coloring_b = chamswall_b;
-			oStudioRenderFinal();
-		}
-
-		glEnable(GL_DEPTH_TEST);
-		glDepthFunc(GL_LESS);
-		coloring_r = chams_r;
-		coloring_g = chams_g;
-		coloring_b = chams_b;
-		oStudioRenderFinal();
-
-		if (chams > 1) glEnable(GL_TEXTURE_2D);
-	}
-	coloring = false;
-}
-
 void StudioRenderModel(void)
 {
 	cl_entity_s* ent = g_Studio.GetCurrentEntity();
 
-	bool Player = ent && ent->player && (g_Player[ent->index].iTeam != g_Local.iTeam || cvar.visual_visual_team);
-	bool ViewModel = ent && ent->model && ent->model->name && strstr(ent->model->name, "v_");
-	bool World = ent && ent->model && !strstr(ent->model->name, "player") && !strstr(ent->model->name, "v_");
-
-	Glow(ent, World, cvar.chams_world_glow, cvar.chams_world, color_green, color_blue, color_red, 12);
-	Chams(ent, World, cvar.chams_world, cvar.chams_world_wall, color_blue, color_red, color_green, color_red, color_green, color_blue, chams_world, chams_world_r, chams_world_g, chams_world_b);
-	Glow(ent, ViewModel, cvar.chams_view_model_glow, cvar.chams_view_model, color_blue, color_red, color_green, cvar.visual_skins_viewmodel_nohands ?0:1);
-	Chams(ent, ViewModel, cvar.chams_view_model, 0, color_blue, color_red, color_green, 0, 0, 0, chams_viewmodel, chams_viewmodel_r, chams_viewmodel_g, chams_viewmodel_b);
-	Glow(ent, Player, cvar.chams_player_glow, cvar.chams_player, color_green, color_blue, color_red, 12);
-	
-	if (ent)
+	if(ent && ent->index == 1337 && ent->curstate.messagenum == -1337)
 	{
-		float r[2], g[2], b[2];
-		if (g_Player[ent->index].iTeam == 1) r[0] = 1, g[0] = 0, b[0] = 0, r[1] = 1, g[1] = 0, b[1] = 1;
-		else if (g_Player[ent->index].iTeam == 2) r[0] = 0, g[0] = 0, b[0] = 1, r[1] = 0, g[1] = 1, b[1] = 1;
-		else r[0] = 1, g[0] = 1, b[0] = 1, r[1] = 1, g[1] = 1, b[1] = 1;
-		Chams(ent, Player, cvar.chams_player, cvar.chams_player_wall, r[0], g[0], b[0], r[1], g[1], b[1], chams_player, chams_player_r, chams_player_g, chams_player_b);
+		glDepthRange(0, 0.5);
+		oStudioRenderFinal();
 	}
 	oStudioRenderModel();
 }

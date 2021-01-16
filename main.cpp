@@ -63,6 +63,8 @@ DWORD WINAPI Hook()
 		SetDestination(c_Offset.Steam_GSInitiateGameConnection(), (uintptr_t)&Steam_GSInitiateGameConnection_Hooked);
 	}
 
+	HookOpenGL();
+
 	HookClientFunctions();
 
 	HookStudioFunctions();
@@ -70,8 +72,6 @@ DWORD WINAPI Hook()
 	HookStudiModelRendererFunctions();
 
 	HookUserMessages();
-
-	HookOpenGL();
 
 	InitBass();
 

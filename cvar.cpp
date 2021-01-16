@@ -185,15 +185,6 @@ void CVARlist::init()
 	INITCVAR(misc_quick_change_key, -1.0);
 	INITCVAR(misc_wav_speed, 1.0);
 
-	INITCVAR(chams_view_model, 0.0);
-	INITCVAR(chams_view_model_glow, 0.0);
-	INITCVAR(chams_player, 0.0);
-	INITCVAR(chams_player_glow, 0.0);
-	INITCVAR(chams_player_wall, 0.0);
-	INITCVAR(chams_world, 0.0);
-	INITCVAR(chams_world_wall, 0.0);
-	INITCVAR(chams_world_glow, 0.0);
-
 	INITCVAR(kz_strafe_psilent, 0.0);
 	INITCVAR(kz_strafe, 0.0);
 	INITCVAR(kz_fast_run, 0.0);
@@ -242,8 +233,6 @@ void CVARlist::init()
 	INITCVAR(visual_crosshair, 0.0);
 	INITCVAR(visual_vip, 0.0);
 	INITCVAR(visual_custom_fov, 90.0);
-	INITCVAR(visual_wall, 0.0);
-	INITCVAR(visual_lambert, 0.0);
 	INITCVAR(visual_weapon_local, 0.0);
 	INITCVAR(visual_lightmap, 0.0);
 	INITCVAR(visual_sky, 0.0);
@@ -300,6 +289,8 @@ void CVARlist::init()
 	INITCVAR(radar_pos_y, 100.0);
 	INITCVAR(radar_size_x, 150.0);
 	INITCVAR(radar_size_y, 150.0);
+
+	INITCVAR(model_type, 0);
 }
 
 void SaveCvar()

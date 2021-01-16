@@ -192,7 +192,7 @@ void DrawCrossHair()
 
 void CrossHair()
 {
-	if (cvar.visual_crosshair && bAliveLocal() && bInitializeImGui)
+	if (cvar.visual_crosshair && bAliveLocal())
 	{
 		static float angle[4];
 		int weaponid = g_Local.weapon.m_iWeaponID;

@@ -106,15 +106,6 @@ public:
 	float misc_quick_change_key;
 	float misc_wav_speed;
 
-	float chams_view_model;
-	float chams_view_model_glow;
-	float chams_player;
-	float chams_player_glow;
-	float chams_player_wall;
-	float chams_world;
-	float chams_world_wall;
-	float chams_world_glow;
-
 	float kz_strafe;
 	float kz_strafe_psilent;
 	float kz_fast_run;
@@ -163,8 +154,6 @@ public:
 	float visual_crosshair;
 	float visual_vip;
 	float visual_custom_fov;
-	float visual_wall;
-	float visual_lambert;
 	float visual_weapon_local;
 	float visual_lightmap;
 	float visual_sky;
@@ -221,6 +210,8 @@ public:
 	float radar_pos_y;
 	float radar_size_x;
 	float radar_size_y;
+
+	float model_type;
 };
 
 extern CVARlist cvar;

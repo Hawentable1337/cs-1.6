@@ -122,21 +122,6 @@ typedef struct StudioModelRenderer_s
 	void(*StudioProcessGait) (entity_state_t *pplayer);
 } StudioModelRenderer_t, *pStudioModelRenderer_t;
 
-extern float chams_viewmodel_r;
-extern float chams_viewmodel_g;
-extern float chams_viewmodel_b;
-extern float chams_viewmodel;
-
-extern float chams_player_r;
-extern float chams_player_g;
-extern float chams_player_b;
-extern float chams_player;
-
-extern float chams_world_r;
-extern float chams_world_g;
-extern float chams_world_b;
-extern float chams_world;
-
 void HookStudiModelRendererFunctions();
 
 #endif

@@ -288,8 +288,48 @@ int CL_IsThirdPerson(void)
 	return g_Client.CL_IsThirdPerson();
 }
 
+void ConsoleMessage()
+{
+	static bool FirstFrame = true;
+	if (FirstFrame)
+	{
+		g_Engine.pfnClientCmd("toggleconsole");
+
+		ConsolePrintColor(255, 255, 255, "\n\n\t\t\t\tHello, %s ;)\n", g_Engine.pfnGetCvarString("name"));
+		ConsolePrintColor(255, 255, 255, "\t\t\t\tYou are injected!\n\n");
+
+		ConsolePrintColor(255, 0, 255, "\t\t\t\tMultihack by:\n");
+		ConsolePrintColor(255, 0, 255, "\t\t\t\t            [..         [..    [....     [..      \n");
+		ConsolePrintColor(255, 0, 255, "\t\t\t\t             [..       [..   [..    [..  [..      \n");
+		ConsolePrintColor(255, 0, 255, "\t\t\t\t     [..      [..     [..  [..        [..[..      \n");
+		ConsolePrintColor(255, 0, 255, "\t\t\t\t   [.   [..    [..   [..   [..        [..[..      \n");
+		ConsolePrintColor(255, 0, 255, "\t\t\t\t  [..... [..    [.. [..    [..        [..[..      \n");
+		ConsolePrintColor(255, 0, 255, "\t\t\t\t  [.             [....       [..     [.. [..      \n");
+		ConsolePrintColor(255, 0, 255, "\t\t\t\t    [....         [..          [....     [........\n");
+		ConsolePrintColor(255, 0, 255, "\t\t\t\tand team!\n\n");
+
+		ConsolePrintColor(255, 255, 255, "\t\t\t\tSpecial thanks to my friend BloodSharp and oxiKKK <3\n\n");
+		ConsolePrintColor(255, 255, 255, "\t\t\t\tATTENTION! Menu only active in game!\n");
+		if (cvar.gui_key != -1)
+			ConsolePrintColor(0, 255, 0, "\t\t\t\tMenu key is [%s]!\n", KeyEventChar((int)cvar.gui_key));
+
+		FirstFrame = false;
+	}
+	static float ChangeKey = cvar.gui_key;
+	if (ChangeKey != cvar.gui_key)
+	{
+		if (cvar.gui_key == -1)
+			ConsolePrintColor(255, 255, 0, "\t\t\t\tMenu key is [Press key]!\n");
+		else
+			ConsolePrintColor(0, 255, 0, "\t\t\t\tMenu key is [%s]!\n", KeyEventChar((int)cvar.gui_key));
+
+		ChangeKey = cvar.gui_key;
+	}
+}
+
 void HUD_Frame(double time)
 {
+	ConsoleMessage();
 	Snapshot();
 	FindSpawn();
 	LoadTextureWall();
@@ -300,8 +340,110 @@ void HUD_Frame(double time)
 	g_Client.HUD_Frame(time);
 }
 
+Vector screenshit(float x, float y)
+{
+	static float forward, right, up;
+	Vector vForward, vRight, vUp;
+	g_Engine.pfnAngleVectors(pmove->angles, vForward, vRight, vUp);
+	for (unsigned int i = 0; i < 65535; i++)
+	{
+		Vector origin1 = pmove->origin + pmove->view_ofs + vForward * forward + vRight * right - vUp * (up - 32);
+		Vector origin2 = pmove->origin + pmove->view_ofs + vForward * forward + vRight * right - vUp * (up + 32);
+		
+		float Bot[2], Top[2];
+
+		g_Engine.pTriAPI->WorldToScreen(origin1, Bot);
+		Bot[0] = Bot[0] * (ImGui::GetIO().DisplaySize.x / 2) + (ImGui::GetIO().DisplaySize.x / 2);
+		Bot[1] = -Bot[1] * (ImGui::GetIO().DisplaySize.y / 2) + (ImGui::GetIO().DisplaySize.y / 2);
+		
+		g_Engine.pTriAPI->WorldToScreen(origin2, Top);
+		Top[0] = Top[0] * (ImGui::GetIO().DisplaySize.x / 2) + (ImGui::GetIO().DisplaySize.x / 2);
+		Top[1] = -Top[1] * (ImGui::GetIO().DisplaySize.y / 2) + (ImGui::GetIO().DisplaySize.y / 2);
+
+		float height = (Top[1] - Bot[1]);
+		if (int(height) < 130)
+			forward -= 0.001f;
+		else if (int(height) > 130)
+			forward += 0.001f;
+		else
+			break;
+	}
+	for (unsigned int i = 0; i < 65535; i++)
+	{
+		Vector origin = pmove->origin + pmove->view_ofs + vForward * forward + vRight * right - vUp * up;
+		
+		float screen[2];
+		
+		g_Engine.pTriAPI->WorldToScreen(origin, screen);
+		screen[0] = screen[0] * (ImGui::GetIO().DisplaySize.x / 2) + (ImGui::GetIO().DisplaySize.x / 2);
+		screen[1] = -screen[1] * (ImGui::GetIO().DisplaySize.y / 2) + (ImGui::GetIO().DisplaySize.y / 2);
+
+		if (int(screen[0]) < int(x))
+			right += 0.001f;
+		else if (int(screen[0]) > int(x))
+			right -= 0.001f;
+		else
+			break;
+	}
+	for (unsigned int i = 0; i < 65535; i++)
+	{
+		Vector origin = pmove->origin + pmove->view_ofs + vForward * forward + vRight * right - vUp * up;
+		
+		float screen[2];
+		
+		g_Engine.pTriAPI->WorldToScreen(origin, screen);
+		screen[0] = screen[0] * (ImGui::GetIO().DisplaySize.x / 2) + (ImGui::GetIO().DisplaySize.x / 2);
+		screen[1] = -screen[1] * (ImGui::GetIO().DisplaySize.y / 2) + (ImGui::GetIO().DisplaySize.y / 2);
+
+		if (int(screen[1]) < int(y))
+			up += 0.001f;
+		else if (int(screen[1]) > int(y))
+			up -= 0.001f;
+		else
+			break;
+	}
+	return pmove->origin + pmove->view_ofs + vForward * forward + vRight * right - vUp * up;;
+}
+
+void HUD_CreateEntities()
+{
+	if ((MenuTab == 5 || MenuTab == 6 || MenuTab == 7 || MenuTab == 2) && showmodel && DrawVisuals && (!cvar.route_auto || cvar.route_draw_visual) && GetTickCount() - HudRedraw <= 100)
+	{
+		int modelindex;
+		static cl_entity_s playerdummy;
+		struct model_s* mod = g_Engine.CL_LoadModel("models/player/arctic/arctic.mdl", &modelindex);;
+		if (cvar.model_type == 1)
+			mod = g_Engine.CL_LoadModel("models/player/gign/gign.mdl", &modelindex);
+		if (cvar.model_type == 2)
+			mod = g_Engine.CL_LoadModel("models/player/gsg9/gsg9.mdl", &modelindex);
+		if (cvar.model_type == 3)
+			mod = g_Engine.CL_LoadModel("models/player/guerilla/guerilla.mdl", &modelindex);
+		if (cvar.model_type == 4)
+			mod = g_Engine.CL_LoadModel("models/player/leet/leet.mdl", &modelindex);
+		if (cvar.model_type == 5)
+			mod = g_Engine.CL_LoadModel("models/player/sas/sas.mdl", &modelindex);
+		if (cvar.model_type == 6)
+			mod = g_Engine.CL_LoadModel("models/player/terror/terror.mdl", &modelindex);
+		if (cvar.model_type == 7)
+			mod = g_Engine.CL_LoadModel("models/player/urban/urban.mdl", &modelindex);
+
+		playerdummy.model = mod;
+		playerdummy.curstate.modelindex = modelindex;
+		playerdummy.curstate.angles = Vector(pmove->angles.x, pmove->angles.y + 180, pmove->angles.z);
+		playerdummy.curstate.sequence = 4;
+		playerdummy.curstate.framerate = 1;
+		playerdummy.curstate.messagenum = -1337;
+		playerdummy.index = 1337;
+		playerdummy.origin = screenshit(modelscreenx + (modelscreenw/2), modelscreeny + (modelscreenh / 2) + 25);
+		g_Engine.CL_CreateVisibleEntity(ET_PLAYER, &playerdummy);
+	}
+
+	g_Client.HUD_CreateEntities();
+}
+
 void HookClientFunctions()
 {
+	g_pClient->HUD_CreateEntities = HUD_CreateEntities;
 	g_pClient->HUD_AddEntity = HUD_AddEntity;
 	g_pClient->HUD_Frame = HUD_Frame;
 	g_pClient->HUD_Redraw = HUD_Redraw;

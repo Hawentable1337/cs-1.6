@@ -4,7 +4,9 @@ GLuint texture_id[2048];
 bool bShowMenu = false;
 bool keysmenu[256];
 int MenuTab;
+bool showmodel = false;
 bool loadtexturemenu = true;
+float modelscreenx, modelscreeny, modelscreenw, modelscreenh;
 
 deque<model_aim_t> Model_Aim;
 deque<model_aim_select_t> Model_Aim_Select;
@@ -584,7 +586,7 @@ void MenuLegit3()
 	ImGui::SameLine();
 	ImVec4 prevColor = ImGui::GetStyle().Colors[ImGuiCol_Text];
 	ImGui::GetStyle().Colors[ImGuiCol_Text] = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
-	if (ImGui::Button("Clear Current Weapon"))
+	if (ImGui::Button("Clear Current"))
 	{
 		deque<int> Hitboxes;
 		for (unsigned int i = 0; i < PlayerAimLegit.size(); i++)
@@ -683,8 +685,6 @@ void MenuModelAim1()
 		if (modelselect > Model_Aim.size() - 1)
 			modelselect = Model_Aim.size() - 1;
 		if (i == 0) ImGui::Separator();
-		ImGui::Text("Model:");
-		ImGui::SameLine();
 		char str[256];
 		sprintf(str, "%s", Model_Aim[i].displaymodel);
 		ImVec4 prevColor = ImGui::GetStyle().Colors[ImGuiCol_Text];
@@ -775,8 +775,6 @@ void MenuModelAim2()
 	{
 		if (i == 0) ImGui::Separator();
 
-		ImGui::Text("Model:");
-		ImGui::SameLine();
 		ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "%s", Model_Aim_Select[i].displaymodel);
 		ImGui::SameLine();
 		ImGui::Text("Hitbox: %d", Model_Aim_Select[i].numhitbox);
@@ -1040,7 +1038,6 @@ void MenuVisual1Window1()
 	ImGui::Text("Player");
 	ImGui::Checkbox("Box", &cvar.visual_box);
 	ImGui::Checkbox("Health", &cvar.visual_health);
-	ImGui::Checkbox("Lambert", &cvar.visual_lambert);
 	ImGui::Checkbox("Name", &cvar.visual_name);
 	ImGui::Checkbox("Reload", &cvar.visual_reload_bar);
 	ImGui::Checkbox("Sound Index", &cvar.visual_sound_index);
@@ -1048,7 +1045,6 @@ void MenuVisual1Window1()
 	ImGui::Checkbox("Sound Steps", &cvar.visual_sound_steps);
 	ImGui::Checkbox("Vip", &cvar.visual_vip);
 	ImGui::Checkbox("Visual Team", &cvar.visual_visual_team);
-	ImGui::Checkbox("Wall", &cvar.visual_wall);
 	ImGui::Checkbox("Weapon Name", &cvar.visual_weapon);
 	ImGui::Separator();
 	ImGui::Text("Third Person");
@@ -1083,28 +1079,6 @@ void MenuVisual1Window2()
 	SliderFloat("Sound Volume##1", &cvar.radio_kill_volume, 0.f, 100.f, "%.0f");
 	ImGui::Text("View Model FOV");
 	SliderFloat("View Model FOV##1", &cvar.visual_viewmodel_fov, 0, 50, "%.0f");
-}
-
-void MenuVisual2Window1()
-{
-	ImGui::Text("Chams"), ImGui::Separator();
-
-	ImGui::Text("Player");
-	ImGui::Checkbox("Glow", &cvar.chams_player_glow);
-	ImGui::Checkbox("Wall", &cvar.chams_player_wall);
-	const char* listbox_player[] = { "None", "Material", "Texture", "Flat" };
-	ComboBox("Player##1", &cvar.chams_player, listbox_player, IM_ARRAYSIZE(listbox_player), 4);
-	ImGui::Separator();
-	ImGui::Text("View Model");
-	ImGui::Checkbox("Glow##3", &cvar.chams_view_model_glow);
-	const char* listbox_weapon[] = { "None", "Material", "Texture", "Flat" };
-	ComboBox("View Model##1", &cvar.chams_view_model, listbox_weapon, IM_ARRAYSIZE(listbox_weapon), 4);
-	ImGui::Separator();
-	ImGui::Text("World");
-	ImGui::Checkbox("Glow##4", &cvar.chams_world_glow);
-	ImGui::Checkbox("Wall##3", &cvar.chams_world_wall);
-	const char* listbox_world[] = { "None", "Material", "Texture", "Flat" };
-	ComboBox("World##1", &cvar.chams_world, listbox_world, IM_ARRAYSIZE(listbox_world), 4);
 }
 
 void MenuVisual2Window2()
@@ -1591,13 +1565,12 @@ void DrawMenuChild(int total)
 	}
 	if (MenuTab == 5)
 	{
-		windowheight1 = 502;
+		windowheight1 = 460;
 		windowheight2 = 289;
 	}
 	if (MenuTab == 6)
 	{
-		windowheight1 = 250;
-		windowheight2 = 208;
+		windowheight1 = 208;
 	}
 	if (MenuTab == 7)
 	{
@@ -1682,6 +1655,7 @@ void DrawMenuChild(int total)
 	EaseMenu(showspeed, 1, 1, 20, bShowMenu);
 	if (showspeed < 1)
 	{
+		ImVec2 windowsize;
 		float pos = 1;
 		if(MenuTab == 4 || MenuTab == 11 || MenuTab == 13 || MenuTab == 14)
 			pos = 0.5f;
@@ -1704,7 +1678,7 @@ void DrawMenuChild(int total)
 			if (MenuTab == 5)
 				MenuVisual1Window1();
 			if (MenuTab == 6)
-				MenuVisual2Window1();
+				MenuVisual2Window2();
 			if (MenuTab == 7)
 				MenuVisual3Window1();
 			if (MenuTab == 8)
@@ -1721,10 +1695,11 @@ void DrawMenuChild(int total)
 				MenuSettings();
 			if (MenuTab == 14)
 				MenuKey();
+			if(MenuTab == 6)
+				windowsize = ImGui::GetWindowSize();
 		}
-		ImVec2 windowsize;
 		ImGui::End();
-		if (MenuTab != 4 && MenuTab != 11 && MenuTab != 13 && MenuTab != 14)
+		if (MenuTab != 4 && MenuTab != 11 && MenuTab != 13 && MenuTab != 14 && MenuTab != 6)
 		{
 			float width = 0;
 			if (MenuTab == 12)
@@ -1744,8 +1719,6 @@ void DrawMenuChild(int total)
 					MenuIdHook2();
 				if (MenuTab == 5)
 					MenuVisual1Window2();
-				if (MenuTab == 6)
-					MenuVisual2Window2();
 				if (MenuTab == 7)
 					MenuVisual3Window2();
 				if (MenuTab == 8)
@@ -1760,16 +1733,44 @@ void DrawMenuChild(int total)
 			}
 			ImGui::End();
 		}
-		if (MenuTab == 1 && Model_Aim_Select.size())
+		if (MenuTab == 1 && Model_Aim_Select.size() || MenuTab == 5 || MenuTab == 6 || MenuTab == 7 || MenuTab == 2)
 		{
-			ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x / 2 + windowsize.x, 0), ImGuiCond_Always, ImVec2(0, showspeed));
-			ImGui::SetNextWindowSize(ImVec2(0, windowheight3));
+			int x, y;
+			if (MenuTab == 1)
+				x = 0, y = windowheight3;
+			float WindowBorderSize = ImGui::GetStyle().WindowBorderSize;
+			if (MenuTab == 5 || MenuTab == 6 || MenuTab == 7 || MenuTab == 2)
+			{
+				x = 200, y = 350;
+
+				ImGui::GetStyle().WindowBorderSize = 1.0f;
+				ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+			}
+			if (MenuTab == 6)
+				ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x / 2, 0), ImGuiCond_Always, ImVec2(0, showspeed));
+			else
+				ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x / 2 + windowsize.x, 0), ImGuiCond_Always, ImVec2(0, showspeed));
+			ImGui::SetNextWindowSize(ImVec2(x, y));
 			sprintf(str, "child3%d", MenuTab);
 			ImGui::Begin(str, reinterpret_cast<bool*>(true), ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar);
 			{
-				MenuLegit3();
+				if(MenuTab == 1)
+					MenuLegit3();
+				if (MenuTab == 5 || MenuTab == 6 || MenuTab == 7 || MenuTab == 2)
+				{
+					modelscreenx = ImGui::GetWindowPos().x, modelscreeny = ImGui::GetWindowPos().y, modelscreenw = ImGui::GetWindowSize().x, modelscreenh = ImGui::GetWindowSize().y;
+					ImGui::GetCurrentWindow()->DrawList->AddRectFilled({ ImGui::GetWindowPos().x, ImGui::GetWindowPos().y }, { ImGui::GetWindowPos().x + ImGui::GetWindowSize().x, ImGui::GetWindowPos().y + 43 }, Black());
+					ImGui::Text("Esp Preview"), ImGui::Separator();
+					const char* models[] = { "Arctic", "Gign", "Gsg9", "Guerilla", "Leet", "Sas", "Terror", "Urban" };
+					ComboBox("Model Type", &cvar.model_type, models, IM_ARRAYSIZE(models), 8);
+				}
 			}
 			ImGui::End();
+			if (MenuTab == 5 || MenuTab == 6 || MenuTab == 7 || MenuTab == 2)
+			{
+				ImGui::PopStyleColor();
+				ImGui::GetStyle().WindowBorderSize = WindowBorderSize;
+			}
 		}
 	}
 }
@@ -2097,6 +2098,7 @@ int BotButton()
 
 void DrawMenuWindow()
 {
+	showmodel = false;
 	if (loadtexturemenu)
 		GetTextureMenu(), loadtexturemenu = false;
 
@@ -2125,6 +2127,8 @@ void DrawMenuWindow()
 			DrawMenuButton(x, y + showspeed, buttonxend[i], buttonyend[i], i, sizebot);
 		}
 	}
+	if (!showspeed)
+		showmodel = true;
 	DrawMenuChild(total);
 	DrawkeyBind(sizebot);
 	DrawChatInputWindow(sizebot);

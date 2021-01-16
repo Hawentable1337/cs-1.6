@@ -17,7 +17,10 @@ typedef struct
 } model_aim_t;
 extern deque<model_aim_t> Model_Aim;
 
+extern int MenuTab;
+extern bool showmodel;
 extern float radiusy;
+extern float modelscreenx, modelscreeny, modelscreenw, modelscreenh;
 extern bool changewindowfocus;
 extern GLuint texture_id[2048];
 extern bool keysmenu[256];

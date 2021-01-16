@@ -122,8 +122,6 @@ void LoadOverview(char* levelname)
 
 void DrawOverviewLayer()
 {
-	if (!bInitializeImGui)
-		return;
 	if (!MapLoaded)
 		return;
 	if (!cvar.radar)
