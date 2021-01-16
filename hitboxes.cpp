@@ -326,7 +326,7 @@ void GetHitboxes(cl_entity_s* ent)
 		}
 	}
 
-	if (ent && ent->index == 1337 && ent->curstate.messagenum == -1337)
+	if (ent && ent->curstate.messagenum == -1337)
 	{
 		studiohdr_t* pStudioHeader = (studiohdr_t*)g_Studio.Mod_Extradata(ent->model);
 		mstudiobbox_t* pHitbox = (mstudiobbox_t*)((byte*)pStudioHeader + pStudioHeader->hitboxindex);
@@ -412,7 +412,7 @@ void DrawSkeletonPlayer()
 {
 	for (playerbone_t Bones : PlayerBone)
 	{
-		if (Bones.index == 1337 && Bones.messagenum == -1337)
+		if (Bones.messagenum == -1337)
 			continue;
 		ImColor Player;
 		if (g_Player[Bones.index].iTeam == 1) Player = Red();
@@ -424,7 +424,7 @@ void DrawSkeletonPlayer()
 	}
 	for (playerhitbox_t Hitbox : PlayerHitbox)
 	{
-		if (Hitbox.index == 1337 && Hitbox.messagenum == -1337)
+		if (Hitbox.messagenum == -1337)
 			continue;
 		ImColor Player;
 		if (g_Player[Hitbox.index].iTeam == 1) Player = Red();
@@ -439,7 +439,7 @@ void DrawSkeletonPlayer()
 	}
 	for (playerbone_t Bones : PlayerBone)
 	{
-		if (Bones.index != 1337 && Bones.messagenum != -1337)
+		if (Bones.messagenum != -1337)
 			continue;
 		ImColor color = White();
 		if (cvar.model_type == 0 || cvar.model_type == 3 || cvar.model_type == 4 || cvar.model_type == 6)
@@ -452,7 +452,7 @@ void DrawSkeletonPlayer()
 	}
 	for (playerhitbox_t Hitbox : PlayerHitbox)
 	{
-		if (Hitbox.index != 1337 && Hitbox.messagenum != -1337)
+		if (Hitbox.messagenum != -1337)
 			continue;
 		ImColor color = White();
 		if (cvar.model_type == 0 || cvar.model_type == 3 || cvar.model_type == 4 || cvar.model_type == 6)

@@ -155,7 +155,7 @@ void DrawPlayerEsp()
 {
 	for (playeresp_t Esp : PlayerEsp)
 	{
-		if (Esp.ent->index == 1337 && Esp.ent->curstate.messagenum == -1337)
+		if (Esp.ent->curstate.messagenum == -1337)
 			continue;
 		if (cvar.visual_idhook_only && idhook.FirstKillPlayer[Esp.ent->index] != 1)
 			continue;
@@ -181,7 +181,7 @@ void DrawPlayerEsp()
 	}
 	for (playeresp_t Esp : PlayerEsp)
 	{
-		if (Esp.ent->index != 1337 && Esp.ent->curstate.messagenum != -1337)
+		if (Esp.ent->curstate.messagenum != -1337)
 			continue;
 
 		static DWORD time = GetTickCount();

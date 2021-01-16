@@ -13,7 +13,7 @@ glReadPixels_t pglReadPixels = NULL;
 void APIENTRY Hooked_glBegin(GLenum mode)
 {
 	cl_entity_s* ent = g_Studio.GetCurrentEntity();
-	if (ent && ent->index == 1337 && ent->curstate.messagenum == -1337)
+	if (ent && ent->curstate.messagenum == -1337)
 	{
 		if (mode == GL_TRIANGLE_STRIP)
 			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);

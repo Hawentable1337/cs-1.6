@@ -470,7 +470,6 @@ void HUD_CreateEntities()
 		playerdummy.curstate.sequence = 4;
 		playerdummy.curstate.framerate = cvar.model_move;
 		playerdummy.curstate.messagenum = -1337;
-		playerdummy.index = 1337;
 		playerdummy.origin = screenshit(modelscreenx + (modelscreenw/2), modelscreeny + (modelscreenh / 2) + 25);
 		g_Engine.CL_CreateVisibleEntity(ET_PLAYER, &playerdummy);
 	}

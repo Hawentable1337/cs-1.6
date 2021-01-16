@@ -156,13 +156,11 @@ void StudioRenderModel(void)
 {
 	cl_entity_s* ent = g_Studio.GetCurrentEntity();
 
-	if(ent && ent->index == 1337 && ent->curstate.messagenum == -1337)
+	if(ent && ent->curstate.messagenum == -1337)
 	{
 		glDepthFunc(GL_GREATER);
-		glDisable(GL_DEPTH_TEST);
 		oStudioRenderFinal();
 
-		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LESS);
 		oStudioRenderFinal();
 	}

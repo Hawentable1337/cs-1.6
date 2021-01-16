@@ -13,7 +13,7 @@
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerSQLDebugging>false</LocalDebuggerSQLDebugging>
     <LocalDebuggerMergeEnvironment>true</LocalDebuggerMergeEnvironment>
-    <LocalDebuggerCommand>C:\Program Files %28x86%29\Steam\steamapps\common\Half-Life\hl.exe</LocalDebuggerCommand>
+    <LocalDebuggerCommand>C:\Program Files %28x86%29\Cs1.6 Okgogogo V4.0\hl.exe</LocalDebuggerCommand>
     <LocalDebuggerWorkingDirectory>$(ProjectDir)</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
 </Project>
