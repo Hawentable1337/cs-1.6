@@ -9,8 +9,6 @@ StudioModelRenderer_d pThis;
 int (*pStudioDrawModel)(int flags);
 int	StudioDrawModel(int flags)
 {
-	cl_entity_t* ent = g_Studio.GetCurrentEntity();
-	
 	int studioret = pStudioDrawModel(flags); 
 	return studioret;
 }
@@ -20,8 +18,7 @@ int	StudioDrawModel(int flags)
 int (*pStudioDrawPlayer)(int flags, entity_state_s* pplayer);
 int StudioDrawPlayer(int flags, entity_state_s* pplayer)
 {
-
-	int ret = pStudioDrawPlayer(flags, pplayer); // original
+	int ret = pStudioDrawPlayer(flags, pplayer);
 	return ret;
 }
 //=========================
@@ -161,7 +158,12 @@ void StudioRenderModel(void)
 
 	if(ent && ent->index == 1337 && ent->curstate.messagenum == -1337)
 	{
-		glDepthRange(0, 0.5);
+		glDepthFunc(GL_GREATER);
+		glDisable(GL_DEPTH_TEST);
+		oStudioRenderFinal();
+
+		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_LESS);
 		oStudioRenderFinal();
 	}
 	oStudioRenderModel();

@@ -444,7 +444,7 @@ void DrawSkeletonPlayer()
 		ImColor color = White();
 		if (cvar.model_type == 0 || cvar.model_type == 3 || cvar.model_type == 4 || cvar.model_type == 6)
 			color = Red();
-		if (cvar.model_type == 1 || cvar.model_type == 2 || cvar.model_type == 5 || cvar.model_type == 7)
+		if (cvar.model_type == 1 || cvar.model_type == 2 || cvar.model_type == 5 || cvar.model_type == 7 || cvar.model_type == 8)
 			color = Blue();
 		float CalcAnglesMin[2], CalcAnglesMax[2];
 		if (WorldToScreen(Bones.vBone, CalcAnglesMin) && WorldToScreen(Bones.vBoneParent, CalcAnglesMax))
@@ -457,7 +457,7 @@ void DrawSkeletonPlayer()
 		ImColor color = White();
 		if (cvar.model_type == 0 || cvar.model_type == 3 || cvar.model_type == 4 || cvar.model_type == 6)
 			color = Red();
-		if (cvar.model_type == 1 || cvar.model_type == 2 || cvar.model_type == 5 || cvar.model_type == 7)
+		if (cvar.model_type == 1 || cvar.model_type == 2 || cvar.model_type == 5 || cvar.model_type == 7 || cvar.model_type == 8)
 			color = Blue();
 		for (unsigned int x = 0; x < 12; x++)
 		{

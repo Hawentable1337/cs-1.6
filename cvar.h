@@ -212,6 +212,7 @@ public:
 	float radar_size_y;
 
 	float model_type;
+	float model_move;
 };
 
 extern CVARlist cvar;

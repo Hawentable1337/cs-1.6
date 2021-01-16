@@ -407,31 +407,68 @@ Vector screenshit(float x, float y)
 
 void HUD_CreateEntities()
 {
-	if ((MenuTab == 5 || MenuTab == 6 || MenuTab == 7 || MenuTab == 2) && showmodel && DrawVisuals && (!cvar.route_auto || cvar.route_draw_visual) && GetTickCount() - HudRedraw <= 100)
+	static struct model_s* arctic;
+	static struct model_s* gign;
+	static struct model_s* gsg9;
+	static struct model_s* guerilla;
+	static struct model_s* leet;
+	static struct model_s* sas;
+	static struct model_s* terror;
+	static struct model_s* urban;
+	static struct model_s* vip;
+	static int modelindexarctic;
+	static int modelindexgign;
+	static int modelindexgsg9;
+	static int modelindexguerilla;
+	static int modelindexleet;
+	static int modelindexsas;
+	static int modelindexterror;
+	static int modelindexurban;
+	static int modelindexvip;
+
+	static bool init = false;
+	if (!init)
+	{
+		arctic = g_Engine.CL_LoadModel("models/player/arctic/arctic.mdl", &modelindexarctic);
+		gign = g_Engine.CL_LoadModel("models/player/gign/gign.mdl", &modelindexgign);
+		gsg9 = g_Engine.CL_LoadModel("models/player/gsg9/gsg9.mdl", &modelindexgsg9);
+		guerilla = g_Engine.CL_LoadModel("models/player/guerilla/guerilla.mdl", &modelindexguerilla);
+		leet = g_Engine.CL_LoadModel("models/player/leet/leet.mdl", &modelindexleet);
+		sas = g_Engine.CL_LoadModel("models/player/sas/sas.mdl", &modelindexsas);
+		terror = g_Engine.CL_LoadModel("models/player/terror/terror.mdl", &modelindexterror);
+		urban = g_Engine.CL_LoadModel("models/player/urban/urban.mdl", &modelindexurban);
+		vip = g_Engine.CL_LoadModel("models/player/vip/vip.mdl", &modelindexvip);
+		init = true;
+	}
+	if ((MenuTab == 5 || MenuTab == 6 || MenuTab == 7 || MenuTab == 2) && showmodel && DrawVisuals && (!cvar.route_auto || cvar.route_draw_visual) && GetTickCount() - HudRedraw <= 100 && ImGui::GetIO().DisplaySize.x >= 640 && ImGui::GetIO().DisplaySize.y >= 480)
 	{
 		int modelindex;
-		static cl_entity_s playerdummy;
-		struct model_s* mod = g_Engine.CL_LoadModel("models/player/arctic/arctic.mdl", &modelindex);;
-		if (cvar.model_type == 1)
-			mod = g_Engine.CL_LoadModel("models/player/gign/gign.mdl", &modelindex);
-		if (cvar.model_type == 2)
-			mod = g_Engine.CL_LoadModel("models/player/gsg9/gsg9.mdl", &modelindex);
-		if (cvar.model_type == 3)
-			mod = g_Engine.CL_LoadModel("models/player/guerilla/guerilla.mdl", &modelindex);
-		if (cvar.model_type == 4)
-			mod = g_Engine.CL_LoadModel("models/player/leet/leet.mdl", &modelindex);
-		if (cvar.model_type == 5)
-			mod = g_Engine.CL_LoadModel("models/player/sas/sas.mdl", &modelindex);
-		if (cvar.model_type == 6)
-			mod = g_Engine.CL_LoadModel("models/player/terror/terror.mdl", &modelindex);
-		if (cvar.model_type == 7)
-			mod = g_Engine.CL_LoadModel("models/player/urban/urban.mdl", &modelindex);
+		struct model_s* mod;
 
+		mod = arctic, modelindex = modelindexarctic;
+		if (cvar.model_type == 1)
+			mod = gign, modelindex = modelindexgign;
+		if (cvar.model_type == 2)
+			mod = gsg9, modelindex = modelindexgsg9;
+		if (cvar.model_type == 3)
+			mod = guerilla, modelindex = modelindexguerilla;
+		if (cvar.model_type == 4)
+			mod = leet, modelindex = modelindexleet;
+		if (cvar.model_type == 5)
+			mod = sas, modelindex = modelindexsas;
+		if (cvar.model_type == 6)
+			mod = terror, modelindex = modelindexterror;
+		if (cvar.model_type == 7)
+			mod = urban, modelindex = modelindexurban;
+		if (cvar.model_type == 8)
+			mod = vip, modelindex = modelindexvip;
+
+		static cl_entity_s playerdummy;
 		playerdummy.model = mod;
 		playerdummy.curstate.modelindex = modelindex;
 		playerdummy.curstate.angles = Vector(pmove->angles.x, pmove->angles.y + 180, pmove->angles.z);
 		playerdummy.curstate.sequence = 4;
-		playerdummy.curstate.framerate = 1;
+		playerdummy.curstate.framerate = cvar.model_move;
 		playerdummy.curstate.messagenum = -1337;
 		playerdummy.index = 1337;
 		playerdummy.origin = screenshit(modelscreenx + (modelscreenw/2), modelscreeny + (modelscreenh / 2) + 25);

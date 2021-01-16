@@ -291,6 +291,7 @@ void CVARlist::init()
 	INITCVAR(radar_size_y, 150.0);
 
 	INITCVAR(model_type, 0);
+	INITCVAR(model_move, 0);
 }
 
 void SaveCvar()

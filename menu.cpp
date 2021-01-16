@@ -1759,10 +1759,12 @@ void DrawMenuChild(int total)
 				if (MenuTab == 5 || MenuTab == 6 || MenuTab == 7 || MenuTab == 2)
 				{
 					modelscreenx = ImGui::GetWindowPos().x, modelscreeny = ImGui::GetWindowPos().y, modelscreenw = ImGui::GetWindowSize().x, modelscreenh = ImGui::GetWindowSize().y;
-					ImGui::GetCurrentWindow()->DrawList->AddRectFilled({ ImGui::GetWindowPos().x, ImGui::GetWindowPos().y }, { ImGui::GetWindowPos().x + ImGui::GetWindowSize().x, ImGui::GetWindowPos().y + 43 }, Black());
+					ImGui::GetCurrentWindow()->DrawList->AddRectFilled({ ImGui::GetWindowPos().x, ImGui::GetWindowPos().y }, { ImGui::GetWindowPos().x + ImGui::GetWindowSize().x, ImGui::GetWindowPos().y + 65 }, Black());
 					ImGui::Text("Esp Preview"), ImGui::Separator();
-					const char* models[] = { "Arctic", "Gign", "Gsg9", "Guerilla", "Leet", "Sas", "Terror", "Urban" };
-					ComboBox("Model Type", &cvar.model_type, models, IM_ARRAYSIZE(models), 8);
+
+					ImGui::Checkbox("Move", &cvar.model_move);
+					const char* models[] = { "Arctic", "Gign", "Gsg9", "Guerilla", "Leet", "Sas", "Terror", "Urban", "Vip" };
+					ComboBox("Model Type", &cvar.model_type, models, IM_ARRAYSIZE(models), 9);
 				}
 			}
 			ImGui::End();
