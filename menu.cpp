@@ -4,8 +4,8 @@ GLuint texture_id[2048];
 bool bShowMenu = false;
 bool keysmenu[256];
 int MenuTab;
-bool showmodel = false;
 bool loadtexturemenu = true;
+bool showmodel = false;
 float modelscreenx, modelscreeny, modelscreenw, modelscreenh;
 
 deque<model_aim_t> Model_Aim;
@@ -1733,13 +1733,13 @@ void DrawMenuChild(int total)
 			}
 			ImGui::End();
 		}
-		if (MenuTab == 1 && Model_Aim_Select.size() || MenuTab == 5 || MenuTab == 6 || MenuTab == 7 || MenuTab == 2)
+		if (MenuTab == 1 && Model_Aim_Select.size() || ((MenuTab == 5 || MenuTab == 6 || MenuTab == 7 || MenuTab == 2) && bAliveLocal()))
 		{
 			int x, y;
 			if (MenuTab == 1)
 				x = 0, y = windowheight3;
 			float WindowBorderSize = ImGui::GetStyle().WindowBorderSize;
-			if (MenuTab == 5 || MenuTab == 6 || MenuTab == 7 || MenuTab == 2)
+			if ((MenuTab == 5 || MenuTab == 6 || MenuTab == 7 || MenuTab == 2) && bAliveLocal())
 			{
 				x = 200, y = 350;
 
@@ -1756,7 +1756,7 @@ void DrawMenuChild(int total)
 			{
 				if(MenuTab == 1)
 					MenuLegit3();
-				if (MenuTab == 5 || MenuTab == 6 || MenuTab == 7 || MenuTab == 2)
+				if ((MenuTab == 5 || MenuTab == 6 || MenuTab == 7 || MenuTab == 2) && bAliveLocal())
 				{
 					modelscreenx = ImGui::GetWindowPos().x, modelscreeny = ImGui::GetWindowPos().y, modelscreenw = ImGui::GetWindowSize().x, modelscreenh = ImGui::GetWindowSize().y;
 					ImGui::GetCurrentWindow()->DrawList->AddRectFilled({ ImGui::GetWindowPos().x, ImGui::GetWindowPos().y }, { ImGui::GetWindowPos().x + ImGui::GetWindowSize().x, ImGui::GetWindowPos().y + 65 }, Black());
@@ -1768,7 +1768,7 @@ void DrawMenuChild(int total)
 				}
 			}
 			ImGui::End();
-			if (MenuTab == 5 || MenuTab == 6 || MenuTab == 7 || MenuTab == 2)
+			if ((MenuTab == 5 || MenuTab == 6 || MenuTab == 7 || MenuTab == 2) && bAliveLocal())
 			{
 				ImGui::PopStyleColor();
 				ImGui::GetStyle().WindowBorderSize = WindowBorderSize;
@@ -2128,9 +2128,8 @@ void DrawMenuWindow()
 			int y = yScreen(buttonrotate[i], sizebot);
 			DrawMenuButton(x, y + showspeed, buttonxend[i], buttonyend[i], i, sizebot);
 		}
-	}
-	if (!showspeed)
 		showmodel = true;
+	}
 	DrawMenuChild(total);
 	DrawkeyBind(sizebot);
 	DrawChatInputWindow(sizebot);

@@ -340,15 +340,15 @@ void HUD_Frame(double time)
 	g_Client.HUD_Frame(time);
 }
 
-Vector screenshit(float x, float y)
+Vector screenshit(float x, float y, Vector viewangle)
 {
-	static float forward, right, up;
+	static float forwards = 100, rights = 0, ups = 0;
 	Vector vForward, vRight, vUp;
-	g_Engine.pfnAngleVectors(pmove->angles, vForward, vRight, vUp);
+	g_Engine.pfnAngleVectors(viewangle, vForward, vRight, vUp);
 	for (unsigned int i = 0; i < 65535; i++)
 	{
-		Vector origin1 = pmove->origin + pmove->view_ofs + vForward * forward + vRight * right - vUp * (up - 32);
-		Vector origin2 = pmove->origin + pmove->view_ofs + vForward * forward + vRight * right - vUp * (up + 32);
+		Vector origin1 = pmove->origin + pmove->view_ofs + vForward * forwards + vRight * rights - vUp * (ups - 32);
+		Vector origin2 = pmove->origin + pmove->view_ofs + vForward * forwards + vRight * rights - vUp * (ups + 32);
 		
 		float Bot[2], Top[2];
 
@@ -362,15 +362,15 @@ Vector screenshit(float x, float y)
 
 		float height = (Top[1] - Bot[1]);
 		if (int(height) < 130)
-			forward -= 0.001f;
+			forwards -= 0.001f;
 		else if (int(height) > 130)
-			forward += 0.001f;
+			forwards += 0.001f;
 		else
 			break;
 	}
 	for (unsigned int i = 0; i < 65535; i++)
 	{
-		Vector origin = pmove->origin + pmove->view_ofs + vForward * forward + vRight * right - vUp * up;
+		Vector origin = pmove->origin + pmove->view_ofs + vForward * forwards + vRight * rights - vUp * ups;
 		
 		float screen[2];
 		
@@ -379,15 +379,15 @@ Vector screenshit(float x, float y)
 		screen[1] = -screen[1] * (ImGui::GetIO().DisplaySize.y / 2) + (ImGui::GetIO().DisplaySize.y / 2);
 
 		if (int(screen[0]) < int(x))
-			right += 0.001f;
+			rights += 0.001f;
 		else if (int(screen[0]) > int(x))
-			right -= 0.001f;
+			rights -= 0.001f;
 		else
 			break;
 	}
 	for (unsigned int i = 0; i < 65535; i++)
 	{
-		Vector origin = pmove->origin + pmove->view_ofs + vForward * forward + vRight * right - vUp * up;
+		Vector origin = pmove->origin + pmove->view_ofs + vForward * forwards + vRight * rights - vUp * ups;
 		
 		float screen[2];
 		
@@ -396,26 +396,21 @@ Vector screenshit(float x, float y)
 		screen[1] = -screen[1] * (ImGui::GetIO().DisplaySize.y / 2) + (ImGui::GetIO().DisplaySize.y / 2);
 
 		if (int(screen[1]) < int(y))
-			up += 0.001f;
+			ups += 0.001f;
 		else if (int(screen[1]) > int(y))
-			up -= 0.001f;
+			ups -= 0.001f;
 		else
 			break;
 	}
-	return pmove->origin + pmove->view_ofs + vForward * forward + vRight * right - vUp * up;;
+	Vector origin = pmove->origin + pmove->view_ofs + vForward * forwards + vRight * rights - vUp * ups;
+	float screen[2];
+	if (!WorldToScreen(origin, screen))
+		forwards = 100, rights = 0, ups = 0;
+	return origin;
 }
 
 void HUD_CreateEntities()
 {
-	static struct model_s* arctic;
-	static struct model_s* gign;
-	static struct model_s* gsg9;
-	static struct model_s* guerilla;
-	static struct model_s* leet;
-	static struct model_s* sas;
-	static struct model_s* terror;
-	static struct model_s* urban;
-	static struct model_s* vip;
 	static int modelindexarctic;
 	static int modelindexgign;
 	static int modelindexgsg9;
@@ -426,21 +421,17 @@ void HUD_CreateEntities()
 	static int modelindexurban;
 	static int modelindexvip;
 
-	static bool init = false;
-	if (!init)
-	{
-		arctic = g_Engine.CL_LoadModel("models/player/arctic/arctic.mdl", &modelindexarctic);
-		gign = g_Engine.CL_LoadModel("models/player/gign/gign.mdl", &modelindexgign);
-		gsg9 = g_Engine.CL_LoadModel("models/player/gsg9/gsg9.mdl", &modelindexgsg9);
-		guerilla = g_Engine.CL_LoadModel("models/player/guerilla/guerilla.mdl", &modelindexguerilla);
-		leet = g_Engine.CL_LoadModel("models/player/leet/leet.mdl", &modelindexleet);
-		sas = g_Engine.CL_LoadModel("models/player/sas/sas.mdl", &modelindexsas);
-		terror = g_Engine.CL_LoadModel("models/player/terror/terror.mdl", &modelindexterror);
-		urban = g_Engine.CL_LoadModel("models/player/urban/urban.mdl", &modelindexurban);
-		vip = g_Engine.CL_LoadModel("models/player/vip/vip.mdl", &modelindexvip);
-		init = true;
-	}
-	if ((MenuTab == 5 || MenuTab == 6 || MenuTab == 7 || MenuTab == 2) && showmodel && DrawVisuals && (!cvar.route_auto || cvar.route_draw_visual) && GetTickCount() - HudRedraw <= 100 && ImGui::GetIO().DisplaySize.x >= 640 && ImGui::GetIO().DisplaySize.y >= 480)
+	static struct model_s* arctic = g_Engine.CL_LoadModel("models/player/arctic/arctic.mdl", &modelindexarctic);
+	static struct model_s* gign = g_Engine.CL_LoadModel("models/player/gign/gign.mdl", &modelindexgign);
+	static struct model_s* gsg9 = g_Engine.CL_LoadModel("models/player/gsg9/gsg9.mdl", &modelindexgsg9);
+	static struct model_s* guerilla = g_Engine.CL_LoadModel("models/player/guerilla/guerilla.mdl", &modelindexguerilla);
+	static struct model_s* leet = g_Engine.CL_LoadModel("models/player/leet/leet.mdl", &modelindexleet);
+	static struct model_s* sas = g_Engine.CL_LoadModel("models/player/sas/sas.mdl", &modelindexsas);
+	static struct model_s* terror = g_Engine.CL_LoadModel("models/player/terror/terror.mdl", &modelindexterror);
+	static struct model_s* urban = g_Engine.CL_LoadModel("models/player/urban/urban.mdl", &modelindexurban);
+	static struct model_s* vip = g_Engine.CL_LoadModel("models/player/vip/vip.mdl", &modelindexvip);
+
+	if (bAliveLocal() && showmodel && (MenuTab == 5 || MenuTab == 6 || MenuTab == 7 || MenuTab == 2) && DrawVisuals && (!cvar.route_auto || cvar.route_draw_visual) && GetTickCount() - HudRedraw <= 100)
 	{
 		int modelindex;
 		struct model_s* mod;
@@ -462,15 +453,17 @@ void HUD_CreateEntities()
 			mod = urban, modelindex = modelindexurban;
 		if (cvar.model_type == 8)
 			mod = vip, modelindex = modelindexvip;
-
+		
+		Vector viewangle;
+		g_Engine.GetViewAngles(viewangle);
 		static cl_entity_s playerdummy;
 		playerdummy.model = mod;
 		playerdummy.curstate.modelindex = modelindex;
-		playerdummy.curstate.angles = Vector(pmove->angles.x, pmove->angles.y + 180, pmove->angles.z);
+		playerdummy.curstate.angles = Vector(viewangle.x, viewangle.y + 180, viewangle.z);
 		playerdummy.curstate.sequence = 4;
 		playerdummy.curstate.framerate = cvar.model_move;
 		playerdummy.curstate.messagenum = -1337;
-		playerdummy.origin = screenshit(modelscreenx + (modelscreenw/2), modelscreeny + (modelscreenh / 2) + 25);
+		playerdummy.origin = screenshit(modelscreenx + (modelscreenw/2), modelscreeny + (modelscreenh / 2) + 25, viewangle);
 		g_Engine.CL_CreateVisibleEntity(ET_PLAYER, &playerdummy);
 	}
 

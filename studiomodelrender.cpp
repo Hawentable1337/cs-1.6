@@ -158,6 +158,9 @@ void StudioRenderModel(void)
 
 	if(ent && ent->curstate.messagenum == -1337)
 	{
+		g_Studio.SetForceFaceFlags(0);
+		ent->curstate.renderfx = 0;
+
 		glDepthFunc(GL_GREATER);
 		oStudioRenderFinal();
 

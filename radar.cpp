@@ -129,7 +129,8 @@ void DrawOverviewLayer()
 	if (!(DrawVisuals && (!cvar.route_auto || cvar.route_draw_visual)))
 		return;
 
-	Vector vAngle = pmove->angles, vEye = pmove->origin + pmove->view_ofs;
+	Vector vAngle, vEye = pmove->origin + pmove->view_ofs;
+	g_Engine.GetViewAngles(vAngle);
 
 	glViewport(iX, ImGui::GetIO().DisplaySize.y - (iY + iH), iW, iH);
 	if (m_MapSprites) 
@@ -210,7 +211,8 @@ void DrawOverviewEntities()
 	if (!cvar.radar)
 		return;
 
-	Vector vAngle = pmove->angles, vEye = pmove->origin + pmove->view_ofs;
+	Vector vAngle, vEye = pmove->origin + pmove->view_ofs;
+	g_Engine.GetViewAngles(vAngle);
 
 	for (unsigned int i = 1; i <= g_Engine.GetMaxClients(); i++)
 	{
@@ -279,7 +281,8 @@ void DrawOverviewEntitiesSoundIndex()
 	if (!cvar.radar)
 		return;
 
-	Vector vAngle = pmove->angles, vEye = pmove->origin + pmove->view_ofs;
+	Vector vAngle, vEye = pmove->origin + pmove->view_ofs;
+	g_Engine.GetViewAngles(vAngle);
 
 	for (player_sound_index_t sound_index : Sound_Index)
 	{
@@ -344,7 +347,8 @@ void DrawOverviewEntitiesSoundNoIndex()
 	if (!cvar.radar)
 		return;
 
-	Vector vAngle = pmove->angles, vEye = pmove->origin + pmove->view_ofs;
+	Vector vAngle, vEye = pmove->origin + pmove->view_ofs;
+	g_Engine.GetViewAngles(vAngle);
 
 	for (player_sound_no_index_t sound_no_index : Sound_No_Index)
 	{
