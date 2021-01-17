@@ -5,7 +5,7 @@ bool bShowMenu = false;
 bool keysmenu[256];
 int MenuTab;
 bool loadtexturemenu = true;
-bool showmodel = false;
+bool modelmenu;
 float modelscreenx, modelscreeny, modelscreenw, modelscreenh;
 
 deque<model_aim_t> Model_Aim;
@@ -1058,6 +1058,7 @@ void MenuVisual1Window1()
 	ImGui::Checkbox("My Weapon Name", &cvar.visual_weapon_local);
 	ImGui::Checkbox("No Flash", &cvar.visual_rem_flash);
 	ImGui::Checkbox("Radar", &cvar.radar);
+	ImGui::Checkbox("Esp Preview", &cvar.model_preview);
 }
 
 void MenuVisual1Window2()
@@ -1565,7 +1566,7 @@ void DrawMenuChild(int total)
 	}
 	if (MenuTab == 5)
 	{
-		windowheight1 = 460;
+		windowheight1 = 481;
 		windowheight2 = 289;
 	}
 	if (MenuTab == 6)
@@ -1733,46 +1734,39 @@ void DrawMenuChild(int total)
 			}
 			ImGui::End();
 		}
-		if (MenuTab == 1 && Model_Aim_Select.size() || ((MenuTab == 5 || MenuTab == 6 || MenuTab == 7 || MenuTab == 2) && bAliveLocal()))
+		if (MenuTab == 1 && Model_Aim_Select.size())
 		{
-			int x, y;
-			if (MenuTab == 1)
-				x = 0, y = windowheight3;
-			float WindowBorderSize = ImGui::GetStyle().WindowBorderSize;
-			if ((MenuTab == 5 || MenuTab == 6 || MenuTab == 7 || MenuTab == 2) && bAliveLocal())
-			{
-				x = 200, y = 350;
-
-				ImGui::GetStyle().WindowBorderSize = 1.0f;
-				ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
-			}
-			if (MenuTab == 6)
-				ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x / 2, 0), ImGuiCond_Always, ImVec2(0, showspeed));
-			else
-				ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x / 2 + windowsize.x, 0), ImGuiCond_Always, ImVec2(0, showspeed));
-			ImGui::SetNextWindowSize(ImVec2(x, y));
+			ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x / 2 + windowsize.x, 0), ImGuiCond_Always, ImVec2(0, showspeed));
+			ImGui::SetNextWindowSize(ImVec2(0, windowheight3));
 			sprintf(str, "child3%d", MenuTab);
 			ImGui::Begin(str, reinterpret_cast<bool*>(true), ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar);
 			{
-				if(MenuTab == 1)
-					MenuLegit3();
-				if ((MenuTab == 5 || MenuTab == 6 || MenuTab == 7 || MenuTab == 2) && bAliveLocal())
-				{
-					modelscreenx = ImGui::GetWindowPos().x, modelscreeny = ImGui::GetWindowPos().y, modelscreenw = ImGui::GetWindowSize().x, modelscreenh = ImGui::GetWindowSize().y;
-					ImGui::GetCurrentWindow()->DrawList->AddRectFilled({ ImGui::GetWindowPos().x, ImGui::GetWindowPos().y }, { ImGui::GetWindowPos().x + ImGui::GetWindowSize().x, ImGui::GetWindowPos().y + 65 }, Black());
-					ImGui::Text("Esp Preview"), ImGui::Separator();
-
-					ImGui::Checkbox("Move", &cvar.model_move);
-					const char* models[] = { "Arctic", "Gign", "Gsg9", "Guerilla", "Leet", "Sas", "Terror", "Urban", "Vip" };
-					ComboBox("Model Type", &cvar.model_type, models, IM_ARRAYSIZE(models), 9);
-				}
+				MenuLegit3();
 			}
 			ImGui::End();
-			if ((MenuTab == 5 || MenuTab == 6 || MenuTab == 7 || MenuTab == 2) && bAliveLocal())
+		}
+		if (cvar.model_preview && bAliveLocal() && modelmenu)
+		{
+			float WindowBorderSize = ImGui::GetStyle().WindowBorderSize;
+			ImGui::GetStyle().WindowBorderSize = 1.0f;
+			ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+			ImGui::SetNextWindowPos(ImVec2(cvar.model_pos_x, cvar.model_pos_y), ImGuiCond_Once);
+			ImGui::SetNextWindowSize(ImVec2(200, 350));
+			ImGui::Begin("esppreview", reinterpret_cast<bool*>(true), ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar);
 			{
-				ImGui::PopStyleColor();
-				ImGui::GetStyle().WindowBorderSize = WindowBorderSize;
+				cvar.model_pos_x = (int)ImGui::GetWindowPos().x;
+				cvar.model_pos_y = (int)ImGui::GetWindowPos().y;
+				modelscreenx = ImGui::GetWindowPos().x, modelscreeny = ImGui::GetWindowPos().y, modelscreenw = ImGui::GetWindowSize().x, modelscreenh = ImGui::GetWindowSize().y;
+				ImGui::GetCurrentWindow()->DrawList->AddRectFilled({ ImGui::GetWindowPos().x, ImGui::GetWindowPos().y }, { ImGui::GetWindowPos().x + ImGui::GetWindowSize().x, ImGui::GetWindowPos().y + 65 }, Black());
+				ImGui::Text("Esp Preview"), ImGui::Separator();
+
+				ImGui::Checkbox("Move", &cvar.model_move);
+				const char* models[] = { "Arctic", "Gign", "Gsg9", "Guerilla", "Leet", "Sas", "Terror", "Urban", "Vip" };
+				ComboBox("Model Type", &cvar.model_type, models, IM_ARRAYSIZE(models), 9);
 			}
+			ImGui::End();
+			ImGui::PopStyleColor();
+			ImGui::GetStyle().WindowBorderSize = WindowBorderSize;
 		}
 	}
 }
@@ -2100,7 +2094,7 @@ int BotButton()
 
 void DrawMenuWindow()
 {
-	showmodel = false;
+	modelmenu = false;
 	if (loadtexturemenu)
 		GetTextureMenu(), loadtexturemenu = false;
 
@@ -2128,8 +2122,9 @@ void DrawMenuWindow()
 			int y = yScreen(buttonrotate[i], sizebot);
 			DrawMenuButton(x, y + showspeed, buttonxend[i], buttonyend[i], i, sizebot);
 		}
-		showmodel = true;
 	}
+	if (!showspeed)
+		modelmenu = true;
 	DrawMenuChild(total);
 	DrawkeyBind(sizebot);
 	DrawChatInputWindow(sizebot);
@@ -2139,9 +2134,6 @@ void DrawMenuWindow()
 		for (unsigned int i = 0; i < 15; i++)
 			ImGui::SetWindowFocus(windowname[i]);
 		ImGui::SetWindowFocus("keywindow");
-		ImGui::SetWindowFocus("child1");
-		ImGui::SetWindowFocus("child2");
-		ImGui::SetWindowFocus("child3");
 		changewindowfocus = false;
 	}
 }

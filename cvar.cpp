@@ -292,6 +292,9 @@ void CVARlist::init()
 
 	INITCVAR(model_type, 0);
 	INITCVAR(model_move, 0);
+	INITCVAR(model_preview, 0);
+	INITCVAR(model_pos_x, 100);
+	INITCVAR(model_pos_y, 100);
 }
 
 void SaveCvar()

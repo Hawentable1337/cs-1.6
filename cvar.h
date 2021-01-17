@@ -213,6 +213,9 @@ public:
 
 	float model_type;
 	float model_move;
+	float model_preview;
+	float model_pos_x;
+	float model_pos_y;
 };
 
 extern CVARlist cvar;

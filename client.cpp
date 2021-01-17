@@ -340,40 +340,43 @@ void HUD_Frame(double time)
 	g_Client.HUD_Frame(time);
 }
 
-Vector screenshit(float x, float y, Vector viewangle)
+bool CalcForward(Vector vForward, float& forwards, Vector vRight, float rights, Vector vUp, float ups )
 {
-	static float forwards = 100, rights = 0, ups = 0;
-	Vector vForward, vRight, vUp;
-	g_Engine.pfnAngleVectors(viewangle, vForward, vRight, vUp);
 	for (unsigned int i = 0; i < 65535; i++)
 	{
 		Vector origin1 = pmove->origin + pmove->view_ofs + vForward * forwards + vRight * rights - vUp * (ups - 32);
 		Vector origin2 = pmove->origin + pmove->view_ofs + vForward * forwards + vRight * rights - vUp * (ups + 32);
-		
+
 		float Bot[2], Top[2];
 
 		g_Engine.pTriAPI->WorldToScreen(origin1, Bot);
 		Bot[0] = Bot[0] * (ImGui::GetIO().DisplaySize.x / 2) + (ImGui::GetIO().DisplaySize.x / 2);
 		Bot[1] = -Bot[1] * (ImGui::GetIO().DisplaySize.y / 2) + (ImGui::GetIO().DisplaySize.y / 2);
-		
+
 		g_Engine.pTriAPI->WorldToScreen(origin2, Top);
 		Top[0] = Top[0] * (ImGui::GetIO().DisplaySize.x / 2) + (ImGui::GetIO().DisplaySize.x / 2);
 		Top[1] = -Top[1] * (ImGui::GetIO().DisplaySize.y / 2) + (ImGui::GetIO().DisplaySize.y / 2);
 
-		float height = (Top[1] - Bot[1]);
+		float height;
+		height = (Top[1] - Bot[1]);
 		if (int(height) < 130)
 			forwards -= 0.001f;
 		else if (int(height) > 130)
 			forwards += 0.001f;
 		else
-			break;
+			return true;
 	}
+	return false;
+}
+
+bool CalcRight(float x, float y, Vector vForward, float forwards, Vector vRight, float& rights, Vector vUp, float ups)
+{
 	for (unsigned int i = 0; i < 65535; i++)
 	{
 		Vector origin = pmove->origin + pmove->view_ofs + vForward * forwards + vRight * rights - vUp * ups;
-		
+
 		float screen[2];
-		
+
 		g_Engine.pTriAPI->WorldToScreen(origin, screen);
 		screen[0] = screen[0] * (ImGui::GetIO().DisplaySize.x / 2) + (ImGui::GetIO().DisplaySize.x / 2);
 		screen[1] = -screen[1] * (ImGui::GetIO().DisplaySize.y / 2) + (ImGui::GetIO().DisplaySize.y / 2);
@@ -383,14 +386,19 @@ Vector screenshit(float x, float y, Vector viewangle)
 		else if (int(screen[0]) > int(x))
 			rights -= 0.001f;
 		else
-			break;
+			return true;
 	}
+	return false;
+}
+
+bool CalcUp(float x, float y, Vector vForward, float forwards, Vector vRight, float rights, Vector vUp, float& ups)
+{
 	for (unsigned int i = 0; i < 65535; i++)
 	{
 		Vector origin = pmove->origin + pmove->view_ofs + vForward * forwards + vRight * rights - vUp * ups;
-		
+
 		float screen[2];
-		
+
 		g_Engine.pTriAPI->WorldToScreen(origin, screen);
 		screen[0] = screen[0] * (ImGui::GetIO().DisplaySize.x / 2) + (ImGui::GetIO().DisplaySize.x / 2);
 		screen[1] = -screen[1] * (ImGui::GetIO().DisplaySize.y / 2) + (ImGui::GetIO().DisplaySize.y / 2);
@@ -400,13 +408,58 @@ Vector screenshit(float x, float y, Vector viewangle)
 		else if (int(screen[1]) > int(y))
 			ups -= 0.001f;
 		else
-			break;
+			return true;
 	}
-	Vector origin = pmove->origin + pmove->view_ofs + vForward * forwards + vRight * rights - vUp * ups;
-	float screen[2];
-	if (!WorldToScreen(origin, screen))
-		forwards = 100, rights = 0, ups = 0;
-	return origin;
+	return false;
+}
+
+bool WorldToScreen(float* pflOrigin)
+{
+	float pflVecScreen[2];
+	int iResult = g_Engine.pTriAPI->WorldToScreen(pflOrigin, pflVecScreen);
+	if (pflVecScreen[0] < 1.5f && pflVecScreen[1] < 1.5f && pflVecScreen[0] > -1.5f && pflVecScreen[1] > -1.5f && !iResult)
+	{
+		pflVecScreen[0] = pflVecScreen[0] * (ImGui::GetIO().DisplaySize.x / 2) + (ImGui::GetIO().DisplaySize.x / 2);
+		pflVecScreen[1] = -pflVecScreen[1] * (ImGui::GetIO().DisplaySize.y / 2) + (ImGui::GetIO().DisplaySize.y / 2);
+		return true;
+	}
+	return false;
+}
+
+Vector screenshit(Vector viewangle)
+{
+	static bool loadmodel = false;
+
+	static float forwards = 100, rights = 0, ups = 0;
+
+	static float screenx = 0, screeny = 0;
+	float x = modelscreenx + (modelscreenw / 2), y = modelscreeny + (modelscreenh / 2) + 25;
+	if (screenx != x || screeny != y)
+	{
+		screenx = x, screeny = y; 
+		loadmodel = true;
+	}
+
+	static float screensizex = 0, screensizey = 0;
+	if (screensizex != ImGui::GetIO().DisplaySize.x || screensizey != ImGui::GetIO().DisplaySize.y)
+	{
+		screensizex = ImGui::GetIO().DisplaySize.x, screensizey = ImGui::GetIO().DisplaySize.y;
+		loadmodel = true;
+	}
+
+	Vector vForward, vRight, vUp;
+	g_Engine.pfnAngleVectors(viewangle, vForward, vRight, vUp);
+
+	if (loadmodel)
+	{
+		Vector origin = pmove->origin + pmove->view_ofs + vForward * forwards + vRight * rights - vUp * ups;
+		if (!WorldToScreen(origin))
+			forwards = 100, rights = 0, ups = 0;
+		if(CalcForward(vForward, forwards, vRight, rights, vUp, ups) && CalcRight(x, y, vForward, forwards, vRight, rights, vUp, ups) && CalcUp(x, y, vForward, forwards, vRight, rights, vUp, ups))
+			loadmodel = false;
+	}
+
+	return pmove->origin + pmove->view_ofs + vForward * forwards + vRight * rights - vUp * ups;
 }
 
 void HUD_CreateEntities()
@@ -431,7 +484,7 @@ void HUD_CreateEntities()
 	static struct model_s* urban = g_Engine.CL_LoadModel("models/player/urban/urban.mdl", &modelindexurban);
 	static struct model_s* vip = g_Engine.CL_LoadModel("models/player/vip/vip.mdl", &modelindexvip);
 
-	if (bAliveLocal() && showmodel && (MenuTab == 5 || MenuTab == 6 || MenuTab == 7 || MenuTab == 2) && DrawVisuals && (!cvar.route_auto || cvar.route_draw_visual) && GetTickCount() - HudRedraw <= 100)
+	if (modelmenu && bAliveLocal() && cvar.model_preview && DrawVisuals && (!cvar.route_auto || cvar.route_draw_visual) && GetTickCount() - HudRedraw <= 100)
 	{
 		int modelindex;
 		struct model_s* mod;
@@ -463,7 +516,7 @@ void HUD_CreateEntities()
 		playerdummy.curstate.sequence = 4;
 		playerdummy.curstate.framerate = cvar.model_move;
 		playerdummy.curstate.messagenum = -1337;
-		playerdummy.origin = screenshit(modelscreenx + (modelscreenw/2), modelscreeny + (modelscreenh / 2) + 25, viewangle);
+		playerdummy.origin = screenshit(viewangle);
 		g_Engine.CL_CreateVisibleEntity(ET_PLAYER, &playerdummy);
 	}
 

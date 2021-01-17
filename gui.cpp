@@ -97,7 +97,7 @@ void MenuHandle()
 		if (bShowMenu || bInputActive)
 		{
 			ImGui::GetIO().MouseDrawCursor = true;
-			g_pClient->IN_DeactivateMouse();
+			g_Client.IN_DeactivateMouse();
 			if (bInputActive)SetKeyboardFocus = true;
 			if (bShowMenu)changewindowfocus = true;
 		}
@@ -105,7 +105,7 @@ void MenuHandle()
 		{
 			SetCursorPos(g_Engine.GetWindowCenterX(), g_Engine.GetWindowCenterY());
 			ImGui::GetIO().MouseDrawCursor = false;
-			g_pClient->IN_ActivateMouse();
+			g_Client.IN_ActivateMouse();
 		}
 		checkmenu = bShowMenu;
 		checkchat = bInputActive;
@@ -114,7 +114,7 @@ void MenuHandle()
 	{
 		POINT Point;
 		if (::GetCursorPos(&Point) && Point.x == g_Engine.GetWindowCenterX() && Point.y == g_Engine.GetWindowCenterY())
-			g_pClient->IN_DeactivateMouse();
+			g_Client.IN_DeactivateMouse();
 	}
 }
 
