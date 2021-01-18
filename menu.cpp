@@ -1052,13 +1052,13 @@ void MenuVisual1Window1()
 	ImGui::Separator();
 	ImGui::Text("Other");
 	ImGui::Checkbox("Crosshair", &cvar.visual_crosshair);
+	ImGui::Checkbox("Esp Preview", &cvar.model_preview);
 	ImGui::Checkbox("Grenade Trajectory", &cvar.visual_grenade_trajectory);
 	ImGui::Checkbox("Kill Sound", &cvar.radio_kill_sound);
 	ImGui::Checkbox("Light Map", &cvar.visual_lightmap);
 	ImGui::Checkbox("My Weapon Name", &cvar.visual_weapon_local);
 	ImGui::Checkbox("No Flash", &cvar.visual_rem_flash);
 	ImGui::Checkbox("Radar", &cvar.radar);
-	ImGui::Checkbox("Esp Preview", &cvar.model_preview);
 }
 
 void MenuVisual1Window2()

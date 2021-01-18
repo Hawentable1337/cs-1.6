@@ -344,9 +344,9 @@ bool CalcForward(Vector vForward, float& forwards, Vector vRight, float rights, 
 {
 	for (unsigned int i = 0; i < 65535; i++)
 	{
-		Vector origin1 = pmove->origin + pmove->view_ofs + vForward * forwards + vRight * rights - vUp * (ups - 32);
-		Vector origin2 = pmove->origin + pmove->view_ofs + vForward * forwards + vRight * rights - vUp * (ups + 32);
-
+		Vector origin1 = pmove->origin + pmove->view_ofs + vForward * (cvar.visual_chase_cam ? forwards - cvar.visual_chase_back : forwards) + vRight * rights - vUp * ((cvar.visual_chase_cam ? ups - cvar.visual_chase_up : ups) - 32 );
+		Vector origin2 = pmove->origin + pmove->view_ofs + vForward * (cvar.visual_chase_cam ? forwards - cvar.visual_chase_back : forwards) + vRight * rights - vUp * ((cvar.visual_chase_cam ? ups - cvar.visual_chase_up : ups) + 32);
+		
 		float Bot[2], Top[2];
 
 		g_Engine.pTriAPI->WorldToScreen(origin1, Bot);
@@ -373,7 +373,7 @@ bool CalcRight(float x, float y, Vector vForward, float forwards, Vector vRight,
 {
 	for (unsigned int i = 0; i < 65535; i++)
 	{
-		Vector origin = pmove->origin + pmove->view_ofs + vForward * forwards + vRight * rights - vUp * ups;
+		Vector origin = pmove->origin + pmove->view_ofs + vForward * (cvar.visual_chase_cam ? forwards - cvar.visual_chase_back : forwards) + vRight * rights - vUp * (cvar.visual_chase_cam ? ups - cvar.visual_chase_up : ups);
 
 		float screen[2];
 
@@ -395,7 +395,7 @@ bool CalcUp(float x, float y, Vector vForward, float forwards, Vector vRight, fl
 {
 	for (unsigned int i = 0; i < 65535; i++)
 	{
-		Vector origin = pmove->origin + pmove->view_ofs + vForward * forwards + vRight * rights - vUp * ups;
+		Vector origin = pmove->origin + pmove->view_ofs + vForward * (cvar.visual_chase_cam ? forwards - cvar.visual_chase_back : forwards) + vRight * rights - vUp * (cvar.visual_chase_cam ? ups - cvar.visual_chase_up : ups);
 
 		float screen[2];
 
@@ -452,14 +452,14 @@ Vector screenshit(Vector viewangle)
 
 	if (loadmodel)
 	{
-		Vector origin = pmove->origin + pmove->view_ofs + vForward * forwards + vRight * rights - vUp * ups;
+		Vector origin = pmove->origin + pmove->view_ofs + vForward * (cvar.visual_chase_cam ? forwards - cvar.visual_chase_back : forwards) + vRight * rights - vUp * (cvar.visual_chase_cam ? ups - cvar.visual_chase_up : ups);
 		if (!WorldToScreen(origin))
 			forwards = 100, rights = 0, ups = 0;
 		if(CalcForward(vForward, forwards, vRight, rights, vUp, ups) && CalcRight(x, y, vForward, forwards, vRight, rights, vUp, ups) && CalcUp(x, y, vForward, forwards, vRight, rights, vUp, ups))
 			loadmodel = false;
 	}
 
-	return pmove->origin + pmove->view_ofs + vForward * forwards + vRight * rights - vUp * ups;
+	return pmove->origin + pmove->view_ofs + vForward * (cvar.visual_chase_cam ?forwards - cvar.visual_chase_back: forwards) + vRight * rights - vUp * (cvar.visual_chase_cam ? ups - cvar.visual_chase_up:ups);
 }
 
 void HUD_CreateEntities()
