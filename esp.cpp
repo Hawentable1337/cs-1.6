@@ -155,7 +155,7 @@ void DrawPlayerEsp()
 {
 	for (playeresp_t Esp : PlayerEsp)
 	{
-		if (Esp.ent->curstate.messagenum == -1337)
+		if (Esp.ent == &playerdummy)
 			continue;
 		if (cvar.visual_idhook_only && idhook.FirstKillPlayer[Esp.ent->index] != 1)
 			continue;
@@ -181,18 +181,14 @@ void DrawPlayerEsp()
 	}
 	for (playeresp_t Esp : PlayerEsp)
 	{
-		if (Esp.ent->curstate.messagenum != -1337)
+		if (Esp.ent != &playerdummy)
 			continue;
-
-		static DWORD time = GetTickCount();
-		if (GetTickCount() - time > 900)
-			time = GetTickCount();
-		float x, y, w, h, xo;
 		ImColor color = White();
 		if (cvar.model_type == 0 || cvar.model_type == 3 || cvar.model_type == 4 || cvar.model_type == 6)
 			color = Red();
 		if (cvar.model_type == 1 || cvar.model_type == 2 || cvar.model_type == 5 || cvar.model_type == 7 || cvar.model_type == 8)
 			color = Blue();
+		float x, y, w, h, xo;
 		if (bCalcScreen(Esp, x, y, w, h, xo))
 		{
 			Box(x, y, w, h, color);

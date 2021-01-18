@@ -151,15 +151,14 @@ void StudioCalcRotations(float pos[][3], vec4_t *q, mstudioseqdesc_t *pseqdesc, 
 // StudioRenderModel
 // Send bones and verts to renderer
 //=========================
-
 void StudioRenderModel(void)
 {
 	cl_entity_s* ent = g_Studio.GetCurrentEntity();
 
-	if(ent && ent->curstate.messagenum == -1337)
+	if(ent && ent == &playerdummy)
 	{
-		g_Studio.SetForceFaceFlags(0);
 		ent->curstate.renderfx = 0;
+		g_Studio.SetForceFaceFlags(0);
 
 		glDepthFunc(GL_GREATER);
 		oStudioRenderFinal();

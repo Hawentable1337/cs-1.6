@@ -153,7 +153,6 @@ public:
 	float visual_grenade_trajectory;
 	float visual_crosshair;
 	float visual_vip;
-	float visual_custom_fov;
 	float visual_weapon_local;
 	float visual_lightmap;
 	float visual_sky;

@@ -127,9 +127,6 @@
     <ClCompile Include="studiomodelrender.cpp">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="fov.cpp">
-      <Filter>source</Filter>
-    </ClCompile>
     <ClCompile Include="crosshair.cpp">
       <Filter>source</Filter>
     </ClCompile>
@@ -209,6 +206,9 @@
       <Filter>imgui</Filter>
     </ClCompile>
     <ClCompile Include="strings.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="playerdummy.cpp">
       <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>
@@ -339,9 +339,6 @@
     <ClInclude Include="studiomodelrender.h">
       <Filter>source</Filter>
     </ClInclude>
-    <ClInclude Include="fov.h">
-      <Filter>source</Filter>
-    </ClInclude>
     <ClInclude Include="crosshair.h">
       <Filter>source</Filter>
     </ClInclude>
@@ -421,6 +418,9 @@
       <Filter>imgui</Filter>
     </ClInclude>
     <ClInclude Include="strings.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="playerdummy.h">
       <Filter>source</Filter>
     </ClInclude>
   </ItemGroup>

@@ -130,7 +130,10 @@ void DrawOverviewLayer()
 		return;
 
 	Vector vAngle, vEye = pmove->origin + pmove->view_ofs;
-	g_Engine.GetViewAngles(vAngle);
+	if (bAliveLocal())
+		g_Engine.GetViewAngles(vAngle);
+	else
+		vAngle = pmove->angles;
 
 	glViewport(iX, ImGui::GetIO().DisplaySize.y - (iY + iH), iW, iH);
 	if (m_MapSprites) 
@@ -212,7 +215,10 @@ void DrawOverviewEntities()
 		return;
 
 	Vector vAngle, vEye = pmove->origin + pmove->view_ofs;
-	g_Engine.GetViewAngles(vAngle);
+	if (bAliveLocal())
+		g_Engine.GetViewAngles(vAngle);
+	else
+		vAngle = pmove->angles;
 
 	for (unsigned int i = 1; i <= g_Engine.GetMaxClients(); i++)
 	{
@@ -282,7 +288,10 @@ void DrawOverviewEntitiesSoundIndex()
 		return;
 
 	Vector vAngle, vEye = pmove->origin + pmove->view_ofs;
-	g_Engine.GetViewAngles(vAngle);
+	if (bAliveLocal())
+		g_Engine.GetViewAngles(vAngle);
+	else
+		vAngle = pmove->angles;
 
 	for (player_sound_index_t sound_index : Sound_Index)
 	{
@@ -348,7 +357,10 @@ void DrawOverviewEntitiesSoundNoIndex()
 		return;
 
 	Vector vAngle, vEye = pmove->origin + pmove->view_ofs;
-	g_Engine.GetViewAngles(vAngle);
+	if (bAliveLocal())
+		g_Engine.GetViewAngles(vAngle);
+	else
+		vAngle = pmove->angles;
 
 	for (player_sound_no_index_t sound_no_index : Sound_No_Index)
 	{

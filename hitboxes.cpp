@@ -229,7 +229,7 @@ void GetHitboxes(cl_entity_s* ent)
 					Bones.vBoneParent[2] = (*pBoneMatrix)[pbones[i].parent][2][3];
 					Bones.parent = pbones[i].parent;
 					Bones.index = ent->index;
-					Bones.messagenum = ent->curstate.messagenum;
+					Bones.ent = ent;
 					PlayerBone.push_back(Bones);
 				}
 			}
@@ -277,7 +277,7 @@ void GetHitboxes(cl_entity_s* ent)
 
 					if (cvar.skeleton_player_hitbox)
 					{
-						Hitboxes.messagenum = ent->curstate.messagenum;
+						Hitboxes.ent = ent;
 						Hitboxes.index = ent->index;
 						for (unsigned int x = 0; x < 8; x++)
 							Hitboxes.vCubePointsTrans[x] = vCubePointsTrans[x];
@@ -326,7 +326,7 @@ void GetHitboxes(cl_entity_s* ent)
 		}
 	}
 
-	if (ent && ent->curstate.messagenum == -1337)
+	if (ent && ent == &playerdummy)
 	{
 		studiohdr_t* pStudioHeader = (studiohdr_t*)g_Studio.Mod_Extradata(ent->model);
 		mstudiobbox_t* pHitbox = (mstudiobbox_t*)((byte*)pStudioHeader + pStudioHeader->hitboxindex);
@@ -348,7 +348,7 @@ void GetHitboxes(cl_entity_s* ent)
 					Bones.vBoneParent[2] = (*pBoneMatrix)[pbones[i].parent][2][3];
 					Bones.parent = pbones[i].parent;
 					Bones.index = ent->index;
-					Bones.messagenum = ent->curstate.messagenum;
+					Bones.ent = ent;
 					PlayerBone.push_back(Bones);
 				}
 			}
@@ -392,7 +392,7 @@ void GetHitboxes(cl_entity_s* ent)
 					if (cvar.skeleton_player_hitbox)
 					{
 						Hitboxes.index = ent->index;
-						Hitboxes.messagenum = ent->curstate.messagenum;
+						Hitboxes.ent = ent;
 						for (unsigned int x = 0; x < 8; x++)
 							Hitboxes.vCubePointsTrans[x] = vCubePointsTrans[x];
 						PlayerHitbox.push_back(Hitboxes);
@@ -412,7 +412,7 @@ void DrawSkeletonPlayer()
 {
 	for (playerbone_t Bones : PlayerBone)
 	{
-		if (Bones.messagenum == -1337)
+		if (Bones.ent == &playerdummy)
 			continue;
 		ImColor Player;
 		if (g_Player[Bones.index].iTeam == 1) Player = Red();
@@ -424,7 +424,7 @@ void DrawSkeletonPlayer()
 	}
 	for (playerhitbox_t Hitbox : PlayerHitbox)
 	{
-		if (Hitbox.messagenum == -1337)
+		if (Hitbox.ent == &playerdummy)
 			continue;
 		ImColor Player;
 		if (g_Player[Hitbox.index].iTeam == 1) Player = Red();
@@ -439,7 +439,7 @@ void DrawSkeletonPlayer()
 	}
 	for (playerbone_t Bones : PlayerBone)
 	{
-		if (Bones.messagenum != -1337)
+		if (Bones.ent != &playerdummy)
 			continue;
 		ImColor color = White();
 		if (cvar.model_type == 0 || cvar.model_type == 3 || cvar.model_type == 4 || cvar.model_type == 6)
@@ -452,7 +452,7 @@ void DrawSkeletonPlayer()
 	}
 	for (playerhitbox_t Hitbox : PlayerHitbox)
 	{
-		if (Hitbox.messagenum != -1337)
+		if (Hitbox.ent != &playerdummy)
 			continue;
 		ImColor color = White();
 		if (cvar.model_type == 0 || cvar.model_type == 3 || cvar.model_type == 4 || cvar.model_type == 6)

@@ -232,7 +232,6 @@ void CVARlist::init()
 	INITCVAR(visual_grenade_trajectory, 0.0);
 	INITCVAR(visual_crosshair, 0.0);
 	INITCVAR(visual_vip, 0.0);
-	INITCVAR(visual_custom_fov, 90.0);
 	INITCVAR(visual_weapon_local, 0.0);
 	INITCVAR(visual_lightmap, 0.0);
 	INITCVAR(visual_sky, 0.0);

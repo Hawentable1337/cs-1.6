@@ -1069,15 +1069,12 @@ void MenuVisual1Window2()
 	SliderFloat("Chase Back##1", &cvar.visual_chase_back, 100.f, 1000.f, "%.0f");
 	ImGui::Text("Chase Up");
 	SliderFloat("Chase Up##1", &cvar.visual_chase_up, 16.f, 500.f, "%.0f");
-	ImGui::Text("Custom FOV");
-	SliderFloat("Custom FOV##1", &cvar.visual_custom_fov, 45.f, 150.f, "%.0f");
+	ImGui::Text("Kill Sound Volume");
+	SliderFloat("Kill Sound Volume##1", &cvar.radio_kill_volume, 0.f, 100.f, "%.0f");
 	ImGui::Text("Radar Zoom");
-	SliderFloat("Zoom", &cvar.radar_zoom, 1, 10, "%.1f");
+	SliderFloat("Radar Zoom##1", &cvar.radar_zoom, 1, 10, "%.1f");
 	ImGui::Text("Radar Point Size");
-	SliderFloat("Point Size", &cvar.radar_point_size, 5, 25, "%.1f");
-
-	ImGui::Text("Sound Volume");
-	SliderFloat("Sound Volume##1", &cvar.radio_kill_volume, 0.f, 100.f, "%.0f");
+	SliderFloat("Radar Point Size##1", &cvar.radar_point_size, 5, 25, "%.1f");
 	ImGui::Text("View Model FOV");
 	SliderFloat("View Model FOV##1", &cvar.visual_viewmodel_fov, 0, 50, "%.0f");
 }
@@ -1567,7 +1564,7 @@ void DrawMenuChild(int total)
 	if (MenuTab == 5)
 	{
 		windowheight1 = 481;
-		windowheight2 = 289;
+		windowheight2 = 251;
 	}
 	if (MenuTab == 6)
 	{

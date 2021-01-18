@@ -4,10 +4,8 @@ PUserMsg pUserMsgBase;
 pfnUserMsgHook pResetHUD;
 pfnUserMsgHook pTeamInfo;
 pfnUserMsgHook pDeathMsg;
-pfnUserMsgHook pSetFOV;
 pfnUserMsgHook pScoreAttrib;
 pfnUserMsgHook pServerName;
-pfnUserMsgHook pSayText;
 
 int ServerName(const char* pszName, int iSize, void* pbuf)
 {
@@ -25,14 +23,6 @@ int ScoreAttrib(const char* pszName, int iSize, void* pbuf)
 	g_Player[id].bVip = (info & (1 << 2));
 	g_Player[id].bAliveInScoreTab = !(info & (1 << 0));
 	return pScoreAttrib(pszName, iSize, pbuf);
-}
-
-int SetFOV(const char *pszName, int iSize, void *pbuf)
-{
-	BEGIN_READ(pbuf, iSize);
-	int iFOV = READ_BYTE();
-	g_Local.iFOV = iFOV;
-	return pSetFOV(pszName, iSize, pbuf);
 }
 
 int ResetHUD(const char *pszName, int iSize, void *pbuf)
@@ -150,7 +140,6 @@ void HookUserMessages()
 	HOOK_MSG(ResetHUD);
 	HOOK_MSG(TeamInfo);
 	HOOK_MSG(DeathMsg);
-	HOOK_MSG(SetFOV);
 	HOOK_MSG(ScoreAttrib);
 	HOOK_MSG(ServerName);
 }

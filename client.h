@@ -100,7 +100,6 @@ extern char hldir[256];
 #include "skins.h"
 #include "sound.h"
 #include "hitboxes.h"
-#include "fov.h"
 #include "crosshair.h"
 #include "tracegrenade.h"
 #include "flash.h"
@@ -119,6 +118,7 @@ extern char hldir[256];
 #include "model.h"
 #include "radar.h"
 #include "strings.h"
+#include "playerdummy.h"
 
 void HookClientFunctions();
 void CL_Move();
