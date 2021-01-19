@@ -33,7 +33,7 @@ void FindSpawn()
 				continue;
 			if (ent->origin == SpawnDeath[i].Origin)
 				continue;
-			if (Cstrike_SequenceInfo[ent->curstate.sequence] == SEQUENCE_DIE)
+			if (Cstrike_SequenceInfo[ent->curstate.sequence] != SEQUENCE_IDLE)
 				continue;
 			if (ent->index == pmove->player_index + 1)
 				continue;
@@ -46,6 +46,11 @@ void FindSpawn()
 			if (g_Player[ent->index].iTeam == 0)
 				continue;
 			if (ent->curstate.mins.IsZero() || ent->curstate.maxs.IsZero())
+				continue;
+			if (ent->curstate.gaitsequence != GAITSEQUENCE_STAND)
+				continue;
+			Vector velocity = ent->curstate.origin - ent->prevstate.origin;
+			if (velocity.x != 0 || velocity.y != 0 || velocity.z != 0)
 				continue;
 
 			Vector vTraceOrigin = ent->origin;
