@@ -215,6 +215,8 @@ public:
 	float model_preview;
 	float model_pos_x;
 	float model_pos_y;
+
+	float fake_shit;
 };
 
 extern CVARlist cvar;

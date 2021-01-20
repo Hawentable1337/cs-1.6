@@ -1054,6 +1054,7 @@ void MenuVisual1Window1()
 	ImGui::Checkbox("Crosshair", &cvar.visual_crosshair);
 	ImGui::Checkbox("Esp Preview", &cvar.model_preview);
 	ImGui::Checkbox("Grenade Trajectory", &cvar.visual_grenade_trajectory);
+	ImGui::Checkbox("Fake Model", &cvar.fake_shit);
 	ImGui::Checkbox("Kill Sound", &cvar.radio_kill_sound);
 	ImGui::Checkbox("Light Map", &cvar.visual_lightmap);
 	ImGui::Checkbox("My Weapon Name", &cvar.visual_weapon_local);
@@ -1563,7 +1564,7 @@ void DrawMenuChild(int total)
 	}
 	if (MenuTab == 5)
 	{
-		windowheight1 = 481;
+		windowheight1 = 502;
 		windowheight2 = 251;
 	}
 	if (MenuTab == 6)

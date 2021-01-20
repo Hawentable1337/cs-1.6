@@ -245,6 +245,7 @@ int HUD_GetHullBounds(int hullnum, float* mins, float* maxs)
 
 int HUD_AddEntity(int type, struct cl_entity_s* ent, const char* modelname)
 {
+	fakeshit(ent);
 	return g_Client.HUD_AddEntity(type, ent, modelname);
 }
 

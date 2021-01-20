@@ -57,7 +57,7 @@ void CVARlist::init()
 
 	INITCVAR(rage_active, 0.0);
 	INITCVAR(rage_wall, 0.0);
-	INITCVAR(rage_fov, 180.0);
+	INITCVAR(rage_fov, 45.0);
 	INITCVAR(rage_target_selection, 0.0);
 	INITCVAR(rage_perfect_silent, 0.0);
 	INITCVAR(rage_silent, 0.0); 
@@ -294,6 +294,8 @@ void CVARlist::init()
 	INITCVAR(model_preview, 0);
 	INITCVAR(model_pos_x, 100);
 	INITCVAR(model_pos_y, 100);
+
+	INITCVAR(fake_shit, 0);
 }
 
 void SaveCvar()

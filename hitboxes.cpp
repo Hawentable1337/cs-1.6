@@ -167,7 +167,7 @@ void GetHitboxes(cl_entity_s* ent)
 		}
 	}
 
-	if (ent && ent->player)
+	if (ent && ent->player && ent != &playerdummys[ent->index])
 	{
 		model_t* pModel = g_Studio.SetupPlayerModel(ent->index - 1);
 		if (!pModel)

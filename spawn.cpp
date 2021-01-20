@@ -49,8 +49,8 @@ void FindSpawn()
 				continue;
 			if (ent->curstate.gaitsequence != GAITSEQUENCE_STAND)
 				continue;
-			Vector velocity = ent->curstate.origin - ent->prevstate.origin;
-			if (velocity.x != 0 || velocity.y != 0 || velocity.z != 0)
+			float distance = ent->origin.Distance(ent->curstate.origin);
+			if (distance != 0.0f)
 				continue;
 
 			Vector vTraceOrigin = ent->origin;
@@ -68,7 +68,7 @@ void FindSpawn()
 					bBadOrigin = true;
 					break;
 				}
-				else if (distance < 10)
+				else if (distance < 25)
 				{
 					bBadOrigin = true;
 					break;
