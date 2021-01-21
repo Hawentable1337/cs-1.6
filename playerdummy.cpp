@@ -179,46 +179,26 @@ void Playerdummy()
 	}
 }
 
-float averagedistance(int index, float distance)
+bool bAliveAll(cl_entity_s* ent)
 {
-	static float array[33][32];
-	static int loop = 0;
-	if (loop >= 32)
-		loop = 0;
-	array[index][loop] = distance;
-	loop++;
-
-	float out = 0;
-	for (unsigned int i = 0; i < 32; i++)
-		out += array[index][i];
-
-	return out / 32;
+	if (g_Player[ent->index].bAliveInScoreTab &&
+		!(g_Engine.GetEntityByIndex(pmove->player_index + 1)->curstate.iuser1 == OBS_IN_EYE && g_Engine.GetEntityByIndex(pmove->player_index + 1)->curstate.iuser2 == ent->index))
+		return true;
+	return false;
 }
 
 void fakeshit(cl_entity_s* ent)
 {
-	if (ent && ent->player && cvar.fake_shit && DrawVisuals && (!cvar.route_auto || cvar.route_draw_visual) && GetTickCount() - HudRedraw <= 100 && !(g_Engine.GetEntityByIndex(pmove->player_index + 1)->curstate.iuser1 == OBS_IN_EYE && g_Engine.GetEntityByIndex(pmove->player_index + 1)->curstate.iuser2 == ent->index))
+	if (ent && ent->player && bAliveAll(ent) && cvar.fake_shit && DrawVisuals && (!cvar.route_auto || cvar.route_draw_visual) && GetTickCount() - HudRedraw <= 100)
 	{
 		playerdummys[ent->index].index = ent->index;
 		playerdummys[ent->index].player = ent->player;
 		playerdummys[ent->index].model = ent->model;
 		playerdummys[ent->index].angles = Vector(-ent->curstate.angles.x * 3, ent->curstate.angles.y, ent->curstate.angles.z);
+		playerdummys[ent->index].origin = ent->curstate.origin;
 		playerdummys[ent->index].curstate = ent->curstate;
 		playerdummys[ent->index].curstate.framerate = 0;
 		playerdummys[ent->index].curstate.frame = 0;
-		
-		Vector angles, forward = ent->curstate.origin - ent->origin;
-		VectorAngles(forward, angles); 
-		g_Engine.pfnAngleVectors(angles, forward, NULL, NULL);
-		float distance = ent->origin.Distance(ent->curstate.origin);
-		if (ent->origin.x == ent->curstate.origin.x && ent->origin.y == ent->curstate.origin.y)
-			playerdummys[ent->index].origin = ent->origin;
-		else
-		{
-			playerdummys[ent->index].origin.x = ent->origin.x + forward.x * averagedistance(ent->index, distance);
-			playerdummys[ent->index].origin.y = ent->origin.y + forward.y * averagedistance(ent->index, distance);
-			playerdummys[ent->index].origin.z = ent->origin.z + forward.z * averagedistance(ent->index, distance);
-		}
 		g_Engine.CL_CreateVisibleEntity(ET_PLAYER, &playerdummys[ent->index]);
 	}
 }
