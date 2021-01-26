@@ -3,7 +3,9 @@
 cl_entity_s playerdummy;
 cl_entity_s playerdummys[33];
 
-bool CalcForward(Vector vForward, float& forwards, Vector vRight, float rights, Vector vUp, float ups)
+float modelscreenx, modelscreeny, modelscreenw, modelscreenh;
+
+void CalcForward(Vector vForward, float& forwards, Vector vRight, float rights, Vector vUp, float ups)
 {
 	for (unsigned int i = 0; i < 65535; i++)
 	{
@@ -27,12 +29,11 @@ bool CalcForward(Vector vForward, float& forwards, Vector vRight, float rights, 
 		else if (int(height) > 130)
 			forwards += 0.001f;
 		else
-			return true;
+			break;
 	}
-	return false;
 }
 
-bool CalcRight(float x, float y, Vector vForward, float forwards, Vector vRight, float& rights, Vector vUp, float ups)
+void CalcRight(float x, float y, Vector vForward, float forwards, Vector vRight, float& rights, Vector vUp, float ups)
 {
 	for (unsigned int i = 0; i < 65535; i++)
 	{
@@ -49,12 +50,11 @@ bool CalcRight(float x, float y, Vector vForward, float forwards, Vector vRight,
 		else if (int(screen[0]) > int(x))
 			rights -= 0.001f;
 		else
-			return true;
+			break;
 	}
-	return false;
 }
 
-bool CalcUp(float x, float y, Vector vForward, float forwards, Vector vRight, float rights, Vector vUp, float& ups)
+void CalcUp(float x, float y, Vector vForward, float forwards, Vector vRight, float rights, Vector vUp, float& ups)
 {
 	for (unsigned int i = 0; i < 65535; i++)
 	{
@@ -71,9 +71,8 @@ bool CalcUp(float x, float y, Vector vForward, float forwards, Vector vRight, fl
 		else if (int(screen[1]) > int(y))
 			ups -= 0.001f;
 		else
-			return true;
+			break;
 	}
-	return false;
 }
 
 bool WorldToScreen(float* pflOrigin)
@@ -87,37 +86,16 @@ bool WorldToScreen(float* pflOrigin)
 
 Vector screenshit(Vector viewangle)
 {
-	static bool loadmodel = false;
-
 	static float forwards = 100, rights = 0, ups = 0;
-
-	static float screenx = 0, screeny = 0;
 	float x = modelscreenx + (modelscreenw / 2), y = modelscreeny + (modelscreenh / 2) + 25;
-	if (screenx != x || screeny != y)
-	{
-		screenx = x, screeny = y;
-		loadmodel = true;
-	}
-
-	static float screensizex = 0, screensizey = 0;
-	if (screensizex != ImGui::GetIO().DisplaySize.x || screensizey != ImGui::GetIO().DisplaySize.y)
-	{
-		screensizex = ImGui::GetIO().DisplaySize.x, screensizey = ImGui::GetIO().DisplaySize.y;
-		loadmodel = true;
-	}
-
 	Vector vForward, vRight, vUp;
 	g_Engine.pfnAngleVectors(viewangle, vForward, vRight, vUp);
-
-	if (loadmodel)
-	{
-		Vector origin = pmove->origin + pmove->view_ofs + vForward * (cvar.visual_chase_cam ? forwards - cvar.visual_chase_back : forwards) + vRight * rights - vUp * (cvar.visual_chase_cam ? ups - cvar.visual_chase_up : ups);
-		if (!WorldToScreen(origin))
-			forwards = 100, rights = 0, ups = 0;
-		if (CalcForward(vForward, forwards, vRight, rights, vUp, ups) && CalcRight(x, y, vForward, forwards, vRight, rights, vUp, ups) && CalcUp(x, y, vForward, forwards, vRight, rights, vUp, ups))
-			loadmodel = false;
-	}
-
+	Vector origin = pmove->origin + pmove->view_ofs + vForward * (cvar.visual_chase_cam ? forwards - cvar.visual_chase_back : forwards) + vRight * rights - vUp * (cvar.visual_chase_cam ? ups - cvar.visual_chase_up : ups);
+	if (!WorldToScreen(origin))
+		forwards = 100, rights = 0, ups = 0;
+	CalcForward(vForward, forwards, vRight, rights, vUp, ups);
+	CalcRight(x, y, vForward, forwards, vRight, rights, vUp, ups);
+	CalcUp(x, y, vForward, forwards, vRight, rights, vUp, ups);
 	return pmove->origin + pmove->view_ofs + vForward * (cvar.visual_chase_cam ? forwards - cvar.visual_chase_back : forwards) + vRight * rights - vUp * (cvar.visual_chase_cam ? ups - cvar.visual_chase_up : ups);
 }
 

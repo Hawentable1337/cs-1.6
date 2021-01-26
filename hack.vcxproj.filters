@@ -211,6 +211,12 @@
     <ClCompile Include="playerdummy.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="viewmodel.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="afk.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="autoroute.h">
@@ -421,6 +427,12 @@
       <Filter>source</Filter>
     </ClInclude>
     <ClInclude Include="playerdummy.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="viewmodel.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="afk.h">
       <Filter>source</Filter>
     </ClInclude>
   </ItemGroup>

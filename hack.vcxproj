@@ -164,6 +164,7 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="afk.cpp" />
     <ClCompile Include="aimbot.cpp" />
     <ClCompile Include="antiaim.cpp" />
     <ClCompile Include="autoroute.cpp" />
@@ -226,10 +227,12 @@
     <ClCompile Include="usermsg.cpp" />
     <ClCompile Include="vector\QAngle.cpp" />
     <ClCompile Include="vector\Vector.cpp" />
+    <ClCompile Include="viewmodel.cpp" />
     <ClCompile Include="wallskin.cpp" />
     <ClCompile Include="weapons.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="afk.h" />
     <ClInclude Include="aimbot.h" />
     <ClInclude Include="antiaim.h" />
     <ClInclude Include="autoroute.h" />
@@ -298,6 +301,7 @@
     <ClInclude Include="usermsg.h" />
     <ClInclude Include="vector\QAngle.h" />
     <ClInclude Include="vector\Vector.h" />
+    <ClInclude Include="viewmodel.h" />
     <ClInclude Include="wallskin.h" />
     <ClInclude Include="weapons.h" />
   </ItemGroup>

@@ -4,6 +4,9 @@ deque<fov_t> FOVDraw;
 deque<playeraim_t> PlayerAim;
 deque<playeraimlegit_t> PlayerAimLegit;
 
+deque<model_aim_t> Model_Aim;
+deque<model_aim_select_t> Model_Aim_Select;
+
 DWORD dwReactionTime;
 
 bool TriggerKeyStatus;

@@ -119,6 +119,8 @@ extern char hldir[256];
 #include "radar.h"
 #include "strings.h"
 #include "playerdummy.h"
+#include "viewmodel.h"
+#include "afk.h"
 
 void HookClientFunctions();
 void CL_Move();

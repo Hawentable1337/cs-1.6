@@ -153,19 +153,6 @@ void StudioCalcRotations(float pos[][3], vec4_t *q, mstudioseqdesc_t *pseqdesc, 
 //=========================
 void StudioRenderModel(void)
 {
-	cl_entity_s* ent = g_Studio.GetCurrentEntity();
-
-	if(ent && ent == &playerdummy)
-	{
-		ent->curstate.renderfx = 0;
-		g_Studio.SetForceFaceFlags(0);
-
-		glDepthFunc(GL_GREATER);
-		oStudioRenderFinal();
-
-		glDepthFunc(GL_LESS);
-		oStudioRenderFinal();
-	}
 	oStudioRenderModel();
 }
 

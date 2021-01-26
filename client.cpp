@@ -21,9 +21,7 @@ DWORD HudRedraw;
 void HUD_Redraw(float time, int intermission)
 {
 	g_Client.HUD_Redraw(time, intermission);
-
 	HudRedraw = GetTickCount();
-
 	DrawOverviewLayer();
 	KzFameCount();
 }
@@ -132,35 +130,6 @@ int HUD_Key_Event(int down, int keynum, const char* pszCurrentBinding)
 	}
 	
 	return g_Client.HUD_Key_Event(down, keynum, pszCurrentBinding);
-}
-
-void AntiAfk(usercmd_s* cmd)
-{
-	int afktime = cvar.afk_time;
-	afktime -= 1;
-	afktime *= 1000;
-	static DWORD antiafk = GetTickCount();
-	static Vector prevorigin;
-	static Vector prevangles;
-	if (bAliveLocal())
-	{
-		if (pmove->origin != prevorigin || cmd->viewangles != prevangles)
-			antiafk = GetTickCount();
-		prevorigin = pmove->origin;
-		prevangles = cmd->viewangles;
-		if (cvar.afk_anti)
-		{
-			if (GetTickCount() - antiafk > afktime)
-			{
-				cmd->buttons |= IN_JUMP;
-				cmd->viewangles[1] += 5;
-				g_Engine.SetViewAngles(cmd->viewangles);
-			}
-
-		}
-	}
-	else
-		antiafk = GetTickCount();
 }
 
 void CL_CreateMove(float frametime, struct usercmd_s* cmd, int active)
@@ -324,18 +293,10 @@ void PreV_CalcRefdef(struct ref_params_s* pparams)
 
 void PostV_CalcRefdef(struct ref_params_s* pparams)
 {
-	TraceGrenade(pparams);
-	if (DrawVisuals && (!cvar.route_auto || cvar.route_draw_visual) && GetTickCount() - HudRedraw <= 100)
-	{
-		cl_entity_s* vm = g_Engine.GetViewModel();
-		if (vm)
-		{
-			Vector forward = pparams->forward;
-			vm->origin += forward * cvar.visual_viewmodel_fov;
-		}
-	}
 	g_Local.vPostForward = pparams->forward;
 	g_Local.iPostHealth = pparams->health;
+	TraceGrenade(pparams);
+	ViewModelFov(pparams);
 	ThirdPerson(pparams);
 }
 

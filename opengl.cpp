@@ -13,11 +13,18 @@ glReadPixels_t pglReadPixels = NULL;
 void APIENTRY Hooked_glBegin(GLenum mode)
 {
 	cl_entity_s* ent = g_Studio.GetCurrentEntity();
+	cl_entity_t* vm = g_Engine.GetViewModel();
 	if (ent && ent == &playerdummy)
 	{
 		if (mode == GL_TRIANGLE_STRIP)
 			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 	}
+
+	if (ent && (ent == &playerdummy || ent == vm))
+		glDepthRange(0, 0.5);
+	else
+		glDepthRange(0.5, 1);
+
 	pglBegin(mode);
 }
 

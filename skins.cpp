@@ -591,7 +591,7 @@ void ReplaceTextureIndex(char* texturename, int textureindex, int restoreindex, 
 	}
 }
 
-void SetSkins(struct cl_entity_s* ent)
+void SetSkins()
 {
 	static char CurrentServerName[256];
 	if (strcmp(CurrentServerName, sServerName))

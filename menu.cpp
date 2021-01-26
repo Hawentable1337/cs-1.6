@@ -6,10 +6,6 @@ bool keysmenu[256];
 int MenuTab;
 bool loadtexturemenu = true;
 bool modelmenu;
-float modelscreenx, modelscreeny, modelscreenw, modelscreenh;
-
-deque<model_aim_t> Model_Aim;
-deque<model_aim_select_t> Model_Aim_Select;
 
 float EasyIn(float time, float start, float change, float duration)
 {
@@ -580,9 +576,9 @@ void MenuLegit3()
 {
 	ImGui::Text("Hitboxes"), ImGui::Separator();
 
-	if (ImGui::Button("Load Hitbox"))LoadHitboxLegit();
-	ImGui::SameLine();
 	if (ImGui::Button("Save Hitbox"))SaveHitboxLegit();
+	ImGui::SameLine();
+	if (ImGui::Button("Load Hitbox"))LoadHitboxLegit();
 	ImGui::SameLine();
 	ImVec4 prevColor = ImGui::GetStyle().Colors[ImGuiCol_Text];
 	ImGui::GetStyle().Colors[ImGuiCol_Text] = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
@@ -762,9 +758,9 @@ void MenuModelAim2()
 {
 	ImGui::Text("Selected Model"), ImGui::Separator();
 
-	if (ImGui::Button("Load Hitbox"))LoadHitbox();
-	ImGui::SameLine();
 	if (ImGui::Button("Save Hitbox"))SaveHitbox();
+	ImGui::SameLine();
+	if (ImGui::Button("Load Hitbox"))LoadHitbox();
 	ImGui::SameLine();
 	ImVec4 prevColor = ImGui::GetStyle().Colors[ImGuiCol_Text];
 	ImGui::GetStyle().Colors[ImGuiCol_Text] = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
@@ -878,11 +874,11 @@ void MenuSpawn()
 		ImGui::SameLine();
 		ImGui::Checkbox("Show Point Number", &cvar.visual_spawn_num);
 
-		if (ImGui::Button("Load"))
-			LoadSpawn();
-		ImGui::SameLine();
 		if (ImGui::Button("Save"))
 			SaveSpawn();
+		ImGui::SameLine();
+		if (ImGui::Button("Load"))
+			LoadSpawn();
 		ImGui::SameLine();
 		ImVec4 prevColor = ImGui::GetStyle().Colors[ImGuiCol_Text];
 		ImGui::GetStyle().Colors[ImGuiCol_Text] = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
@@ -1064,7 +1060,7 @@ void MenuVisual1Window1()
 
 void MenuVisual1Window2()
 {
-	ImGui::Text("Visual1 Settings"), ImGui::Separator();
+	ImGui::Text("Visual2"), ImGui::Separator();
 
 	ImGui::Text("Chase Back");
 	SliderFloat("Chase Back##1", &cvar.visual_chase_back, 100.f, 1000.f, "%.0f");
@@ -1078,26 +1074,18 @@ void MenuVisual1Window2()
 	SliderFloat("Radar Point Size##1", &cvar.radar_point_size, 5, 25, "%.1f");
 	ImGui::Text("View Model FOV");
 	SliderFloat("View Model FOV##1", &cvar.visual_viewmodel_fov, 0, 50, "%.0f");
-}
-
-void MenuVisual2Window2()
-{
+	
 	ImGui::Text("Skeleton"), ImGui::Separator();
 
-	ImGui::Text("Player");
-	ImGui::Checkbox("Bone", &cvar.skeleton_player_bone);
-	ImGui::Checkbox("HitBox", &cvar.skeleton_player_hitbox);
-	ImGui::Separator();
-	ImGui::Text("View Model");
-	ImGui::Checkbox("Bone##1", &cvar.skeleton_view_model_bone);
-	ImGui::Checkbox("HitBox##1", &cvar.skeleton_view_model_hitbox);
-	ImGui::Separator();
-	ImGui::Text("World");
-	ImGui::Checkbox("Bone##2", &cvar.skeleton_world_bone);
-	ImGui::Checkbox("Hitbox##2", &cvar.skeleton_world_hitbox);
+	ImGui::Checkbox("Player Bone", &cvar.skeleton_player_bone);
+	ImGui::Checkbox("Player HitBox", &cvar.skeleton_player_hitbox);
+	ImGui::Checkbox("View Model Bone", &cvar.skeleton_view_model_bone);
+	ImGui::Checkbox("View Model HitBox", &cvar.skeleton_view_model_hitbox);
+	ImGui::Checkbox("World Bone", &cvar.skeleton_world_bone);
+	ImGui::Checkbox("World Hitbox", &cvar.skeleton_world_hitbox);
 }
 
-void MenuVisual3Window1()
+void MenuVisual2Window1()
 {
 	ImGui::Text("Player/ViewModel/World Texture"), ImGui::Separator();
 	if (ImGui::Button("Reload Textures From Folder"))
@@ -1109,18 +1097,138 @@ void MenuVisual3Window1()
 	ImGui::Checkbox("Player Thighpack", &cvar.visual_skins_thighpack);
 	ImGui::Checkbox("View Model", &cvar.visual_skins_viewmodel);
 	ImGui::Checkbox("View Model Hands", &cvar.visual_skins_viewmodel_hands);
-	ImGui::Checkbox("View Model No Hands", &cvar.visual_skins_viewmodel_nohands);
 	ImGui::Checkbox("Bullet Shell", &cvar.visual_skins_bullet_shell);
 	ImGui::Checkbox("World", &cvar.visual_skins_world);
 	ImGui::Checkbox("Chicken", &cvar.visual_skins_chicken);
 }
 
-void MenuVisual3Window2()
+void MenuVisual2Window2()
 {
 	ImGui::Text("Sky Texture"), ImGui::Separator();
 	if (ImGui::Button("Reload Textures From Folder"))
 		loadtexturesky = true;
 	ImGui::Checkbox("Sky", &cvar.visual_sky);
+}
+
+void MenuVisual3Window1()
+{
+	if (cvar.visual_skins_viewmodel_nohands)
+	{
+		ImGui::Text("Select Texture To Remove"), ImGui::Separator();
+		ImGui::Checkbox("Enable", &cvar.visual_skins_viewmodel_nohands);
+
+		cl_entity_s* vm = g_Engine.GetViewModel();
+		if (vm && vm->model)
+		{
+			studiohdr_t* pStudioHeader = (studiohdr_t*)g_Studio.Mod_Extradata(vm->model);
+			mstudiotexture_t* ptexture = (mstudiotexture_t*)((byte*)pStudioHeader + pStudioHeader->textureindex);
+
+			int textures = 0;
+			for (unsigned int i = 0; i < pStudioHeader->numtextures; i++)
+			{
+				if (ptexture[i].name && ptexture[i].index)
+				{
+					if (textures != 0 && (textures % 4))
+						ImGui::SameLine();
+
+					if (ImGui::ImageButtonID(textures + 1, (GLuint*)ptexture[i].index, ImVec2(60, 60)))
+					{
+						bool saved = false;
+						for (viewmodeltexture_t Tex : ViewModelTexture)
+						{
+							if (strstr(Tex.name, ptexture[i].name))
+								saved = true;
+						}
+						if (!saved)
+						{
+							viewmodeltexture_t Tex;
+							strcpy(Tex.name, ptexture[i].name);
+							ViewModelTexture.push_back(Tex);
+						}
+					}
+					if (ImGui::IsItemHovered())
+					{
+						ImGui::BeginTooltip();
+						ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+						ImGui::Text("Name: %s", ptexture[i].name);
+						ImGui::Text("Width: %d", ptexture[i].width);
+						ImGui::Text("Height: %d", ptexture[i].height);
+						ImGui::Image((GLuint*)ptexture[i].index, ImVec2(256, 256));
+						ImGui::PopTextWrapPos();
+						ImGui::EndTooltip();
+					}
+					textures++;
+				}
+			}
+		}
+		else
+			ImGui::Text("No View Model");
+	}
+	else
+	{
+		ImGui::Text("No Hands"), ImGui::Separator();
+		ImGui::Checkbox("Enable", &cvar.visual_skins_viewmodel_nohands);
+	}
+}
+
+void MenuVisual3Window2()
+{
+	if (cvar.visual_skins_viewmodel_nohands)
+	{
+		ImGui::Text("Selected Texture"), ImGui::Separator();
+		if (ImGui::Button("Save"))
+			SaveView();
+		ImGui::SameLine();
+		if (ImGui::Button("Load"))
+			LoadView();
+		ImGui::SameLine();
+		if (ImGui::Button("Clear All"))
+		{
+			ResetViewModelSkin();
+			ViewModelTexture.deque::clear();
+		}
+		
+		cl_entity_s* vm = g_Engine.GetViewModel();
+		if (vm && vm->model)
+		{
+			studiohdr_t* pStudioHeader = (studiohdr_t*)g_Studio.Mod_Extradata(vm->model);
+			mstudiotexture_t* ptexture = (mstudiotexture_t*)((byte*)pStudioHeader + pStudioHeader->textureindex);
+
+			int textures = 0;
+			for (unsigned int i = 0; i < pStudioHeader->numtextures; i++)
+			{
+				if (ptexture[i].name && ptexture[i].index)
+				{
+					for (int x = 0; x < ViewModelTexture.size(); x++)
+					{
+						if (strstr(ptexture[i].name, ViewModelTexture[x].name))
+						{
+							if (textures != 0 && (textures % 4))
+								ImGui::SameLine();
+
+							ImGui::Image((GLuint*)ptexture[i].index, ImVec2(60, 60));
+							if (ImGui::IsItemHovered())
+							{
+								ImGui::BeginTooltip();
+								ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+								ImGui::Text("Name: %s", ptexture[i].name);
+								ImGui::Text("Width: %d", ptexture[i].width);
+								ImGui::Text("Height: %d", ptexture[i].height);
+								ImGui::Image((GLuint*)ptexture[i].index, ImVec2(256, 256));
+								ImGui::PopTextWrapPos();
+								ImGui::EndTooltip();
+							}
+							textures++;
+						}
+					}
+				}
+			}
+		}
+		else
+			ImGui::Text("No View Model");
+	}
+	else
+		ImGui::Text("Enable To Open"), ImGui::Separator();
 }
 
 void MenuVisual4Window1()
@@ -1130,7 +1238,13 @@ void MenuVisual4Window1()
 		ImGui::Text("Select Texture To Replace"), ImGui::Separator();
 		ImGui::Checkbox("Enable", &cvar.visual_skins_wall);
 		ImGui::SameLine();
-		if (ImGui::Button("Reset All Textures"))
+		if (ImGui::Button("Save"))
+			savewall = true;
+		ImGui::SameLine();
+		if (ImGui::Button("Load"))
+			loadwall = true;
+		ImGui::SameLine();
+		if (ImGui::Button("Clear All Textures"))
 			resetall = true;
 		if (ImGui::IsItemHovered())
 		{
@@ -1140,12 +1254,6 @@ void MenuVisual4Window1()
 			ImGui::PopTextWrapPos();
 			ImGui::EndTooltip();
 		}
-		ImGui::SameLine();
-		if (ImGui::Button("Save"))
-			savewall = true;
-		ImGui::SameLine();
-		if (ImGui::Button("Load"))
-			loadwall = true;
 		cl_entity_s* ent = g_Engine.GetEntityByIndex(0);
 		if (!ent || !ent->model)return;
 		int textures = 0;
@@ -1565,16 +1673,59 @@ void DrawMenuChild(int total)
 	if (MenuTab == 5)
 	{
 		windowheight1 = 502;
-		windowheight2 = 251;
+		windowheight2 = 398;
 	}
 	if (MenuTab == 6)
 	{
-		windowheight1 = 208;
+		windowheight1 = 254;
+		windowheight2 = 65;
 	}
 	if (MenuTab == 7)
 	{
-		windowheight1 = 275;
-		windowheight2 = 65;
+		windowheight1 = 44;
+		windowheight2 = 23;
+		if (cvar.visual_skins_viewmodel_nohands)
+		{
+			cl_entity_s* vm = g_Engine.GetViewModel();
+			if (vm && vm->model)
+			{
+				studiohdr_t* pStudioHeader = (studiohdr_t*)g_Studio.Mod_Extradata(vm->model);
+				mstudiotexture_t* ptexture = (mstudiotexture_t*)((byte*)pStudioHeader + pStudioHeader->textureindex);
+
+				int textures = 0;
+				for (unsigned int i = 0; i < pStudioHeader->numtextures; i++)
+				{
+					if (ptexture[i].name && ptexture[i].index)
+					{
+						if (!(textures % 4))
+							windowheight1 += 68;
+						textures++;
+					}
+				}
+				windowheight2 += 21;
+				textures = 0;
+				for (unsigned int i = 0; i < pStudioHeader->numtextures; i++)
+				{
+					if (ptexture[i].name && ptexture[i].index)
+					{
+						for (viewmodeltexture_t Tex : ViewModelTexture)
+						{
+							if (strstr(ptexture[i].name, Tex.name))
+							{
+								if (!(textures % 4))
+									windowheight2 += 68;
+								textures++;
+							}
+						}
+					}
+				}
+			}
+			else
+			{
+				windowheight1 += 21;
+				windowheight2 += 42;
+			}
+		}
 	}
 	if (MenuTab == 8)
 	{
@@ -1677,7 +1828,7 @@ void DrawMenuChild(int total)
 			if (MenuTab == 5)
 				MenuVisual1Window1();
 			if (MenuTab == 6)
-				MenuVisual2Window2();
+				MenuVisual2Window1();
 			if (MenuTab == 7)
 				MenuVisual3Window1();
 			if (MenuTab == 8)
@@ -1698,7 +1849,7 @@ void DrawMenuChild(int total)
 				windowsize = ImGui::GetWindowSize();
 		}
 		ImGui::End();
-		if (MenuTab != 4 && MenuTab != 11 && MenuTab != 13 && MenuTab != 14 && MenuTab != 6)
+		if (MenuTab != 4 && MenuTab != 11 && MenuTab != 13 && MenuTab != 14)
 		{
 			float width = 0;
 			if (MenuTab == 12)
@@ -1718,6 +1869,8 @@ void DrawMenuChild(int total)
 					MenuIdHook2();
 				if (MenuTab == 5)
 					MenuVisual1Window2();
+				if (MenuTab == 6)
+					MenuVisual2Window2();
 				if (MenuTab == 7)
 					MenuVisual3Window2();
 				if (MenuTab == 8)
