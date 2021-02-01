@@ -212,12 +212,6 @@ int HUD_GetHullBounds(int hullnum, float* mins, float* maxs)
 	return 1;
 }
 
-int HUD_AddEntity(int type, struct cl_entity_s* ent, const char* modelname)
-{
-	fakeshit(ent);
-	return g_Client.HUD_AddEntity(type, ent, modelname);
-}
-
 int CL_IsThirdPerson(void)
 {
 	if (cvar.visual_chase_cam && bAliveLocal() && DrawVisuals && (!cvar.route_auto || cvar.route_draw_visual) && GetTickCount() - HudRedraw <= 100)
@@ -266,6 +260,7 @@ void ConsoleMessage()
 
 void HUD_Frame(double time)
 {
+	SetSkins();
 	ConsoleMessage();
 	Snapshot();
 	FindSpawn();
@@ -310,7 +305,6 @@ void V_CalcRefdef(struct ref_params_s* pparams)
 void HookClientFunctions()
 {
 	g_pClient->HUD_CreateEntities = HUD_CreateEntities;
-	g_pClient->HUD_AddEntity = HUD_AddEntity;
 	g_pClient->HUD_Frame = HUD_Frame;
 	g_pClient->HUD_Redraw = HUD_Redraw;
 	g_pClient->CL_CreateMove = CL_CreateMove;

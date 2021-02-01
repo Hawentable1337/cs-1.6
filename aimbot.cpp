@@ -110,13 +110,13 @@ void TriggerTarget(struct usercmd_s* cmd, playeraim_t Aim, float& m_flBestFOV, D
 
 			int detect = g_Engine.pEventAPI->EV_IndexFromTrace(&tr);
 
-			if ((cvar.bypass_trace_trigger && tr.fraction == 1 && !detect) || (!cvar.bypass_trace_trigger && detect == Aim.ent->index))
+			if ((cvar.bypass_trace_trigger && tr.fraction == 1 && !detect) || (!cvar.bypass_trace_trigger && detect == Aim.index))
 			{
 				bHitboxPointsVisible[point] = true;
 				if (Aim.PlayerAimHitbox[Model_Selected.numhitbox].HitboxPointsFOV[point] < m_flBestFOV)
 				{
 					m_flBestFOV = Aim.PlayerAimHitbox[Model_Selected.numhitbox].HitboxPointsFOV[point];
-					iTargetTrigger = Aim.ent->index;
+					iTargetTrigger = Aim.index;
 				}
 			}
 			else
@@ -140,7 +140,7 @@ void TriggerTarget(struct usercmd_s* cmd, playeraim_t Aim, float& m_flBestFOV, D
 						if (Aim.PlayerAimHitbox[Model_Selected.numhitbox].HitboxPointsFOV[point] < m_flBestFOV)
 						{
 							m_flBestFOV = Aim.PlayerAimHitbox[Model_Selected.numhitbox].HitboxPointsFOV[point];
-							iTargetTrigger = Aim.ent->index;
+							iTargetTrigger = Aim.index;
 						}
 					}
 				}
@@ -175,19 +175,19 @@ void TriggerTarget(struct usercmd_s* cmd, playeraim_t Aim, float& m_flBestFOV, D
 			g_Engine.pEventAPI->EV_SetTraceHull(2);
 
 			if (cvar.bypass_trace_trigger)
-				g_Engine.pEventAPI->EV_PlayerTrace(vEye, Aim.PlayerAimHitbox[HeadBox[Aim.ent->index]].HitboxMulti[point], PM_WORLD_ONLY, -1, &tr);
+				g_Engine.pEventAPI->EV_PlayerTrace(vEye, Aim.PlayerAimHitbox[HeadBox[Aim.index]].HitboxMulti[point], PM_WORLD_ONLY, -1, &tr);
 			else
-				g_Engine.pEventAPI->EV_PlayerTrace(vEye, Aim.PlayerAimHitbox[HeadBox[Aim.ent->index]].HitboxMulti[point], PM_GLASS_IGNORE, -1, &tr);
+				g_Engine.pEventAPI->EV_PlayerTrace(vEye, Aim.PlayerAimHitbox[HeadBox[Aim.index]].HitboxMulti[point], PM_GLASS_IGNORE, -1, &tr);
 
 			detect = g_Engine.pEventAPI->EV_IndexFromTrace(&tr);
 
-			if ((cvar.bypass_trace_trigger && tr.fraction == 1 && !detect) || (!cvar.bypass_trace_trigger && detect == Aim.ent->index))
+			if ((cvar.bypass_trace_trigger && tr.fraction == 1 && !detect) || (!cvar.bypass_trace_trigger && detect == Aim.index))
 			{
 				bHitboxPointsVisible[point] = true;
-				if (Aim.PlayerAimHitbox[HeadBox[Aim.ent->index]].HitboxPointsFOV[point] < m_flBestFOV)
+				if (Aim.PlayerAimHitbox[HeadBox[Aim.index]].HitboxPointsFOV[point] < m_flBestFOV)
 				{
-					m_flBestFOV = Aim.PlayerAimHitbox[HeadBox[Aim.ent->index]].HitboxPointsFOV[point];
-					iTargetTrigger = Aim.ent->index;
+					m_flBestFOV = Aim.PlayerAimHitbox[HeadBox[Aim.index]].HitboxPointsFOV[point];
+					iTargetTrigger = Aim.index;
 				}
 			}
 			else
@@ -203,15 +203,15 @@ void TriggerTarget(struct usercmd_s* cmd, playeraim_t Aim, float& m_flBestFOV, D
 					float flDistance = CurDistance();
 					float flRangeModifier = CurWallPierce();
 
-					int iCurrentDamage = FireBullets(vEye, Aim.PlayerAimHitbox[HeadBox[Aim.ent->index]].HitboxMulti[point], flDistance, iOriginalPenetration, iBulletType, iDamage, flRangeModifier);
+					int iCurrentDamage = FireBullets(vEye, Aim.PlayerAimHitbox[HeadBox[Aim.index]].HitboxMulti[point], flDistance, iOriginalPenetration, iBulletType, iDamage, flRangeModifier);
 
 					if (iCurrentDamage > 0)
 					{
 						bHitboxPointsVisible[point] = true;
-						if (Aim.PlayerAimHitbox[HeadBox[Aim.ent->index]].HitboxPointsFOV[point] < m_flBestFOV)
+						if (Aim.PlayerAimHitbox[HeadBox[Aim.index]].HitboxPointsFOV[point] < m_flBestFOV)
 						{
-							m_flBestFOV = Aim.PlayerAimHitbox[HeadBox[Aim.ent->index]].HitboxPointsFOV[point];
-							iTargetTrigger = Aim.ent->index;
+							m_flBestFOV = Aim.PlayerAimHitbox[HeadBox[Aim.index]].HitboxPointsFOV[point];
+							iTargetTrigger = Aim.index;
 						}
 					}
 				}
@@ -222,7 +222,7 @@ void TriggerTarget(struct usercmd_s* cmd, playeraim_t Aim, float& m_flBestFOV, D
 			if (bHitboxPointsVisible[SkeletonHitboxMatrix[i][0]] && bHitboxPointsVisible[SkeletonHitboxMatrix[i][1]])
 			{
 				Vector vEye = pmove->origin + pmove->view_ofs;
-				if (IsBoxIntersectingRay(Aim.PlayerAimHitbox[HeadBox[Aim.ent->index]].HitboxMulti[SkeletonHitboxMatrix[i][0]], Aim.PlayerAimHitbox[HeadBox[Aim.ent->index]].HitboxMulti[SkeletonHitboxMatrix[i][1]], vEye, vecSpreadDir))
+				if (IsBoxIntersectingRay(Aim.PlayerAimHitbox[HeadBox[Aim.index]].HitboxMulti[SkeletonHitboxMatrix[i][0]], Aim.PlayerAimHitbox[HeadBox[Aim.index]].HitboxMulti[SkeletonHitboxMatrix[i][1]], vEye, vecSpreadDir))
 				{
 					if (CanAttack() && GetTickCount() - delay > cvar.legit[g_Local.weapon.m_iWeaponID].trigger_delay_shot)
 						cmd->buttons |= IN_ATTACK;
@@ -281,12 +281,12 @@ void TriggerAimbot(struct usercmd_s* cmd)
 
 	for (playeraim_t Aim : PlayerAim)
 	{
-		if (idhook.FirstKillPlayer[Aim.ent->index] == 1 || cvar.aim_id_mode == 0)
+		if (idhook.FirstKillPlayer[Aim.index] == 1 || cvar.aim_id_mode == 0)
 		{
-			if (!bAlive(Aim.ent))
+			if (!bAlive(Aim.index))
 				continue;
 
-			if (!cvar.legit_trigger_team && g_Player[Aim.ent->index].iTeam == g_Local.iTeam)
+			if (!cvar.legit_trigger_team && g_Player[Aim.index].iTeam == g_Local.iTeam)
 				continue;
 
 			TriggerTarget(cmd, Aim, m_flBestFOV, delay, vecSpreadDir);
@@ -297,12 +297,12 @@ void TriggerAimbot(struct usercmd_s* cmd)
 	{
 		for (playeraim_t Aim : PlayerAim)
 		{
-			if (idhook.FirstKillPlayer[Aim.ent->index] < 2)
+			if (idhook.FirstKillPlayer[Aim.index] < 2)
 			{
-				if (!bAlive(Aim.ent))
+				if (!bAlive(Aim.index))
 					continue;
 
-				if (!cvar.legit_trigger_team && g_Player[Aim.ent->index].iTeam == g_Local.iTeam)
+				if (!cvar.legit_trigger_team && g_Player[Aim.index].iTeam == g_Local.iTeam)
 					continue;
 
 				TriggerTarget(cmd, Aim, m_flBestFOV, delay, vecSpreadDir);
@@ -381,14 +381,14 @@ void LegitSelect(playeraim_t Aim, Vector vecFOV, float& flBestFOV, float flSpeed
 
 		int detect = g_Engine.pEventAPI->EV_IndexFromTrace(&tr);
 
-		if ((cvar.bypass_trace_legit && tr.fraction == 1 && !detect) || (!cvar.bypass_trace_legit && detect == Aim.ent->index))
+		if ((cvar.bypass_trace_legit && tr.fraction == 1 && !detect) || (!cvar.bypass_trace_legit && detect == Aim.index))
 		{
 			Vector vEye = pmove->origin + pmove->view_ofs;
 			float fov = vecFOV.AngleBetween(Aim.PlayerAimHitbox[Model_Selected.numhitbox].Hitbox - vEye);
 			if (fov < flBestFOV)
 			{
 				flBestFOV = fov;
-				iTargetLegit = Aim.ent->index;
+				iTargetLegit = Aim.index;
 				iHitboxLegit = Model_Selected.numhitbox;
 				vAimOriginLegit = Aim.PlayerAimHitbox[Model_Selected.numhitbox].Hitbox;
 				if (flSpeedScaleFov > 0 && flSpeedScaleFov <= 100 && g_Local.vPunchangle.IsZero() && !isnan(Aim.PlayerAimHitbox[Model_Selected.numhitbox].HitboxFOV))
@@ -405,24 +405,24 @@ void LegitSelect(playeraim_t Aim, Vector vecFOV, float& flBestFOV, float flSpeed
 		Vector vEye = pmove->origin + pmove->view_ofs;
 
 		if (cvar.bypass_trace_legit)
-			g_Engine.pEventAPI->EV_PlayerTrace(vEye, Aim.PlayerAimHitbox[HeadBox[Aim.ent->index]].Hitbox, PM_WORLD_ONLY, -1, &tr);
+			g_Engine.pEventAPI->EV_PlayerTrace(vEye, Aim.PlayerAimHitbox[HeadBox[Aim.index]].Hitbox, PM_WORLD_ONLY, -1, &tr);
 		else
-			g_Engine.pEventAPI->EV_PlayerTrace(vEye, Aim.PlayerAimHitbox[HeadBox[Aim.ent->index]].Hitbox, PM_GLASS_IGNORE, -1, &tr);
+			g_Engine.pEventAPI->EV_PlayerTrace(vEye, Aim.PlayerAimHitbox[HeadBox[Aim.index]].Hitbox, PM_GLASS_IGNORE, -1, &tr);
 
 		int detect = g_Engine.pEventAPI->EV_IndexFromTrace(&tr);
 
-		if ((cvar.bypass_trace_legit && tr.fraction == 1 && !detect) || (!cvar.bypass_trace_legit && detect == Aim.ent->index))
+		if ((cvar.bypass_trace_legit && tr.fraction == 1 && !detect) || (!cvar.bypass_trace_legit && detect == Aim.index))
 		{
 			Vector vEye = pmove->origin + pmove->view_ofs;
-			float fov = vecFOV.AngleBetween(Aim.PlayerAimHitbox[HeadBox[Aim.ent->index]].Hitbox - vEye);
+			float fov = vecFOV.AngleBetween(Aim.PlayerAimHitbox[HeadBox[Aim.index]].Hitbox - vEye);
 			if (fov < flBestFOV)
 			{
 				flBestFOV = fov;
-				iTargetLegit = Aim.ent->index;
-				iHitboxLegit = HeadBox[Aim.ent->index];
-				vAimOriginLegit = Aim.PlayerAimHitbox[HeadBox[Aim.ent->index]].Hitbox;
-				if (flSpeedScaleFov > 0 && flSpeedScaleFov <= 100 && g_Local.vPunchangle.IsZero() && !isnan(Aim.PlayerAimHitbox[HeadBox[Aim.ent->index]].HitboxFOV))
-					flSpeed = flSpeed - (((Aim.PlayerAimHitbox[HeadBox[Aim.ent->index]].HitboxFOV * (flSpeed / m_flCurrentFOV)) * flSpeedScaleFov) / 100);
+				iTargetLegit = Aim.index;
+				iHitboxLegit = HeadBox[Aim.index];
+				vAimOriginLegit = Aim.PlayerAimHitbox[HeadBox[Aim.index]].Hitbox;
+				if (flSpeedScaleFov > 0 && flSpeedScaleFov <= 100 && g_Local.vPunchangle.IsZero() && !isnan(Aim.PlayerAimHitbox[HeadBox[Aim.index]].HitboxFOV))
+					flSpeed = flSpeed - (((Aim.PlayerAimHitbox[HeadBox[Aim.index]].HitboxFOV * (flSpeed / m_flCurrentFOV)) * flSpeedScaleFov) / 100);
 			}
 		}
 	}
@@ -504,12 +504,12 @@ void LegitAimbot(struct usercmd_s* cmd)
 
 	for (playeraim_t Aim : PlayerAim)
 	{
-		if (idhook.FirstKillPlayer[Aim.ent->index] == 1 || cvar.aim_id_mode == 0)
+		if (idhook.FirstKillPlayer[Aim.index] == 1 || cvar.aim_id_mode == 0)
 		{
-			if (!bAlive(Aim.ent))
+			if (!bAlive(Aim.index))
 				continue;
 
-			if (!cvar.legit_team && g_Player[Aim.ent->index].iTeam == g_Local.iTeam)
+			if (!cvar.legit_team && g_Player[Aim.index].iTeam == g_Local.iTeam)
 				continue;
 
 			LegitSelect(Aim, vecFOV, flBestFOV, flSpeedScaleFov, flSpeed);
@@ -520,12 +520,12 @@ void LegitAimbot(struct usercmd_s* cmd)
 	{
 		for (playeraim_t Aim : PlayerAim)
 		{
-			if (idhook.FirstKillPlayer[Aim.ent->index] < 2)
+			if (idhook.FirstKillPlayer[Aim.index] < 2)
 			{
-				if (!bAlive(Aim.ent))
+				if (!bAlive(Aim.index))
 					continue;
 
-				if (!cvar.legit_team && g_Player[Aim.ent->index].iTeam == g_Local.iTeam)
+				if (!cvar.legit_team && g_Player[Aim.index].iTeam == g_Local.iTeam)
 					continue;
 
 				LegitSelect(Aim, vecFOV, flBestFOV, flSpeedScaleFov, flSpeed);
@@ -635,7 +635,7 @@ void LegitAimbot(struct usercmd_s* cmd)
 			}
 			for (playeraim_t Aim : PlayerAim)
 			{
-				if (Aim.ent->index != iTargetLegit)
+				if (Aim.index != iTargetLegit)
 					continue;
 
 				bool hitboxselected = false;
@@ -673,7 +673,7 @@ void LegitAimbot(struct usercmd_s* cmd)
 				{
 					for (unsigned int i = 0; i < 12; i++)
 					{
-						if (IsBoxIntersectingRay(Aim.PlayerAimHitbox[HeadBox[Aim.ent->index]].HitboxMulti[SkeletonHitboxMatrix[i][0]], Aim.PlayerAimHitbox[HeadBox[Aim.ent->index]].HitboxMulti[SkeletonHitboxMatrix[i][1]], vEye, vecSpreadDir))
+						if (IsBoxIntersectingRay(Aim.PlayerAimHitbox[HeadBox[Aim.index]].HitboxMulti[SkeletonHitboxMatrix[i][0]], Aim.PlayerAimHitbox[HeadBox[Aim.index]].HitboxMulti[SkeletonHitboxMatrix[i][1]], vEye, vecSpreadDir))
 						{
 							bBlock = false;
 							break;
@@ -751,14 +751,14 @@ void KnifeSelect(playeraim_t Aim, float& flDist)
 
 		int detect = g_Engine.pEventAPI->EV_IndexFromTrace(&tr);
 
-		if ((cvar.bypass_trace_knife && tr.fraction == 1 && !detect) || (!cvar.bypass_trace_knife && detect == Aim.ent->index))
+		if ((cvar.bypass_trace_knife && tr.fraction == 1 && !detect) || (!cvar.bypass_trace_knife && detect == Aim.index))
 		{
 			if (Aim.PlayerAimHitbox[Model_Selected.numhitbox].HitboxFOV <= cvar.knifebot_fov)
 			{
 				if (Aim.PlayerAimHitbox[Model_Selected.numhitbox].Hitbox.Distance(pmove->origin + pmove->view_ofs) < flDist)
 				{
 					flDist = Aim.PlayerAimHitbox[Model_Selected.numhitbox].Hitbox.Distance(pmove->origin + pmove->view_ofs);
-					iTargetKnife = Aim.ent->index;
+					iTargetKnife = Aim.index;
 					vAimOriginKnife = Aim.PlayerAimHitbox[Model_Selected.numhitbox].Hitbox;
 					iHitboxKnife = Model_Selected.numhitbox;
 					break;
@@ -775,22 +775,22 @@ void KnifeSelect(playeraim_t Aim, float& flDist)
 		Vector vEye = pmove->origin + pmove->view_ofs;
 
 		if (cvar.bypass_trace_knife)
-			g_Engine.pEventAPI->EV_PlayerTrace(vEye, Aim.PlayerAimHitbox[HeadBox[Aim.ent->index]].Hitbox, PM_WORLD_ONLY, -1, &tr);
+			g_Engine.pEventAPI->EV_PlayerTrace(vEye, Aim.PlayerAimHitbox[HeadBox[Aim.index]].Hitbox, PM_WORLD_ONLY, -1, &tr);
 		else
-			g_Engine.pEventAPI->EV_PlayerTrace(vEye, Aim.PlayerAimHitbox[HeadBox[Aim.ent->index]].Hitbox, PM_GLASS_IGNORE, -1, &tr);
+			g_Engine.pEventAPI->EV_PlayerTrace(vEye, Aim.PlayerAimHitbox[HeadBox[Aim.index]].Hitbox, PM_GLASS_IGNORE, -1, &tr);
 
 		int detect = g_Engine.pEventAPI->EV_IndexFromTrace(&tr);
 
-		if ((cvar.bypass_trace_knife && tr.fraction == 1 && !detect) || (!cvar.bypass_trace_knife && detect == Aim.ent->index))
+		if ((cvar.bypass_trace_knife && tr.fraction == 1 && !detect) || (!cvar.bypass_trace_knife && detect == Aim.index))
 		{
-			if (Aim.PlayerAimHitbox[HeadBox[Aim.ent->index]].HitboxFOV <= cvar.knifebot_fov)
+			if (Aim.PlayerAimHitbox[HeadBox[Aim.index]].HitboxFOV <= cvar.knifebot_fov)
 			{
-				if (Aim.PlayerAimHitbox[HeadBox[Aim.ent->index]].Hitbox.Distance(pmove->origin + pmove->view_ofs) < flDist)
+				if (Aim.PlayerAimHitbox[HeadBox[Aim.index]].Hitbox.Distance(pmove->origin + pmove->view_ofs) < flDist)
 				{
-					flDist = Aim.PlayerAimHitbox[HeadBox[Aim.ent->index]].Hitbox.Distance(pmove->origin + pmove->view_ofs);
-					iTargetKnife = Aim.ent->index;
-					vAimOriginKnife = Aim.PlayerAimHitbox[HeadBox[Aim.ent->index]].Hitbox;
-					iHitboxKnife = HeadBox[Aim.ent->index];
+					flDist = Aim.PlayerAimHitbox[HeadBox[Aim.index]].Hitbox.Distance(pmove->origin + pmove->view_ofs);
+					iTargetKnife = Aim.index;
+					vAimOriginKnife = Aim.PlayerAimHitbox[HeadBox[Aim.index]].Hitbox;
+					iHitboxKnife = HeadBox[Aim.index];
 				}
 			}
 		}
@@ -806,12 +806,12 @@ void KnifeAimBot(struct usercmd_s* cmd)
 
 	for (playeraim_t Aim : PlayerAim)
 	{
-		if (idhook.FirstKillPlayer[Aim.ent->index] == 1 || cvar.aim_id_mode == 0)
+		if (idhook.FirstKillPlayer[Aim.index] == 1 || cvar.aim_id_mode == 0)
 		{
-			if (!bAlive(Aim.ent))
+			if (!bAlive(Aim.index))
 				continue;
 
-			if (!cvar.knifebot_team && g_Player[Aim.ent->index].iTeam == g_Local.iTeam)
+			if (!cvar.knifebot_team && g_Player[Aim.index].iTeam == g_Local.iTeam)
 				continue;
 
 			KnifeSelect(Aim, flDist);
@@ -822,12 +822,12 @@ void KnifeAimBot(struct usercmd_s* cmd)
 	{
 		for (playeraim_t Aim : PlayerAim)
 		{
-			if (idhook.FirstKillPlayer[Aim.ent->index] < 2)
+			if (idhook.FirstKillPlayer[Aim.index] < 2)
 			{
-				if (!bAlive(Aim.ent))
+				if (!bAlive(Aim.index))
 					continue;
 
-				if (!cvar.knifebot_team && g_Player[Aim.ent->index].iTeam == g_Local.iTeam)
+				if (!cvar.knifebot_team && g_Player[Aim.index].iTeam == g_Local.iTeam)
 					continue;
 
 				KnifeSelect(Aim, flDist);
@@ -893,7 +893,7 @@ void RageTarget(playeraim_t Aim, float& m_flBestDist, float& m_flBestFOV, int hi
 		if (Aim.PlayerAimHitbox[hitbox].Hitbox.Distance(pmove->origin + pmove->view_ofs) < m_flBestDist)
 		{
 			m_flBestDist = Aim.PlayerAimHitbox[hitbox].Hitbox.Distance(pmove->origin + pmove->view_ofs);
-			iTargetRage = Aim.ent->index;
+			iTargetRage = Aim.index;
 			vAimOriginRage = Aim.PlayerAimHitbox[hitbox].Hitbox;
 			iHitboxRage = hitbox;
 		}
@@ -905,7 +905,7 @@ void RageTarget(playeraim_t Aim, float& m_flBestDist, float& m_flBestFOV, int hi
 			if (Aim.PlayerAimHitbox[hitbox].HitboxFOV < m_flBestFOV)
 			{
 				m_flBestFOV = Aim.PlayerAimHitbox[hitbox].HitboxFOV;
-				iTargetRage = Aim.ent->index;
+				iTargetRage = Aim.index;
 				vAimOriginRage = Aim.PlayerAimHitbox[hitbox].Hitbox;
 				iHitboxRage = hitbox;
 			}
@@ -915,7 +915,7 @@ void RageTarget(playeraim_t Aim, float& m_flBestDist, float& m_flBestFOV, int hi
 			if (Aim.PlayerAimHitbox[hitbox].Hitbox.Distance(pmove->origin + pmove->view_ofs) < m_flBestDist)
 			{
 				m_flBestDist = Aim.PlayerAimHitbox[hitbox].Hitbox.Distance(pmove->origin + pmove->view_ofs);
-				iTargetRage = Aim.ent->index;
+				iTargetRage = Aim.index;
 				vAimOriginRage = Aim.PlayerAimHitbox[hitbox].Hitbox;
 				iHitboxRage = hitbox;
 			}
@@ -928,7 +928,7 @@ void RageTarget(playeraim_t Aim, float& m_flBestDist, float& m_flBestFOV, int hi
 				{
 					m_flBestFOV = Aim.PlayerAimHitbox[hitbox].HitboxFOV;
 					m_flBestDist = Aim.PlayerAimHitbox[hitbox].Hitbox.Distance(pmove->origin + pmove->view_ofs);
-					iTargetRage = Aim.ent->index;
+					iTargetRage = Aim.index;
 					vAimOriginRage = Aim.PlayerAimHitbox[hitbox].Hitbox;
 					iHitboxRage = hitbox;
 				}
@@ -961,7 +961,7 @@ void RageSelect(playeraim_t Aim, float& m_flBestDist, float& m_flBestFOV)
 
 		int detect = g_Engine.pEventAPI->EV_IndexFromTrace(&tr);
 
-		if ((cvar.bypass_trace_rage && tr.fraction == 1 && !detect) || (!cvar.bypass_trace_rage && detect == Aim.ent->index))
+		if ((cvar.bypass_trace_rage && tr.fraction == 1 && !detect) || (!cvar.bypass_trace_rage && detect == Aim.index))
 		{
 			if (Aim.PlayerAimHitbox[Model_Selected.numhitbox].HitboxFOV <= cvar.rage_fov)
 			{
@@ -1002,16 +1002,16 @@ void RageSelect(playeraim_t Aim, float& m_flBestDist, float& m_flBestFOV)
 		Vector vEye = pmove->origin + pmove->view_ofs;
 
 		if (cvar.bypass_trace_rage)
-			g_Engine.pEventAPI->EV_PlayerTrace(vEye, Aim.PlayerAimHitbox[HeadBox[Aim.ent->index]].Hitbox, PM_WORLD_ONLY, -1, &tr);
+			g_Engine.pEventAPI->EV_PlayerTrace(vEye, Aim.PlayerAimHitbox[HeadBox[Aim.index]].Hitbox, PM_WORLD_ONLY, -1, &tr);
 		else
-			g_Engine.pEventAPI->EV_PlayerTrace(vEye, Aim.PlayerAimHitbox[HeadBox[Aim.ent->index]].Hitbox, PM_GLASS_IGNORE, -1, &tr);
+			g_Engine.pEventAPI->EV_PlayerTrace(vEye, Aim.PlayerAimHitbox[HeadBox[Aim.index]].Hitbox, PM_GLASS_IGNORE, -1, &tr);
 
 		int detect = g_Engine.pEventAPI->EV_IndexFromTrace(&tr);
 
-		if ((cvar.bypass_trace_rage && tr.fraction == 1 && !detect) || (!cvar.bypass_trace_rage && detect == Aim.ent->index))
+		if ((cvar.bypass_trace_rage && tr.fraction == 1 && !detect) || (!cvar.bypass_trace_rage && detect == Aim.index))
 		{
-			if (Aim.PlayerAimHitbox[HeadBox[Aim.ent->index]].HitboxFOV <= cvar.rage_fov)
-				RageTarget(Aim, m_flBestDist, m_flBestFOV, HeadBox[Aim.ent->index]);
+			if (Aim.PlayerAimHitbox[HeadBox[Aim.index]].HitboxFOV <= cvar.rage_fov)
+				RageTarget(Aim, m_flBestDist, m_flBestFOV, HeadBox[Aim.index]);
 		}
 		else
 		{
@@ -1024,12 +1024,12 @@ void RageSelect(playeraim_t Aim, float& m_flBestDist, float& m_flBestFOV)
 				float flDistance = CurDistance();
 				float flRangeModifier = CurWallPierce();
 
-				int iCurrentDamage = FireBullets(vEye, Aim.PlayerAimHitbox[HeadBox[Aim.ent->index]].Hitbox, flDistance, iOriginalPenetration, iBulletType, iDamage, flRangeModifier);
+				int iCurrentDamage = FireBullets(vEye, Aim.PlayerAimHitbox[HeadBox[Aim.index]].Hitbox, flDistance, iOriginalPenetration, iBulletType, iDamage, flRangeModifier);
 
 				if (iCurrentDamage > 0)
 				{
-					if (Aim.PlayerAimHitbox[HeadBox[Aim.ent->index]].HitboxFOV <= cvar.rage_fov)
-						RageTarget(Aim, m_flBestDist, m_flBestFOV, HeadBox[Aim.ent->index]);
+					if (Aim.PlayerAimHitbox[HeadBox[Aim.index]].HitboxFOV <= cvar.rage_fov)
+						RageTarget(Aim, m_flBestDist, m_flBestFOV, HeadBox[Aim.index]);
 				}
 			}
 		}
@@ -1046,15 +1046,15 @@ void RageAimbot(struct usercmd_s* cmd)
 
 	for (playeraim_t Aim : PlayerAim)
 	{
-		if (idhook.FirstKillPlayer[Aim.ent->index] == 1 || cvar.aim_id_mode == 0)
+		if (idhook.FirstKillPlayer[Aim.index] == 1 || cvar.aim_id_mode == 0)
 		{
-			if (!bAlive(Aim.ent))
+			if (!bAlive(Aim.index))
 				continue;
 
-			if (!cvar.rage_team && g_Player[Aim.ent->index].iTeam == g_Local.iTeam)
+			if (!cvar.rage_team && g_Player[Aim.index].iTeam == g_Local.iTeam)
 				continue;
 
-			if (!cvar.rage_shield_attack && (Aim.ent->curstate.sequence == 97 || Aim.ent->curstate.sequence == 98))
+			if (!cvar.rage_shield_attack && (Aim.sequence == 97 || Aim.sequence == 98))
 				continue;
 
 			RageSelect(Aim, m_flBestDist, m_flBestFOV);
@@ -1065,15 +1065,15 @@ void RageAimbot(struct usercmd_s* cmd)
 	{
 		for (playeraim_t Aim : PlayerAim)
 		{
-			if (idhook.FirstKillPlayer[Aim.ent->index] < 2)
+			if (idhook.FirstKillPlayer[Aim.index] < 2)
 			{
-				if (!bAlive(Aim.ent))
+				if (!bAlive(Aim.index))
 					continue;
 
-				if (!cvar.rage_team && g_Player[Aim.ent->index].iTeam == g_Local.iTeam)
+				if (!cvar.rage_team && g_Player[Aim.index].iTeam == g_Local.iTeam)
 					continue;
 
-				if (!cvar.rage_shield_attack && (Aim.ent->curstate.sequence == 97 || Aim.ent->curstate.sequence == 98))
+				if (!cvar.rage_shield_attack && (Aim.sequence == 97 || Aim.sequence == 98))
 					continue;
 
 				RageSelect(Aim, m_flBestDist, m_flBestFOV);
@@ -1259,7 +1259,7 @@ void KnifeDraw()
 	{
 		for (playeraim_t Aim : PlayerAim)
 		{
-			if (Aim.ent->index != iTargetKnife)
+			if (Aim.index != iTargetKnife)
 				continue;
 			for (unsigned int i = 0; i < 12; i++)
 			{
@@ -1280,7 +1280,7 @@ void RageDraw()
 	{
 		for (playeraim_t Aim : PlayerAim)
 		{
-			if (Aim.ent->index != iTargetRage)
+			if (Aim.index != iTargetRage)
 				continue;
 			for (unsigned int i = 0; i < 12; i++)
 			{
@@ -1301,7 +1301,7 @@ void LegitDraw()
 	{
 		for (playeraim_t Aim : PlayerAim)
 		{
-			if (Aim.ent->index != iTargetLegit)
+			if (Aim.index != iTargetLegit)
 				continue;
 			for (unsigned int i = 0; i < 12; i++)
 			{
@@ -1355,7 +1355,7 @@ void TriggerDrawTarget(playeraim_t Aim)
 
 			int detect = g_Engine.pEventAPI->EV_IndexFromTrace(&tr);
 
-			if ((cvar.bypass_trace_trigger && tr.fraction == 1 && !detect) || (!cvar.bypass_trace_trigger && detect == Aim.ent->index))
+			if ((cvar.bypass_trace_trigger && tr.fraction == 1 && !detect) || (!cvar.bypass_trace_trigger && detect == Aim.index))
 				bHitboxPointsVisible[point] = true;
 			else
 			{
@@ -1403,13 +1403,13 @@ void TriggerDrawTarget(playeraim_t Aim)
 			g_Engine.pEventAPI->EV_SetTraceHull(2);
 
 			if (cvar.bypass_trace_trigger)
-				g_Engine.pEventAPI->EV_PlayerTrace(vEye, Aim.PlayerAimHitbox[HeadBox[Aim.ent->index]].HitboxMulti[point], PM_WORLD_ONLY, -1, &tr);
+				g_Engine.pEventAPI->EV_PlayerTrace(vEye, Aim.PlayerAimHitbox[HeadBox[Aim.index]].HitboxMulti[point], PM_WORLD_ONLY, -1, &tr);
 			else
-				g_Engine.pEventAPI->EV_PlayerTrace(vEye, Aim.PlayerAimHitbox[HeadBox[Aim.ent->index]].HitboxMulti[point], PM_GLASS_IGNORE, -1, &tr);
+				g_Engine.pEventAPI->EV_PlayerTrace(vEye, Aim.PlayerAimHitbox[HeadBox[Aim.index]].HitboxMulti[point], PM_GLASS_IGNORE, -1, &tr);
 
 			detect = g_Engine.pEventAPI->EV_IndexFromTrace(&tr);
 
-			if ((cvar.bypass_trace_trigger && tr.fraction == 1 && !detect) || (!cvar.bypass_trace_trigger && detect == Aim.ent->index))
+			if ((cvar.bypass_trace_trigger && tr.fraction == 1 && !detect) || (!cvar.bypass_trace_trigger && detect == Aim.index))
 				bHitboxPointsVisible[point] = true;
 			else
 			{
@@ -1424,7 +1424,7 @@ void TriggerDrawTarget(playeraim_t Aim)
 					float flDistance = CurDistance();
 					float flRangeModifier = CurWallPierce();
 
-					int iCurrentDamage = FireBullets(vEye, Aim.PlayerAimHitbox[HeadBox[Aim.ent->index]].HitboxMulti[point], flDistance, iOriginalPenetration, iBulletType, iDamage, flRangeModifier);
+					int iCurrentDamage = FireBullets(vEye, Aim.PlayerAimHitbox[HeadBox[Aim.index]].HitboxMulti[point], flDistance, iOriginalPenetration, iBulletType, iDamage, flRangeModifier);
 
 					if (iCurrentDamage > 0)
 						bHitboxPointsVisible[point] = true;
@@ -1437,7 +1437,7 @@ void TriggerDrawTarget(playeraim_t Aim)
 			if (bHitboxPointsVisible[SkeletonHitboxMatrix[i][0]] && bHitboxPointsVisible[SkeletonHitboxMatrix[i][1]])
 			{
 				float CalcAnglesMin[2], CalcAnglesMax[2];
-				if (WorldToScreen(Aim.PlayerAimHitbox[HeadBox[Aim.ent->index]].HitboxMulti[SkeletonHitboxMatrix[i][0]], CalcAnglesMin) && WorldToScreen(Aim.PlayerAimHitbox[HeadBox[Aim.ent->index]].HitboxMulti[SkeletonHitboxMatrix[i][1]], CalcAnglesMax))
+				if (WorldToScreen(Aim.PlayerAimHitbox[HeadBox[Aim.index]].HitboxMulti[SkeletonHitboxMatrix[i][0]], CalcAnglesMin) && WorldToScreen(Aim.PlayerAimHitbox[HeadBox[Aim.index]].HitboxMulti[SkeletonHitboxMatrix[i][1]], CalcAnglesMax))
 					ImGui::GetCurrentWindow()->DrawList->AddLine({ IM_ROUND(CalcAnglesMin[0]), IM_ROUND(CalcAnglesMin[1]) }, { IM_ROUND(CalcAnglesMax[0]), IM_ROUND(CalcAnglesMax[1]) }, Green());
 			}
 		}
@@ -1487,7 +1487,7 @@ void TriggerDraw()
 	{
 		for (playeraim_t Aim : PlayerAim)
 		{
-			if (Aim.ent->index != iTargetTrigger)
+			if (Aim.index != iTargetTrigger)
 				continue;
 
 			TriggerDrawTarget(Aim);

@@ -175,6 +175,8 @@ public:
 
 	float skeleton_player_bone;
 	float skeleton_player_hitbox;
+	float skeleton_player_weapon_bone;
+	float skeleton_player_weapon_hitbox;
 	float skeleton_view_model_bone;
 	float skeleton_view_model_hitbox;
 	float skeleton_world_bone;
@@ -210,13 +212,7 @@ public:
 	float radar_size_x;
 	float radar_size_y;
 
-	float model_type;
-	float model_move;
 	float model_preview;
-	float model_pos_x;
-	float model_pos_y;
-
-	float fake_shit;
 };
 
 extern CVARlist cvar;

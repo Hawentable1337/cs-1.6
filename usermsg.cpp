@@ -19,9 +19,12 @@ int ScoreAttrib(const char* pszName, int iSize, void* pbuf)
 {
 	BEGIN_READ(pbuf, iSize);
 	int id = READ_BYTE();
-	int info = READ_BYTE();
-	g_Player[id].bVip = (info & (1 << 2));
-	g_Player[id].bAliveInScoreTab = !(info & (1 << 0));
+	int info = READ_BYTE(); 
+	if (id > 0 && id <= g_Engine.GetMaxClients())
+	{
+		g_Player[id].bVip = (info & (1 << 2));
+		g_Player[id].bAliveInScoreTab = !(info & (1 << 0));
+	}
 	return pScoreAttrib(pszName, iSize, pbuf);
 }
 
@@ -38,7 +41,7 @@ int ResetHUD(const char *pszName, int iSize, void *pbuf)
 	ResetSpawn();
 	Sound_No_Index.deque::clear();
 	Sound_Index.deque::clear();
-	for (unsigned int i = 0; i < 33; i++)
+	for (unsigned int i = 1; i <= g_Engine.GetMaxClients(); i++)
 		g_Player[i].iHealth = 100;
 	return pResetHUD(pszName, iSize, pbuf);
 }

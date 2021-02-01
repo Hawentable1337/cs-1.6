@@ -17,9 +17,8 @@ extern deque<worldhitbox_t> WorldHitbox;
 
 typedef struct
 {
-	cl_entity_s* ent;
-	int index; 
-	int parent;
+	int index;
+	bool dummy;
 	Vector vBone;
 	Vector vBoneParent;
 } playerbone_t;
@@ -27,14 +26,15 @@ extern deque<playerbone_t> PlayerBone;
 
 typedef struct
 {
-	cl_entity_s* ent;
 	int index;
+	bool dummy;
 	Vector vCubePointsTrans[8];
 } playerhitbox_t;
 extern deque<playerhitbox_t> PlayerHitbox;
 
 typedef struct
 {
+	bool dummy;
 	int Hitbox;
 	Vector HitboxPos;
 } playerhitboxnum_t;

@@ -30,7 +30,7 @@ extern PlayerInfo g_Player[33];
 unsigned int Cstrike_SequenceInfo[];
 void ThirdPerson(struct ref_params_s* pparams);
 void RunHLCommands();
-bool bAlive(cl_entity_s* ent);
+bool bAlive(int index);
 bool bAliveLocal();
 void LogToFile(const char* fmt, ...);
 

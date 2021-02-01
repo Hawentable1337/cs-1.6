@@ -2,11 +2,19 @@
 #define _PLAYERDUMMY_
 
 extern cl_entity_s playerdummy;
-extern cl_entity_s playerdummys[33];
 
-extern float modelscreenx, modelscreeny, modelscreenw, modelscreenh;
+typedef struct
+{
+	model_s* mod;
+} playermodel_t;
+
+extern deque<playermodel_t> PlayerModel;
+
+extern float modelscreenw, modelscreenh;
+extern int model_type;
+extern float esph;
+extern float model_pos_x, model_pos_y;
 
 void Playerdummy();
-void fakeshit(cl_entity_s* ent);
 
 #endif

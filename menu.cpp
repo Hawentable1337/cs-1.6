@@ -1050,7 +1050,6 @@ void MenuVisual1Window1()
 	ImGui::Checkbox("Crosshair", &cvar.visual_crosshair);
 	ImGui::Checkbox("Esp Preview", &cvar.model_preview);
 	ImGui::Checkbox("Grenade Trajectory", &cvar.visual_grenade_trajectory);
-	ImGui::Checkbox("Fake Model", &cvar.fake_shit);
 	ImGui::Checkbox("Kill Sound", &cvar.radio_kill_sound);
 	ImGui::Checkbox("Light Map", &cvar.visual_lightmap);
 	ImGui::Checkbox("My Weapon Name", &cvar.visual_weapon_local);
@@ -1079,6 +1078,8 @@ void MenuVisual1Window2()
 
 	ImGui::Checkbox("Player Bone", &cvar.skeleton_player_bone);
 	ImGui::Checkbox("Player HitBox", &cvar.skeleton_player_hitbox);
+	ImGui::Checkbox("Player Weapon Bone", &cvar.skeleton_player_weapon_bone);
+	ImGui::Checkbox("Player Weapon HitBox", &cvar.skeleton_player_weapon_hitbox);
 	ImGui::Checkbox("View Model Bone", &cvar.skeleton_view_model_bone);
 	ImGui::Checkbox("View Model HitBox", &cvar.skeleton_view_model_hitbox);
 	ImGui::Checkbox("World Bone", &cvar.skeleton_world_bone);
@@ -1672,8 +1673,8 @@ void DrawMenuChild(int total)
 	}
 	if (MenuTab == 5)
 	{
-		windowheight1 = 502;
-		windowheight2 = 398;
+		windowheight1 = 481;
+		windowheight2 = 440;
 	}
 	if (MenuTab == 6)
 	{
@@ -1849,6 +1850,7 @@ void DrawMenuChild(int total)
 				windowsize = ImGui::GetWindowSize();
 		}
 		ImGui::End();
+		
 		if (MenuTab != 4 && MenuTab != 11 && MenuTab != 13 && MenuTab != 14)
 		{
 			float width = 0;
@@ -1885,6 +1887,7 @@ void DrawMenuChild(int total)
 			}
 			ImGui::End();
 		}
+
 		if (MenuTab == 1 && Model_Aim_Select.size())
 		{
 			ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x / 2 + windowsize.x, 0), ImGuiCond_Always, ImVec2(0, showspeed));
@@ -1896,27 +1899,40 @@ void DrawMenuChild(int total)
 			}
 			ImGui::End();
 		}
-		if (cvar.model_preview && bAliveLocal() && modelmenu)
+
+		if (cvar.model_preview && (pmove->iuser1 == OBS_NONE || pmove->iuser1 == OBS_ROAMING) && modelmenu)
 		{
 			float WindowBorderSize = ImGui::GetStyle().WindowBorderSize;
 			ImGui::GetStyle().WindowBorderSize = 1.0f;
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(200, 300));
 			ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
-			ImGui::SetNextWindowPos(ImVec2(cvar.model_pos_x, cvar.model_pos_y), ImGuiCond_Once);
-			ImGui::SetNextWindowSize(ImVec2(200, 350));
-			ImGui::Begin("esppreview", reinterpret_cast<bool*>(true), ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar);
+			ImGui::SetNextWindowPos(ImVec2(model_pos_x, model_pos_y), ImGuiCond_Once);
+			ImGui::SetNextWindowSize(ImVec2(200, 300), ImGuiCond_Once);
+			ImGui::Begin("esppreview", reinterpret_cast<bool*>(true), ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
 			{
-				cvar.model_pos_x = (int)ImGui::GetWindowPos().x;
-				cvar.model_pos_y = (int)ImGui::GetWindowPos().y;
-				modelscreenx = ImGui::GetWindowPos().x, modelscreeny = ImGui::GetWindowPos().y, modelscreenw = ImGui::GetWindowSize().x, modelscreenh = ImGui::GetWindowSize().y;
-				ImGui::GetCurrentWindow()->DrawList->AddRectFilled({ ImGui::GetWindowPos().x, ImGui::GetWindowPos().y }, { ImGui::GetWindowPos().x + ImGui::GetWindowSize().x, ImGui::GetWindowPos().y + 65 }, Black());
+				model_pos_x = (int)ImGui::GetWindowPos().x;
+				model_pos_y = (int)ImGui::GetWindowPos().y;
+				modelscreenw = ImGui::GetWindowSize().x, modelscreenh = ImGui::GetWindowSize().y;
+				ImGui::GetCurrentWindow()->DrawList->AddRectFilled({ ImGui::GetWindowPos().x, ImGui::GetWindowPos().y }, { ImGui::GetWindowPos().x + ImGui::GetWindowSize().x, ImGui::GetWindowPos().y + 44 }, Black());
 				ImGui::Text("Esp Preview"), ImGui::Separator();
-
-				ImGui::Checkbox("Move", &cvar.model_move);
-				const char* models[] = { "Arctic", "Gign", "Gsg9", "Guerilla", "Leet", "Sas", "Terror", "Urban", "Vip" };
-				ComboBox("Model Type", &cvar.model_type, models, IM_ARRAYSIZE(models), 9);
+				if (ImGui::ArrowButtonDouble("##left", ImGuiDir_Left))
+				{
+					if (model_type > 0)
+						model_type--;
+				}
+				ImGui::SameLine();
+				if (ImGui::ArrowButtonDouble("##right", ImGuiDir_Right))
+				{
+					if (model_type < PlayerModel.size() - 1)
+						model_type++;
+				}
+				ImGui::SameLine();
+				if (PlayerModel.size() && model_type < PlayerModel.size() && model_type >= 0)
+					ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "%s", getfilename(PlayerModel[int(model_type)].mod->name).c_str());
 			}
 			ImGui::End();
-			ImGui::PopStyleColor();
+			ImGui::PopStyleColor(); 
+			ImGui::PopStyleVar(1);
 			ImGui::GetStyle().WindowBorderSize = WindowBorderSize;
 		}
 	}

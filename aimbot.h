@@ -22,9 +22,11 @@ typedef struct
 
 typedef struct
 {
+	int sequence;
+	int index;
 	char modelname[MAX_MODEL_NAME];
+	Vector origin;
 	deque<playeraimhitbox_t> PlayerAimHitbox;
-	cl_entity_s* ent;
 } playeraim_t;
 extern deque<playeraim_t> PlayerAim;
 

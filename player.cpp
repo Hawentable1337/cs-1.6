@@ -3,13 +3,11 @@
 PlayerInfoLocal g_Local;
 PlayerInfo g_Player[33];
 
-bool bAlive(cl_entity_s* ent)
+bool bAlive(int index)
 {
-	if (ent->index != pmove->player_index + 1 &&
-		!ent->curstate.mins.IsZero() &&
-		!ent->curstate.maxs.IsZero() &&
-		g_Player[ent->index].bAliveInScoreTab &&
-		!(g_Engine.GetEntityByIndex(pmove->player_index + 1)->curstate.iuser1 == OBS_IN_EYE && g_Engine.GetEntityByIndex(pmove->player_index + 1)->curstate.iuser2 == ent->index))
+	if (index != pmove->player_index + 1 &&
+		g_Player[index].bAliveInScoreTab &&
+		!(pmove->iuser1 == OBS_IN_EYE && pmove->iuser2 == index))
 		return true;
 	return false;
 }
@@ -20,8 +18,6 @@ bool bAliveLocal()
 	if (ent && 
 		ent->player &&
 		g_Local.iTeam != 0 &&
-		!ent->curstate.mins.IsZero() &&
-		!ent->curstate.maxs.IsZero() &&
 		ent->curstate.iuser1 == OBS_NONE &&
 		pmove->view_ofs[2] != PM_DEAD_VIEWHEIGHT &&
 		g_Local.iPrevHealth > 0)

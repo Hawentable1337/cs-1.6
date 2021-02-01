@@ -13,7 +13,6 @@ void StudioSetRemapColors(int top, int bottom)
 {
 	cl_entity_s* ent = g_Studio.GetCurrentEntity();
 	GetHitboxes(ent);
-	SetSkins();
 	g_Studio.StudioSetRemapColors(top, bottom);
 }
 

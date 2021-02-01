@@ -254,6 +254,8 @@ void CVARlist::init()
 
 	INITCVAR(skeleton_player_bone, 0.0);
 	INITCVAR(skeleton_player_hitbox, 0.0);
+	INITCVAR(skeleton_player_weapon_bone, 0.0);
+	INITCVAR(skeleton_player_weapon_hitbox, 0.0);
 	INITCVAR(skeleton_view_model_bone, 0.0);
 	INITCVAR(skeleton_view_model_hitbox, 0.0);
 	INITCVAR(skeleton_world_bone, 0.0);
@@ -289,13 +291,7 @@ void CVARlist::init()
 	INITCVAR(radar_size_x, 150.0);
 	INITCVAR(radar_size_y, 150.0);
 
-	INITCVAR(model_type, 0);
-	INITCVAR(model_move, 0);
 	INITCVAR(model_preview, 0);
-	INITCVAR(model_pos_x, 100);
-	INITCVAR(model_pos_y, 100);
-
-	INITCVAR(fake_shit, 0);
 }
 
 void SaveCvar()

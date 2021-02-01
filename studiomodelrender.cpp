@@ -15,10 +15,77 @@ int	StudioDrawModel(int flags)
 //=========================
 // StudioDrawPlayer
 //=========================
+void PlayerWeapon(int flags, entity_state_s* pplayer)
+{
+	if (flags & STUDIO_RENDER && pplayer->weaponmodel && g_Studio.StudioCheckBBox())
+	{
+		model_t* model = g_Studio.GetModelByIndex(pplayer->weaponmodel);
+		if (model)
+		{
+			studiohdr_t* pStudioHeader = (studiohdr_t*)g_Studio.Mod_Extradata(model);
+			mstudiobbox_t* pHitbox = (mstudiobbox_t*)((byte*)pStudioHeader + pStudioHeader->hitboxindex);
+			mstudiobone_t* pbones = (mstudiobone_t*)((byte*)pStudioHeader + pStudioHeader->boneindex);
+			BoneMatrix_t* pBoneMatrix = (BoneMatrix_t*)g_Studio.StudioGetBoneTransform();
+
+			if (cvar.skeleton_player_weapon_bone)
+			{
+				for (unsigned int i = 0; i < pStudioHeader->numbones; i++)
+				{
+					if (pbones[i].parent >= 0)
+					{
+						playerbone_t Bones;
+						Bones.vBone[0] = (*pBoneMatrix)[i][0][3];
+						Bones.vBone[1] = (*pBoneMatrix)[i][1][3];
+						Bones.vBone[2] = (*pBoneMatrix)[i][2][3];
+						Bones.vBoneParent[0] = (*pBoneMatrix)[pbones[i].parent][0][3];
+						Bones.vBoneParent[1] = (*pBoneMatrix)[pbones[i].parent][1][3];
+						Bones.vBoneParent[2] = (*pBoneMatrix)[pbones[i].parent][2][3];
+						Bones.index = pplayer->number;
+						Bones.dummy = false;
+						PlayerBone.push_back(Bones);
+					}
+				}
+			}
+			if (cvar.skeleton_player_weapon_hitbox)
+			{
+				playerhitbox_t Hitboxes;
+				for (unsigned int i = 0; i < pStudioHeader->numhitboxes; i++)
+				{
+					Vector vCubePointsTrans[8], vCubePoints[8];
+
+					vCubePoints[0] = Vector(pHitbox[i].bbmin.x, pHitbox[i].bbmin.y, pHitbox[i].bbmin.z);
+					vCubePoints[1] = Vector(pHitbox[i].bbmin.x, pHitbox[i].bbmax.y, pHitbox[i].bbmin.z);
+					vCubePoints[2] = Vector(pHitbox[i].bbmax.x, pHitbox[i].bbmax.y, pHitbox[i].bbmin.z);
+					vCubePoints[3] = Vector(pHitbox[i].bbmax.x, pHitbox[i].bbmin.y, pHitbox[i].bbmin.z);
+					vCubePoints[4] = Vector(pHitbox[i].bbmax.x, pHitbox[i].bbmax.y, pHitbox[i].bbmax.z);
+					vCubePoints[5] = Vector(pHitbox[i].bbmin.x, pHitbox[i].bbmax.y, pHitbox[i].bbmax.z);
+					vCubePoints[6] = Vector(pHitbox[i].bbmin.x, pHitbox[i].bbmin.y, pHitbox[i].bbmax.z);
+					vCubePoints[7] = Vector(pHitbox[i].bbmax.x, pHitbox[i].bbmin.y, pHitbox[i].bbmax.z);
+
+					Hitboxes.index = pplayer->number;
+					Hitboxes.dummy = false;
+					for (unsigned int x = 0; x < 8; x++)
+					{
+						VectorTransform(vCubePoints[x], (*pBoneMatrix)[pHitbox[i].bone], vCubePointsTrans[x]);
+						Hitboxes.vCubePointsTrans[x] = vCubePointsTrans[x];
+					}
+					PlayerHitbox.push_back(Hitboxes);
+				}
+			}
+		}
+	}
+}
+
 int (*pStudioDrawPlayer)(int flags, entity_state_s* pplayer);
 int StudioDrawPlayer(int flags, entity_state_s* pplayer)
 {
 	int ret = pStudioDrawPlayer(flags, pplayer);
+	int m_nPlayerIndex = pplayer->number - 1;
+
+	if (m_nPlayerIndex < 0 || m_nPlayerIndex >= g_Engine.GetMaxClients())
+		return ret;
+	PlayerWeapon(flags, pplayer);
+	
 	return ret;
 }
 //=========================

@@ -44,11 +44,11 @@ void AntiAim(struct usercmd_s* cmd)
 			Vector origin;
 			for (playeraim_t Aim : PlayerAim)
 			{
-				if (Aim.ent->index != iTargetRage)
+				if (Aim.index != iTargetRage)
 					continue;
 
-				origin = Aim.ent->origin;
-				target = Aim.ent->index;
+				origin = Aim.origin;
+				target = Aim.index;
 			}
 
 			Vector vAngles = cmd->viewangles;

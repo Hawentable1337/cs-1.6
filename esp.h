@@ -8,7 +8,11 @@ typedef struct
 
 typedef struct
 {
-	cl_entity_s* ent;
+	int index;
+	int sequence;
+	int weaponmodel;
+	bool dummy;
+	Vector origin;
 	deque<playeresphitbox_t> PlayerEspHitbox;
 } playeresp_t;
 extern deque<playeresp_t> PlayerEsp;

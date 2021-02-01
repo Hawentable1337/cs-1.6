@@ -46,9 +46,9 @@ void Vip2(int id, float x, float y, float w)
 	ImGui::GetCurrentWindow()->DrawList->AddImage((GLuint*)texture_id[VIP], { x, y - w }, { x + w, y });
 }
 
-bool Reload(cl_entity_s* ent, float x, float y, ImU32 team, ImU32 green)
+bool Reload(int sequence, float x, float y, ImU32 team, ImU32 green)
 {
-	int seqinfo = Cstrike_SequenceInfo[ent->curstate.sequence];
+	int seqinfo = Cstrike_SequenceInfo[sequence];
 	if (!cvar.visual_reload_bar || seqinfo != 2) return false;
 	float label_size = IM_ROUND(ImGui::CalcTextSize("Reloading", NULL, true).x / 2);
 	ImGui::GetCurrentWindow()->DrawList->AddRect({ x - label_size - 2, y - 15 }, { x + label_size + 3 , y - 1 }, team);
@@ -56,7 +56,7 @@ bool Reload(cl_entity_s* ent, float x, float y, ImU32 team, ImU32 green)
 	return true;
 }
 
-bool Reload2(cl_entity_s* ent, float x, float y, ImU32 team, ImU32 green)
+bool Reload2(float x, float y, ImU32 team, ImU32 green)
 {
 	if (!cvar.visual_reload_bar) return false;
 	float label_size = IM_ROUND(ImGui::CalcTextSize("Reloading", NULL, true).x / 2);
@@ -105,9 +105,9 @@ bool Model2(int id, float x, float y, ImU32 team, ImU32 white)
 	return true;
 }
 
-bool Weapon(cl_entity_s* ent, float x, float y, ImU32 team, ImU32 white)
+bool Weapon(int weaponmodel, float x, float y, ImU32 team, ImU32 white)
 {
-	model_s* mdl = g_Studio.GetModelByIndex(ent->curstate.weaponmodel);
+	model_s* mdl = g_Studio.GetModelByIndex(weaponmodel);
 	if (!cvar.visual_weapon || !mdl) return false;
 	char weapon[256];
 	sprintf(weapon, getfilename(mdl->name).c_str() + 2);
@@ -117,7 +117,7 @@ bool Weapon(cl_entity_s* ent, float x, float y, ImU32 team, ImU32 white)
 	return true;
 }
 
-bool Weapon2(cl_entity_s* ent, float x, float y, ImU32 team, ImU32 white)
+bool Weapon2(float x, float y, ImU32 team, ImU32 white)
 {
 	if (!cvar.visual_weapon) return false;
 	float label_size = IM_ROUND(ImGui::CalcTextSize("Weapon", NULL, true).x / 2);
@@ -129,7 +129,7 @@ bool Weapon2(cl_entity_s* ent, float x, float y, ImU32 team, ImU32 white)
 bool bCalcScreen(playeresp_t Esp, float& x, float& y, float& w, float& h, float& xo)
 {
 	float vOrigin[2];
-	if (!WorldToScreen(Esp.ent->origin, vOrigin)) return false;
+	if (!WorldToScreen(Esp.origin, vOrigin)) return false;
 	xo = IM_ROUND(vOrigin[0]);
 	float x0 = vOrigin[0], x1 = vOrigin[0], y0 = vOrigin[1], y1 = vOrigin[1];
 	for (playeresphitbox_t Hitbox : Esp.PlayerEspHitbox)
@@ -155,54 +155,54 @@ void DrawPlayerEsp()
 {
 	for (playeresp_t Esp : PlayerEsp)
 	{
-		if (Esp.ent == &playerdummy)
+		if (Esp.dummy)
 			continue;
-		if (cvar.visual_idhook_only && idhook.FirstKillPlayer[Esp.ent->index] != 1)
+		if (cvar.visual_idhook_only && idhook.FirstKillPlayer[Esp.index] != 1)
 			continue;
-		if (!cvar.visual_visual_team && g_Player[Esp.ent->index].iTeam == g_Local.iTeam)
+		if (!cvar.visual_visual_team && g_Player[Esp.index].iTeam == g_Local.iTeam)
 			continue;
-		if (!bAlive(Esp.ent))
+		if (!bAlive(Esp.index))
 			continue;
 		float x, y, w, h, xo;
 		if (bCalcScreen(Esp, x, y, w, h, xo))
 		{
-			Box(x, y, w, h, Team(Esp.ent->index));
-			Health(Esp.ent->index, x, y, h);
-			if (Reload(Esp.ent, xo, y, Team(Esp.ent->index), Green()))
+			Box(x, y, w, h, Team(Esp.index));
+			Health(Esp.index, x, y, h);
+			if (Reload(Esp.sequence, xo, y, Team(Esp.index), Green()))
 				y -= 15;
-			if (Name(Esp.ent->index, xo, y, Team(Esp.ent->index), White()))
+			if (Name(Esp.index, xo, y, Team(Esp.index), White()))
 				y -= 15;
-			if (Model(Esp.ent->index, xo, y, Team(Esp.ent->index), White()))
+			if (Model(Esp.index, xo, y, Team(Esp.index), White()))
 				y -= 15;
-			if (Weapon(Esp.ent, xo, y, Team(Esp.ent->index), White()))
+			if (Weapon(Esp.weaponmodel, xo, y, Team(Esp.index), White()))
 				y -= 15;
-			Vip(Esp.ent->index, x, y, w);
+			Vip(Esp.index, x, y, w);
 		}
 	}
 	for (playeresp_t Esp : PlayerEsp)
 	{
-		if (Esp.ent != &playerdummy)
+		if (!Esp.dummy)
 			continue;
+
 		ImColor color = White();
-		if (cvar.model_type == 0 || cvar.model_type == 3 || cvar.model_type == 4 || cvar.model_type == 6)
-			color = Red();
-		if (cvar.model_type == 1 || cvar.model_type == 2 || cvar.model_type == 5 || cvar.model_type == 7 || cvar.model_type == 8)
-			color = Blue();
 		float x, y, w, h, xo;
 		if (bCalcScreen(Esp, x, y, w, h, xo))
 		{
+			esph = h;
 			Box(x, y, w, h, color);
-			Health2(Esp.ent->index, x, y, h);
-			if (Reload2(Esp.ent, xo, y, color, Green()))
+			Health2(Esp.index, x, y, h);
+			if (Reload2(xo, y, color, White()))
 				y -= 15;
-			if (Name2(Esp.ent->index, xo, y, color, White()))
+			if (Name2(Esp.index, xo, y, color, White()))
 				y -= 15;
-			if (Model2(Esp.ent->index, xo, y, color, White()))
+			if (Model2(Esp.index, xo, y, color, White()))
 				y -= 15;
-			if (Weapon2(Esp.ent, xo, y, color, White()))
+			if (Weapon2(xo, y, color, White()))
 				y -= 15;
-			Vip2(Esp.ent->index, x, y, w);
+			Vip2(Esp.index, x, y, w);
 		}
+		else
+			esph++;
 	}
 }
 
@@ -216,8 +216,6 @@ void DrawPlayerSoundIndexEsp()
 		if (cvar.visual_idhook_only && idhook.FirstKillPlayer[sound_index.index] != 1)
 			continue;
 		if (!cvar.visual_visual_team && g_Player[sound_index.index].iTeam == g_Local.iTeam)
-			continue;
-		if (ent->curstate.messagenum == g_Engine.GetEntityByIndex(pmove->player_index + 1)->curstate.messagenum)
 			continue;
 
 		if (cvar.visual_sound_steps)
@@ -234,6 +232,8 @@ void DrawPlayerSoundIndexEsp()
 					ImGui::GetCurrentWindow()->DrawList->AddLine({ IM_ROUND(vStart[0]), IM_ROUND(vStart[1]) }, { IM_ROUND(vEnd[0]), IM_ROUND(vEnd[1]) }, Team(sound_index.index));
 			}
 		}
+		if (ent->curstate.messagenum == g_Engine.GetEntityByIndex(pmove->player_index + 1)->curstate.messagenum)
+			continue;
 		if (GetTickCount() - sound_index.timestamp > 300)
 			continue;
 

@@ -6,7 +6,7 @@ LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARA
 
 LRESULT CALLBACK HOOK_WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	if ((bInputActive || bShowMenu))
+	if (bInputActive || bShowMenu)
 		ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam);
 	return CallWindowProc(hGameWndProc, hWnd, uMsg, wParam, lParam);
 }
