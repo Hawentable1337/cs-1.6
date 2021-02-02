@@ -107,7 +107,7 @@ void Playerdummy()
 				strcpy(out, getfilename(mod->name).c_str());
 				int len = strlen(out);
 				if (len > 1)out[len - 1] = (char)0;
-				if (strstr(Model.mod->name, mod->name) || strcmp(getfilename(Model.mod->name).c_str(), out) == 0)
+				if (strstr(Model.mod->name, mod->name) || !strcmp(getfilename(Model.mod->name).c_str(), out))
 					saved = true;
 			}
 			if (saved) continue;

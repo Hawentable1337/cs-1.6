@@ -215,10 +215,13 @@ void CVARlist::init()
 
 	INITCVAR(visual_model_hitbox, 0.0);
 	INITCVAR(visual_name, 1.0);
+	INITCVAR(visual_name_world, 0.0);
 	INITCVAR(visual_model, 0.0);
+	INITCVAR(visual_model_world, 0.0);
 	INITCVAR(visual_weapon, 0.0);
 	INITCVAR(visual_reload_bar, 0.0);
 	INITCVAR(visual_box, 0.0);
+	INITCVAR(visual_box_world, 0.0);
 	INITCVAR(visual_health, 0.0);
 	INITCVAR(visual_visual_team, 1.0);
 	INITCVAR(visual_sound_index, 1.0);

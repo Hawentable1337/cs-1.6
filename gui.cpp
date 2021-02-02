@@ -140,6 +140,7 @@ void ClearDeque()
 	PlayerBone.deque::clear();
 	PlayerHitbox.deque::clear();
 	PlayerEsp.deque::clear();
+	WorldEsp.deque::clear();
 	WorldBone.deque::clear();
 	WorldHitbox.deque::clear();
 	Grenadeline.deque::clear();

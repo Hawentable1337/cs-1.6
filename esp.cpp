@@ -1,6 +1,7 @@
 #include "client.h"
 
 deque<playeresp_t> PlayerEsp;
+deque<worldesp_t> WorldEsp;
 
 void Box(float x, float y, float w, float h, ImU32 team)
 {
@@ -22,27 +23,9 @@ void Health(int id, float x, float y, float h)
 	}
 }
 
-void Health2(int id, float x, float y, float h)
-{
-	if (!cvar.visual_health) return;
-	int hp = hp = 100;
-
-	for (unsigned int i = 0; i < 10; i++)
-	{
-		if (hp > 99 - (10 * i))
-			ImGui::GetCurrentWindow()->DrawList->AddRect({ x - 7, y + h / 100.f * 10.f * i }, { x - 1, y + h / 100.f * 10.f * (i + 1) }, ImColor(0.1f * (i + 1), 1.f - (0.1f * i), 0.0f, 1.0f));
-	}
-}
-
 void Vip(int id, float x, float y, float w)
 {
 	if (!cvar.visual_vip || !g_Player[id].bVip) return;
-	ImGui::GetCurrentWindow()->DrawList->AddImage((GLuint*)texture_id[VIP], { x, y - w }, { x + w, y });
-}
-
-void Vip2(int id, float x, float y, float w)
-{
-	if (!cvar.visual_vip) return;
 	ImGui::GetCurrentWindow()->DrawList->AddImage((GLuint*)texture_id[VIP], { x, y - w }, { x + w, y });
 }
 
@@ -50,15 +33,6 @@ bool Reload(int sequence, float x, float y, ImU32 team, ImU32 green)
 {
 	int seqinfo = Cstrike_SequenceInfo[sequence];
 	if (!cvar.visual_reload_bar || seqinfo != 2) return false;
-	float label_size = IM_ROUND(ImGui::CalcTextSize("Reloading", NULL, true).x / 2);
-	ImGui::GetCurrentWindow()->DrawList->AddRect({ x - label_size - 2, y - 15 }, { x + label_size + 3 , y - 1 }, team);
-	ImGui::GetCurrentWindow()->DrawList->AddText({ x - label_size, y - 16 }, green, "Reloading");
-	return true;
-}
-
-bool Reload2(float x, float y, ImU32 team, ImU32 green)
-{
-	if (!cvar.visual_reload_bar) return false;
 	float label_size = IM_ROUND(ImGui::CalcTextSize("Reloading", NULL, true).x / 2);
 	ImGui::GetCurrentWindow()->DrawList->AddRect({ x - label_size - 2, y - 15 }, { x + label_size + 3 , y - 1 }, team);
 	ImGui::GetCurrentWindow()->DrawList->AddText({ x - label_size, y - 16 }, green, "Reloading");
@@ -76,32 +50,12 @@ bool Name(int id, float x, float y, ImU32 team, ImU32 white)
 	return true;
 }
 
-bool Name2(int id, float x, float y, ImU32 team, ImU32 white)
-{
-	if (!cvar.visual_name) return false;
-	float label_size = IM_ROUND(ImGui::CalcTextSize("Name", NULL, true).x / 2);
-	ImGui::GetCurrentWindow()->DrawList->AddRect({ x - label_size - 2, y - 15 }, { x + label_size + 3 , y - 1 }, team);
-	ImGui::GetCurrentWindow()->DrawList->AddText({ x - label_size, y - 16 }, white, "Name");
-	return true;
-}
-
-bool Model(int id, float x, float y, ImU32 team, ImU32 white)
+bool Model(char* model, float x, float y, ImU32 team, ImU32 white)
 {
 	if (!cvar.visual_model) return false;
-	player_info_s* player = g_Studio.PlayerInfo(id - 1);
-	if (!player || !(lstrlenA(player->model) > 0)) return false;
-	float label_size = IM_ROUND(ImGui::CalcTextSize(player->model, NULL, true).x / 2);
+	float label_size = IM_ROUND(ImGui::CalcTextSize(model, NULL, true).x / 2);
 	ImGui::GetCurrentWindow()->DrawList->AddRect({ x - label_size - 2, y - 15 }, { x + label_size + 3 , y - 1 }, team);
-	ImGui::GetCurrentWindow()->DrawList->AddText({ x - label_size, y - 16 }, white, player->model);
-	return true;
-}
-
-bool Model2(int id, float x, float y, ImU32 team, ImU32 white)
-{
-	if (!cvar.visual_model) return false;
-	float label_size = IM_ROUND(ImGui::CalcTextSize("Model", NULL, true).x / 2);
-	ImGui::GetCurrentWindow()->DrawList->AddRect({ x - label_size - 2, y - 15 }, { x + label_size + 3 , y - 1 }, team);
-	ImGui::GetCurrentWindow()->DrawList->AddText({ x - label_size, y - 16 }, white, "Model");
+	ImGui::GetCurrentWindow()->DrawList->AddText({ x - label_size, y - 16 }, white, model);
 	return true;
 }
 
@@ -117,11 +71,56 @@ bool Weapon(int weaponmodel, float x, float y, ImU32 team, ImU32 white)
 	return true;
 }
 
-bool Weapon2(float x, float y, ImU32 team, ImU32 white)
+void HealthDummy(float x, float y, float h)
+{
+	if (!cvar.visual_health) return;
+	int hp = hp = 100;
+
+	for (unsigned int i = 0; i < 10; i++)
+	{
+		if (hp > 99 - (10 * i))
+			ImGui::GetCurrentWindow()->DrawList->AddRect({ x - 7, y + h / 100.f * 10.f * i }, { x - 1, y + h / 100.f * 10.f * (i + 1) }, ImColor(0.1f * (i + 1), 1.f - (0.1f * i), 0.0f, 1.0f));
+	}
+}
+
+void VipDummy(float x, float y, float w)
+{
+	if (!cvar.visual_vip) return;
+	ImGui::GetCurrentWindow()->DrawList->AddImage((GLuint*)texture_id[VIP], { x, y - w }, { x + w, y });
+}
+
+bool ReloadDummy(float x, float y, ImU32 team, ImU32 green)
+{
+	if (!cvar.visual_reload_bar) return false;
+	float label_size = IM_ROUND(ImGui::CalcTextSize("Reloading", NULL, true).x / 2);
+	ImGui::GetCurrentWindow()->DrawList->AddRect({ x - label_size - 2, y - 15 }, { x + label_size + 3 , y - 1 }, team);
+	ImGui::GetCurrentWindow()->DrawList->AddText({ x - label_size, y - 16 }, green, "Reloading");
+	return true;
+}
+
+bool NameDummy(float x, float y, ImU32 white)
+{
+	if (!cvar.visual_name) return false;
+	float label_size = IM_ROUND(ImGui::CalcTextSize("Name", NULL, true).x / 2);
+	ImGui::GetCurrentWindow()->DrawList->AddRect({ x - label_size - 2, y - 15 }, { x + label_size + 3 , y - 1 }, white);
+	ImGui::GetCurrentWindow()->DrawList->AddText({ x - label_size, y - 16 }, white, "Name");
+	return true;
+}
+
+bool ModelDummy(float x, float y, ImU32 white)
+{
+	if (!cvar.visual_model) return false;
+	float label_size = IM_ROUND(ImGui::CalcTextSize("Model", NULL, true).x / 2);
+	ImGui::GetCurrentWindow()->DrawList->AddRect({ x - label_size - 2, y - 15 }, { x + label_size + 3 , y - 1 }, white);
+	ImGui::GetCurrentWindow()->DrawList->AddText({ x - label_size, y - 16 }, white, "Model");
+	return true;
+}
+
+bool WeaponDummy(float x, float y, ImU32 white)
 {
 	if (!cvar.visual_weapon) return false;
 	float label_size = IM_ROUND(ImGui::CalcTextSize("Weapon", NULL, true).x / 2);
-	ImGui::GetCurrentWindow()->DrawList->AddRect({ x - label_size - 2, y - 15 }, { x + label_size + 3 , y - 1 }, team);
+	ImGui::GetCurrentWindow()->DrawList->AddRect({ x - label_size - 2, y - 15 }, { x + label_size + 3 , y - 1 }, white);
 	ImGui::GetCurrentWindow()->DrawList->AddText({ x - label_size, y - 16 }, white, "Weapon");
 	return true;
 }
@@ -132,7 +131,7 @@ bool bCalcScreen(playeresp_t Esp, float& x, float& y, float& w, float& h, float&
 	if (!WorldToScreen(Esp.origin, vOrigin)) return false;
 	xo = IM_ROUND(vOrigin[0]);
 	float x0 = vOrigin[0], x1 = vOrigin[0], y0 = vOrigin[1], y1 = vOrigin[1];
-	for (playeresphitbox_t Hitbox : Esp.PlayerEspHitbox)
+	for (esphitbox_t Hitbox : Esp.PlayerEspHitbox)
 	{
 		for (unsigned int i = 0; i < 8; i++)
 		{
@@ -172,7 +171,7 @@ void DrawPlayerEsp()
 				y -= 15;
 			if (Name(Esp.index, xo, y, Team(Esp.index), White()))
 				y -= 15;
-			if (Model(Esp.index, xo, y, Team(Esp.index), White()))
+			if (Model(Esp.model, xo, y, Team(Esp.index), White()))
 				y -= 15;
 			if (Weapon(Esp.weaponmodel, xo, y, Team(Esp.index), White()))
 				y -= 15;
@@ -184,25 +183,95 @@ void DrawPlayerEsp()
 		if (!Esp.dummy)
 			continue;
 
-		ImColor color = White();
 		float x, y, w, h, xo;
 		if (bCalcScreen(Esp, x, y, w, h, xo))
 		{
 			esph = h;
-			Box(x, y, w, h, color);
-			Health2(Esp.index, x, y, h);
-			if (Reload2(xo, y, color, White()))
+			Box(x, y, w, h, White());
+			HealthDummy(x, y, h);
+			if (ReloadDummy(xo, y, White(), Green()))
 				y -= 15;
-			if (Name2(Esp.index, xo, y, color, White()))
+			if (NameDummy(xo, y, White()))
 				y -= 15;
-			if (Model2(Esp.index, xo, y, color, White()))
+			if (ModelDummy(xo, y, White()))
 				y -= 15;
-			if (Weapon2(xo, y, color, White()))
+			if (WeaponDummy(xo, y, White()))
 				y -= 15;
-			Vip2(Esp.index, x, y, w);
+			VipDummy(x, y, w);
 		}
 		else
 			esph++;
+	}
+}
+
+void BoxWorld(float x, float y, float w, float h, ImU32 white)
+{
+	if (!cvar.visual_box_world) return;
+	ImGui::GetCurrentWindow()->DrawList->AddRect({ x, y }, { x + w, y + h }, white);
+}
+
+bool NameWorld(int id, float x, float y, ImU32 team, ImU32 white)
+{
+	if (!cvar.visual_name_world) return false;
+	player_info_s* player = g_Studio.PlayerInfo(id - 1);
+	if (!player || !(lstrlenA(player->name) > 0)) return false;
+	char str[256];
+	sprintf(str, "Owner: %s", player->name);
+	float label_size = IM_ROUND(ImGui::CalcTextSize(str, NULL, true).x / 2);
+	ImGui::GetCurrentWindow()->DrawList->AddRect({ x - label_size - 2, y - 15 }, { x + label_size + 3 , y - 1 }, team);
+	ImGui::GetCurrentWindow()->DrawList->AddText({ x - label_size, y - 16 }, white, str);
+	return true;
+}
+
+void ModelWorld(char* name, float x, float y, ImU32 white)
+{
+	if (!cvar.visual_model_world) return;
+	float label_size = IM_ROUND(ImGui::CalcTextSize(name, NULL, true).x / 2);
+	ImGui::GetCurrentWindow()->DrawList->AddRect({ x - label_size - 2, y - 15 }, { x + label_size + 3 , y - 1 }, white);
+	ImGui::GetCurrentWindow()->DrawList->AddText({ x - label_size, y - 16 }, white, name);
+}
+
+bool bCalcScreenWorld(worldesp_t Esp, float& x, float& y, float& w, float& h, float& xo)
+{
+	float vOrigin[2];
+	if (!WorldToScreen(Esp.origin, vOrigin)) return false;
+	xo = IM_ROUND(vOrigin[0]);
+	float x0 = vOrigin[0], x1 = vOrigin[0], y0 = vOrigin[1], y1 = vOrigin[1];
+	for (esphitbox_t Hitbox : Esp.WorldEspHitbox)
+	{
+		for (unsigned int i = 0; i < 8; i++)
+		{
+			float vHitbox[2];
+			if (!WorldToScreen(Hitbox.HitboxMulti[i], vHitbox)) return false;
+			x0 = min(x0, vHitbox[0]);
+			x1 = max(x1, vHitbox[0]);
+			y0 = min(y0, vHitbox[1]);
+			y1 = max(y1, vHitbox[1]);
+		}
+	}
+	x = IM_ROUND(x0);
+	y = IM_ROUND(y0);
+	w = IM_ROUND(x1) - IM_ROUND(x0) + 1;
+	h = IM_ROUND(y1) - IM_ROUND(y0) + 1;
+	return true;
+}
+
+void DrawWorldEsp()
+{
+	for (worldesp_t Esp : WorldEsp)
+	{
+		float x, y, w, h, xo;
+		if (bCalcScreenWorld(Esp, x, y, w, h, xo))
+		{
+			BoxWorld(x, y, w, h, White());
+			
+			if (Esp.index > 0 && Esp.index <= g_Engine.GetMaxClients())
+			{
+				if(NameWorld(Esp.index, xo, y, Team(Esp.index), White()))
+					y -= 15;
+			}
+			ModelWorld(Esp.name, xo, y, White());
+		}
 	}
 }
 

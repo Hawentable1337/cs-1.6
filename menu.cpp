@@ -1031,17 +1031,19 @@ void MenuVisual1Window1()
 {
 	ImGui::Text("Visual1"), ImGui::Separator();
 
-	ImGui::Text("Player");
-	ImGui::Checkbox("Box", &cvar.visual_box);
-	ImGui::Checkbox("Health", &cvar.visual_health);
-	ImGui::Checkbox("Name", &cvar.visual_name);
-	ImGui::Checkbox("Reload", &cvar.visual_reload_bar);
-	ImGui::Checkbox("Sound Index", &cvar.visual_sound_index);
-	ImGui::Checkbox("Sound No Index", &cvar.visual_sound_no_index);
-	ImGui::Checkbox("Sound Steps", &cvar.visual_sound_steps);
-	ImGui::Checkbox("Vip", &cvar.visual_vip);
-	ImGui::Checkbox("Visual Team", &cvar.visual_visual_team);
-	ImGui::Checkbox("Weapon Name", &cvar.visual_weapon);
+	ImGui::Checkbox("Player Box", &cvar.visual_box);
+	ImGui::Checkbox("Player Health", &cvar.visual_health);
+	ImGui::Checkbox("Player Name", &cvar.visual_name);
+	ImGui::Checkbox("Player Reload", &cvar.visual_reload_bar);
+	ImGui::Checkbox("Player Sound Index", &cvar.visual_sound_index);
+	ImGui::Checkbox("Player Sound No Index", &cvar.visual_sound_no_index);
+	ImGui::Checkbox("Player Sound Steps", &cvar.visual_sound_steps);
+	ImGui::Checkbox("Player Vip", &cvar.visual_vip);
+	ImGui::Checkbox("Player Visual Team", &cvar.visual_visual_team);
+	ImGui::Checkbox("Player Weapon Name", &cvar.visual_weapon);
+	ImGui::Checkbox("World Box", &cvar.visual_box_world);
+	ImGui::Checkbox("World Model", &cvar.visual_model_world);
+	ImGui::Checkbox("World Owner Name", &cvar.visual_name_world);
 	ImGui::Separator();
 	ImGui::Text("Third Person");
 	ImGui::Checkbox("Chase", &cvar.visual_chase_cam);
@@ -1673,7 +1675,7 @@ void DrawMenuChild(int total)
 	}
 	if (MenuTab == 5)
 	{
-		windowheight1 = 481;
+		windowheight1 = 527;
 		windowheight2 = 440;
 	}
 	if (MenuTab == 6)

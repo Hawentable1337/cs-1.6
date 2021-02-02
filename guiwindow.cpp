@@ -23,6 +23,7 @@ void DrawFullScreenWindow()
 		DrawRouteLine();
 		DrawLongJump();
 		DrawSkeletonWorld();
+		DrawWorldEsp();
 		DrawPlayerSoundNoIndexEsp();
 		DrawPlayerSoundIndexEsp();
 		DrawSkeletonPlayer();

@@ -136,10 +136,13 @@ public:
 
 	float visual_model_hitbox;
 	float visual_name;
+	float visual_name_world;
 	float visual_model;
+	float visual_model_world;
 	float visual_weapon;
 	float visual_reload_bar;
 	float visual_box;
+	float visual_box_world;
 	float visual_health;
 	float visual_visual_team;
 	float visual_sound_index;

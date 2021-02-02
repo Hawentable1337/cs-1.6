@@ -48,7 +48,6 @@ void PlayerWeapon(int flags, entity_state_s* pplayer)
 			}
 			if (cvar.skeleton_player_weapon_hitbox)
 			{
-				playerhitbox_t Hitboxes;
 				for (unsigned int i = 0; i < pStudioHeader->numhitboxes; i++)
 				{
 					Vector vCubePointsTrans[8], vCubePoints[8];
@@ -62,6 +61,7 @@ void PlayerWeapon(int flags, entity_state_s* pplayer)
 					vCubePoints[6] = Vector(pHitbox[i].bbmin.x, pHitbox[i].bbmin.y, pHitbox[i].bbmax.z);
 					vCubePoints[7] = Vector(pHitbox[i].bbmax.x, pHitbox[i].bbmin.y, pHitbox[i].bbmax.z);
 
+					playerhitbox_t Hitboxes;
 					Hitboxes.index = pplayer->number;
 					Hitboxes.dummy = false;
 					for (unsigned int x = 0; x < 8; x++)
@@ -80,12 +80,8 @@ int (*pStudioDrawPlayer)(int flags, entity_state_s* pplayer);
 int StudioDrawPlayer(int flags, entity_state_s* pplayer)
 {
 	int ret = pStudioDrawPlayer(flags, pplayer);
-	int m_nPlayerIndex = pplayer->number - 1;
-
-	if (m_nPlayerIndex < 0 || m_nPlayerIndex >= g_Engine.GetMaxClients())
-		return ret;
-	PlayerWeapon(flags, pplayer);
-	
+	if (pplayer->number > 0 && pplayer->number <= g_Engine.GetMaxClients())
+		PlayerWeapon(flags, pplayer);
 	return ret;
 }
 //=========================
