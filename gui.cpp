@@ -69,29 +69,23 @@ void InistalizeImgui(HDC hdc)
 	}
 }
 
-bool CheckDraw()
+bool checkdraw()
 {
 	return DrawVisuals && GetTickCount() - HudRedraw <= 100;
 }
 
-int CheckDrawScreen()
+bool checkdrawscreen()
 {
-	static bool checkdrawhud = CheckDraw();
-	if (checkdrawhud != CheckDraw())
+	static bool checkdrawhud = checkdraw();
+	if (checkdrawhud != checkdraw())
 	{
-		checkdrawhud = CheckDraw();
-		if (bShowMenu || bInputActive)
-		{
-			if (CheckDraw())
-				return 1;
-			else
-				return 2;
-		}
+		checkdrawhud = checkdraw();
+		return true;
 	}
-	return 0;
+	return false;
 }
 
-int CheckMenu()
+bool checkmenu()
 {
 	static bool checkmenu = bShowMenu;
 	static bool checkchat = bInputActive;
@@ -99,30 +93,30 @@ int CheckMenu()
 	{
 		checkmenu = bShowMenu;
 		checkchat = bInputActive;
-		if (bShowMenu || bInputActive)
-			return 1;
-		else
-			return 2;
+		return true;
 	}
-	return 0;
+	return false;
 }
 
 void MenuHandle()
 {
-	if (CheckDrawScreen())
+	if (checkdrawscreen())
 	{
-		if (CheckDrawScreen() == 1)
+		if (bShowMenu || bInputActive)
 		{
-			ImGui::GetIO().MouseDrawCursor = true;
-			if (bInputActive)SetKeyboardFocus = true;
-			if (bShowMenu)changewindowfocus = true;
+			if (checkdraw())
+			{
+				ImGui::GetIO().MouseDrawCursor = true;
+				if (bInputActive)SetKeyboardFocus = true;
+				if (bShowMenu)changewindowfocus = true;
+			}
+			else
+				ImGui::GetIO().MouseDrawCursor = false;
 		}
-		else
-			ImGui::GetIO().MouseDrawCursor = false;
 	}
-	if (CheckMenu())
+	if (checkmenu())
 	{
-		if (CheckMenu() == 1)
+		if (bShowMenu || bInputActive)
 		{
 			ImGui::GetIO().MouseDrawCursor = true;
 			g_Client.IN_DeactivateMouse();
