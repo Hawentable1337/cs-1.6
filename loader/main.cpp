@@ -78,7 +78,7 @@ void Menu()
 		static int fail = 0;
 		if (sucess)sucess--;
 		if (fail)fail--;
-		if (ImGui::IsMouseHoveringRect({ 0, 0 }, { 312, 277 }))
+		if (ImGui::IsWindowHovered(ImGuiHoveredFlags_AllowWhenBlockedByActiveItem))
 		{
 			GLuint texture = texture_id[INJECTOR];
 			if (sucess) texture = texture_id[CHECKMARK];
@@ -118,7 +118,6 @@ void Menu()
 			}
 			if (ImGui::IsItemHovered())
 			{
-				hovered = true;
 				ImGui::BeginTooltip();
 				ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
 				ImGui::TextUnformatted("Inject DLL To Process");
@@ -132,7 +131,6 @@ void Menu()
 			}
 			if (ImGui::IsItemHovered())
 			{
-				hovered = true;
 				ImGui::BeginTooltip();
 				ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
 				ImGui::TextUnformatted("Visit Facebook Group");
@@ -143,7 +141,6 @@ void Menu()
 				backwards = true;
 			if (ImGui::IsItemHovered())
 			{
-				hovered = true;
 				ImGui::BeginTooltip();
 				ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
 				ImGui::TextUnformatted("Radio Channel Back");
@@ -164,7 +161,6 @@ void Menu()
 
 			if (ImGui::IsItemHovered())
 			{
-				hovered = true;
 				ImGui::BeginTooltip();
 				ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
 				ImGui::TextUnformatted("Radio Channel Play/Pause");
@@ -176,7 +172,6 @@ void Menu()
 				forwards = true;
 			if (ImGui::IsItemHovered())
 			{
-				hovered = true;
 				ImGui::BeginTooltip();
 				ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
 				ImGui::TextUnformatted("Radio Channel Forward");
@@ -189,7 +184,6 @@ void Menu()
 			if (ImGui::Combo("Radio Channel", &gui_radio_channel, listbox_radio, IM_ARRAYSIZE(listbox_radio), 10))channelchange = true;
 			if (ImGui::IsItemHovered())
 			{
-				hovered = true;
 				ImGui::BeginTooltip();
 				ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
 				ImGui::TextUnformatted("Select Radio Channel");
@@ -199,7 +193,6 @@ void Menu()
 			ImGui::SliderFloat("Radio Volume", &gui_radio_volume, 0.f, 100.f, "Radio Volume: %.f");
 			if (ImGui::IsItemHovered())
 			{
-				hovered = true;
 				ImGui::BeginTooltip();
 				ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
 				ImGui::TextUnformatted("Adjust Radio Volume");
@@ -209,13 +202,14 @@ void Menu()
 			if (ImGui::InputText("Input Text", zstationstype, IM_ARRAYSIZE(zstationstype), ImGuiInputTextFlags_EnterReturnsTrue))channeltype = true;
 			if (ImGui::IsItemHovered())
 			{
-				hovered = true;
 				ImGui::BeginTooltip();
 				ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
 				ImGui::TextUnformatted("Input Link To Radio Stream");
 				ImGui::PopTextWrapPos();
 				ImGui::EndTooltip();
 			}
+			if (ImGui::IsAnyItemHovered())
+				hovered = true;
 			ImGui::PopItemWidth();
 		}
 	}
