@@ -217,6 +217,9 @@
     <ClCompile Include="afk.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="guiwindowpop.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="autoroute.h">
@@ -433,6 +436,9 @@
       <Filter>source</Filter>
     </ClInclude>
     <ClInclude Include="afk.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="guiwindowpop.h">
       <Filter>source</Filter>
     </ClInclude>
   </ItemGroup>

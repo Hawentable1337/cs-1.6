@@ -17,7 +17,7 @@ void VectorTransform(Vector in1, float in2[3][4], float* out)
 	out[2] = in1.Dot(in2[2]) + in2[2][3];
 }
 
-bool IsSHield(Vector origin[8])
+bool IsSHield(Vector* origin)
 {
 	int from[12] = { 7, 23, 7, 44, 23, 7, 23, 44, 44, 44, 7, 23 };
 	int to[12] = { 8, 27, 8, 52, 27, 8, 27, 52, 52, 52, 8, 27 };
@@ -261,7 +261,7 @@ void GetHitboxes(cl_entity_s* ent)
 			Aim.index = ent->curstate.owner;
 			Aim.origin = ent->origin;
 			Aim.sequence = ent->curstate.sequence;
-			sprintf(Aim.modelname, ent->model->name);
+			strcpy(Aim.modelname, ent->model->name);
 
 			int numhitboxes = 0;
 			for (unsigned int i = 0; i < pStudioHeader->numhitboxes; i++)
@@ -339,8 +339,8 @@ void GetHitboxes(cl_entity_s* ent)
 				{
 					model_aim_t Model;
 					Model.numhitboxes = numhitboxes;
-					sprintf(Model.displaymodel, getfilename(ent->model->name).c_str());
-					sprintf(Model.checkmodel, ent->model->name);
+					strcpy(Model.displaymodel, getfilename(ent->model->name).c_str());
+					strcpy(Model.checkmodel, ent->model->name);
 					Model_Aim.push_back(Model);
 				}
 			}
@@ -420,14 +420,14 @@ void GetHitboxes(cl_entity_s* ent)
 			Esp.origin = ent->origin;
 			Esp.sequence = ent->curstate.sequence;
 			Esp.weaponmodel = ent->curstate.weaponmodel;
-			strcpy(Esp.model, getfilename(ent->model->name).c_str());
+			strcpy(Esp.model, getfilename(pModel->name).c_str());
 			Esp.dummy = false;
 
 			playeraim_t Aim;
 			Aim.index = ent->index;
 			Aim.origin = ent->origin;
 			Aim.sequence = ent->curstate.sequence;
-			sprintf(Aim.modelname, pModel->name);
+			strcpy(Aim.modelname, pModel->name);
 			
 			int numhitboxes = 0;
 			for (unsigned int i = 0; i < pStudioHeader->numhitboxes; i++)
@@ -505,8 +505,8 @@ void GetHitboxes(cl_entity_s* ent)
 				{
 					model_aim_t Model;
 					Model.numhitboxes = numhitboxes;
-					sprintf(Model.displaymodel, getfilename(pModel->name).c_str());
-					sprintf(Model.checkmodel, pModel->name);
+					strcpy(Model.displaymodel, getfilename(pModel->name).c_str());
+					strcpy(Model.checkmodel, pModel->name);
 					Model_Aim.push_back(Model);
 				}
 			}

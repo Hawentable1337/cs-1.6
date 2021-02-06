@@ -219,49 +219,9 @@ int CL_IsThirdPerson(void)
 	return g_Client.CL_IsThirdPerson();
 }
 
-void ConsoleMessage()
-{
-	static bool FirstFrame = true;
-	if (FirstFrame)
-	{
-		g_Engine.pfnClientCmd("toggleconsole");
-
-		ConsolePrintColor(255, 255, 255, "\n\n\t\t\t\tHello, %s ;)\n", g_Engine.pfnGetCvarString("name"));
-		ConsolePrintColor(255, 255, 255, "\t\t\t\tYou are injected!\n\n");
-
-		ConsolePrintColor(255, 0, 255, "\t\t\t\tMultihack by:\n");
-		ConsolePrintColor(255, 0, 255, "\t\t\t\t            [..         [..    [....     [..      \n");
-		ConsolePrintColor(255, 0, 255, "\t\t\t\t             [..       [..   [..    [..  [..      \n");
-		ConsolePrintColor(255, 0, 255, "\t\t\t\t     [..      [..     [..  [..        [..[..      \n");
-		ConsolePrintColor(255, 0, 255, "\t\t\t\t   [.   [..    [..   [..   [..        [..[..      \n");
-		ConsolePrintColor(255, 0, 255, "\t\t\t\t  [..... [..    [.. [..    [..        [..[..      \n");
-		ConsolePrintColor(255, 0, 255, "\t\t\t\t  [.             [....       [..     [.. [..      \n");
-		ConsolePrintColor(255, 0, 255, "\t\t\t\t    [....         [..          [....     [........\n");
-		ConsolePrintColor(255, 0, 255, "\t\t\t\tand team!\n\n");
-
-		ConsolePrintColor(255, 255, 255, "\t\t\t\tSpecial thanks to my friend BloodSharp and oxiKKK <3\n\n");
-		ConsolePrintColor(255, 255, 255, "\t\t\t\tATTENTION! Menu only active in game!\n");
-		if (cvar.gui_key != -1)
-			ConsolePrintColor(0, 255, 0, "\t\t\t\tMenu key is [%s]!\n", KeyEventChar((int)cvar.gui_key));
-
-		FirstFrame = false;
-	}
-	static float ChangeKey = cvar.gui_key;
-	if (ChangeKey != cvar.gui_key)
-	{
-		if (cvar.gui_key == -1)
-			ConsolePrintColor(255, 255, 0, "\t\t\t\tMenu key is [Press key]!\n");
-		else
-			ConsolePrintColor(0, 255, 0, "\t\t\t\tMenu key is [%s]!\n", KeyEventChar((int)cvar.gui_key));
-
-		ChangeKey = cvar.gui_key;
-	}
-}
-
 void HUD_Frame(double time)
 {
 	SetSkins();
-	ConsoleMessage();
 	Snapshot();
 	FindSpawn();
 	LoadTextureWall();

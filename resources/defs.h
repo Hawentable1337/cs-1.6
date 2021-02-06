@@ -91,5 +91,6 @@ typedef float BoneMatrix_t[MAXSTUDIOBONES][3][4];
 #define GREENSOUND 3
 #define REDARROW 4
 #define BLUEARROW 5
+#define BACKGRND 6
 
 #endif

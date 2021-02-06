@@ -121,6 +121,7 @@ extern char hldir[256];
 #include "playerdummy.h"
 #include "viewmodel.h"
 #include "afk.h"
+#include "guiwindowpop.h"
 
 void HookClientFunctions();
 void CL_Move();

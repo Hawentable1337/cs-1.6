@@ -6,7 +6,7 @@ LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARA
 
 LRESULT CALLBACK HOOK_WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	if (bInputActive || bShowMenu)
+	if (bInputActive || bShowMenu || popoup)
 		ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam);
 	return CallWindowProc(hGameWndProc, hWnd, uMsg, wParam, lParam);
 }
@@ -69,32 +69,60 @@ void InistalizeImgui(HDC hdc)
 	}
 }
 
-void MenuHandle()
+bool CheckDraw()
+{
+	return DrawVisuals && GetTickCount() - HudRedraw <= 100;
+}
+
+int CheckDrawScreen()
+{
+	static bool checkdrawhud = CheckDraw();
+	if (checkdrawhud != CheckDraw())
+	{
+		checkdrawhud = CheckDraw();
+		if (bShowMenu || bInputActive)
+		{
+			if (CheckDraw())
+				return 1;
+			else
+				return 2;
+		}
+	}
+	return 0;
+}
+
+int CheckMenu()
 {
 	static bool checkmenu = bShowMenu;
 	static bool checkchat = bInputActive;
-	static bool checkscreen = DrawVisuals;
-	bool checkdraw = GetTickCount() - HudRedraw <= 100;
-	static bool checkdrawhud = checkdraw;
-	if (checkscreen != DrawVisuals || checkdrawhud != checkdraw)
-	{
-		if (bShowMenu || bInputActive)
-		{
-			if (DrawVisuals && checkdraw)
-			{
-				ImGui::GetIO().MouseDrawCursor = true;
-				if (bInputActive)SetKeyboardFocus = true;
-				if (bShowMenu)changewindowfocus = true;
-			}
-			else
-				ImGui::GetIO().MouseDrawCursor = false;
-		}
-		checkscreen = DrawVisuals;
-		checkdrawhud = checkdraw;
-	}
 	if (checkmenu != bShowMenu || checkchat != bInputActive)
 	{
+		checkmenu = bShowMenu;
+		checkchat = bInputActive;
 		if (bShowMenu || bInputActive)
+			return 1;
+		else
+			return 2;
+	}
+	return 0;
+}
+
+void MenuHandle()
+{
+	if (CheckDrawScreen())
+	{
+		if (CheckDrawScreen() == 1)
+		{
+			ImGui::GetIO().MouseDrawCursor = true;
+			if (bInputActive)SetKeyboardFocus = true;
+			if (bShowMenu)changewindowfocus = true;
+		}
+		else
+			ImGui::GetIO().MouseDrawCursor = false;
+	}
+	if (CheckMenu())
+	{
+		if (CheckMenu() == 1)
 		{
 			ImGui::GetIO().MouseDrawCursor = true;
 			g_Client.IN_DeactivateMouse();
@@ -107,8 +135,6 @@ void MenuHandle()
 			ImGui::GetIO().MouseDrawCursor = false;
 			g_Client.IN_ActivateMouse();
 		}
-		checkmenu = bShowMenu;
-		checkchat = bInputActive;
 	}
 	if ((bShowMenu || bInputActive) && ::GetActiveWindow() == hGameWnd)
 	{
@@ -170,6 +196,7 @@ void HookImGui(HDC hdc)
 		DrawKzWindows();
 		DrawMenuWindow();
 	}
+	DrawPopupWindow();
 	ImGui::Render();
 	if (!bOldOpenGL)
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
