@@ -41,10 +41,9 @@ typedef struct
 extern deque<playerhitboxnum_t> PlayerHitboxNum;
 
 extern int HeadBox[33];
-void GetHitboxes(cl_entity_s* ent);
+void GetHitboxes();
 void DrawSkeletonPlayer();
 void DrawSkeletonWorld();
 void VectorTransform(Vector in1, float in2[3][4], float* out);
-bool IsSHield(Vector origin[8]);
 
 #endif

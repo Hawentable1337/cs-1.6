@@ -216,6 +216,15 @@ public:
 	float radar_size_y;
 
 	float model_preview;
+
+	float chams_view_model;
+	float chams_view_model_glow;
+	float chams_player;
+	float chams_player_glow;
+	float chams_player_wall;
+	float chams_world;
+	float chams_world_wall;
+	float chams_world_glow;
 };
 
 extern CVARlist cvar;

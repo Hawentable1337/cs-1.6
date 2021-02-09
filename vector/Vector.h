@@ -248,6 +248,16 @@ class Vector
 			return Length;
 		}
 
+		inline Vector2D Make2D(void) const
+		{
+			Vector2D	Vec2;
+
+			Vec2.x = x;
+			Vec2.y = y;
+
+			return Vec2;
+		}
+
 		inline float AngleBetween ( Vector& other )
 		{
 			other.Normalize();

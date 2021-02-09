@@ -89,38 +89,38 @@ void VipDummy(float x, float y, float w)
 	ImGui::GetCurrentWindow()->DrawList->AddImage((GLuint*)texture_id[VIP], { x, y - w }, { x + w, y });
 }
 
-bool ReloadDummy(float x, float y, ImU32 team, ImU32 green)
+bool ReloadDummy(float x, float y, ImU32 wheel, ImU32 green)
 {
 	if (!cvar.visual_reload_bar) return false;
 	float label_size = IM_ROUND(ImGui::CalcTextSize("Reloading", NULL, true).x / 2);
-	ImGui::GetCurrentWindow()->DrawList->AddRect({ x - label_size - 2, y - 15 }, { x + label_size + 3 , y - 1 }, team);
+	ImGui::GetCurrentWindow()->DrawList->AddRect({ x - label_size - 2, y - 15 }, { x + label_size + 3 , y - 1 }, wheel);
 	ImGui::GetCurrentWindow()->DrawList->AddText({ x - label_size, y - 16 }, green, "Reloading");
 	return true;
 }
 
-bool NameDummy(float x, float y, ImU32 white)
+bool NameDummy(float x, float y, ImU32 Wheel, ImU32 white)
 {
 	if (!cvar.visual_name) return false;
 	float label_size = IM_ROUND(ImGui::CalcTextSize("Name", NULL, true).x / 2);
-	ImGui::GetCurrentWindow()->DrawList->AddRect({ x - label_size - 2, y - 15 }, { x + label_size + 3 , y - 1 }, white);
+	ImGui::GetCurrentWindow()->DrawList->AddRect({ x - label_size - 2, y - 15 }, { x + label_size + 3 , y - 1 }, Wheel);
 	ImGui::GetCurrentWindow()->DrawList->AddText({ x - label_size, y - 16 }, white, "Name");
 	return true;
 }
 
-bool ModelDummy(float x, float y, ImU32 white)
+bool ModelDummy(float x, float y, ImU32 Wheel, ImU32 white)
 {
 	if (!cvar.visual_model) return false;
 	float label_size = IM_ROUND(ImGui::CalcTextSize("Model", NULL, true).x / 2);
-	ImGui::GetCurrentWindow()->DrawList->AddRect({ x - label_size - 2, y - 15 }, { x + label_size + 3 , y - 1 }, white);
+	ImGui::GetCurrentWindow()->DrawList->AddRect({ x - label_size - 2, y - 15 }, { x + label_size + 3 , y - 1 }, Wheel);
 	ImGui::GetCurrentWindow()->DrawList->AddText({ x - label_size, y - 16 }, white, "Model");
 	return true;
 }
 
-bool WeaponDummy(float x, float y, ImU32 white)
+bool WeaponDummy(float x, float y, ImU32 Wheel, ImU32 white)
 {
 	if (!cvar.visual_weapon) return false;
 	float label_size = IM_ROUND(ImGui::CalcTextSize("Weapon", NULL, true).x / 2);
-	ImGui::GetCurrentWindow()->DrawList->AddRect({ x - label_size - 2, y - 15 }, { x + label_size + 3 , y - 1 }, white);
+	ImGui::GetCurrentWindow()->DrawList->AddRect({ x - label_size - 2, y - 15 }, { x + label_size + 3 , y - 1 }, Wheel);
 	ImGui::GetCurrentWindow()->DrawList->AddText({ x - label_size, y - 16 }, white, "Weapon");
 	return true;
 }
@@ -187,20 +187,20 @@ void DrawPlayerEsp()
 		if (bCalcScreen(Esp, x, y, w, h, xo))
 		{
 			esph = h;
-			Box(x, y, w, h, White());
+			Box(x, y, w, h, Wheel1());
 			HealthDummy(x, y, h);
-			if (ReloadDummy(xo, y, White(), Green()))
+			if (ReloadDummy(xo, y, Wheel1(), Green()))
 				y -= 15;
-			if (NameDummy(xo, y, White()))
+			if (NameDummy(xo, y, Wheel1(), White()))
 				y -= 15;
-			if (ModelDummy(xo, y, White()))
+			if (ModelDummy(xo, y, Wheel1(), White()))
 				y -= 15;
-			if (WeaponDummy(xo, y, White()))
+			if (WeaponDummy(xo, y, Wheel1(), White()))
 				y -= 15;
 			VipDummy(x, y, w);
 		}
 		else
-			esph++;
+			esph = 0;
 	}
 }
 

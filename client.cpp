@@ -229,6 +229,18 @@ void HUD_Frame(double time)
 	NoFlash();
 	Lightmap();
 	PlayerAim.deque::clear();
+	PlayerBone.deque::clear();
+	PlayerHitbox.deque::clear();
+	PlayerEsp.deque::clear();
+	WorldEsp.deque::clear();
+	WorldBone.deque::clear();
+	WorldHitbox.deque::clear();
+	Grenadeline.deque::clear();
+	Routeline.deque::clear();
+	StrafeDraw.deque::clear();
+	FOVDraw.deque::clear();
+	CrosshairDraw.deque::clear();
+	PlayerHitboxNum.deque::clear();
 	g_Client.HUD_Frame(time);
 }
 

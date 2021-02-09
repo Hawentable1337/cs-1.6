@@ -29,8 +29,21 @@ bool IsSHield(Vector* origin)
 	return true;
 }
 
-void GetHitboxes(cl_entity_s* ent)
+bool IsSHieldDummy(Vector* origin)
 {
+	int from[12] = { 7, 23, 7, 44, 23, 7, 23, 44, 44, 44, 7, 23 };
+	int to[12] = { 8, 27, 8, 52, 27, 8, 27, 52, 52, 52, 8, 27 };
+	for (unsigned int x = 0; x < 12; x++)
+	{
+		int distance = round((origin[SkeletonHitboxMatrix[x][0]]).Distance(origin[SkeletonHitboxMatrix[x][1]]) / modelscale);
+		if (distance < from[x] || distance > to[x]) return false;
+	}
+	return true;
+}
+
+void GetHitboxes()
+{
+	cl_entity_s* ent = g_Studio.GetCurrentEntity();
 	if (ent && ent->model && ent->model->name)
 	{
 		studiohdr_t* pStudioHeader = (studiohdr_t*)g_Studio.Mod_Extradata(ent->model);
@@ -563,7 +576,7 @@ void GetHitboxes(cl_entity_s* ent)
 				for (unsigned int x = 0; x < 8; x++)
 					VectorTransform(vCubePoints[x], (*pBoneMatrix)[pHitbox[i].bone], vCubePointsTrans[x]);
 
-				if (!IsSHield(vCubePointsTrans))
+				if (!IsSHieldDummy(vCubePointsTrans))
 				{
 					if (cvar.visual_model_hitbox)
 					{
@@ -626,39 +639,23 @@ void DrawSkeletonPlayer()
 	{
 		if (!Bones.dummy)
 			continue;
-		ImColor Player = White();
 		float CalcAnglesMin[2], CalcAnglesMax[2];
 		if (WorldToScreen(Bones.vBone, CalcAnglesMin) && WorldToScreen(Bones.vBoneParent, CalcAnglesMax))
-			ImGui::GetCurrentWindow()->DrawList->AddLine({ IM_ROUND(CalcAnglesMin[0]), IM_ROUND(CalcAnglesMin[1]) }, { IM_ROUND(CalcAnglesMax[0]), IM_ROUND(CalcAnglesMax[1]) }, Player);
+			ImGui::GetCurrentWindow()->DrawList->AddLine({ IM_ROUND(CalcAnglesMin[0]), IM_ROUND(CalcAnglesMin[1]) }, { IM_ROUND(CalcAnglesMax[0]), IM_ROUND(CalcAnglesMax[1]) }, Wheel1());
 	}
 	for (playerhitbox_t Hitbox : PlayerHitbox)
 	{
 		if (!Hitbox.dummy)
 			continue;
-		ImColor Player = White();
 		for (unsigned int x = 0; x < 12; x++)
 		{
 			float CalcAnglesMin[2], CalcAnglesMax[2];
 			if (WorldToScreen(Hitbox.vCubePointsTrans[SkeletonHitboxMatrix[x][0]], CalcAnglesMin) && WorldToScreen(Hitbox.vCubePointsTrans[SkeletonHitboxMatrix[x][1]], CalcAnglesMax))
-				ImGui::GetCurrentWindow()->DrawList->AddLine({ IM_ROUND(CalcAnglesMin[0]), IM_ROUND(CalcAnglesMin[1]) }, { IM_ROUND(CalcAnglesMax[0]), IM_ROUND(CalcAnglesMax[1]) }, Player);
+				ImGui::GetCurrentWindow()->DrawList->AddLine({ IM_ROUND(CalcAnglesMin[0]), IM_ROUND(CalcAnglesMin[1]) }, { IM_ROUND(CalcAnglesMax[0]), IM_ROUND(CalcAnglesMax[1]) }, Wheel1());
 		}
 	}
 	for (playerhitboxnum_t HitboxNum : PlayerHitboxNum)
 	{
-		if (HitboxNum.dummy)
-			continue;
-		float CalcAnglesMin[2];
-		if (WorldToScreen(HitboxNum.HitboxPos, CalcAnglesMin))
-		{
-			char str[256];
-			sprintf(str, "%d", HitboxNum.Hitbox);
-			ImGui::GetCurrentWindow()->DrawList->AddText({ IM_ROUND(CalcAnglesMin[0]), IM_ROUND(CalcAnglesMin[1]) }, White(), str);
-		}
-	}
-	for (playerhitboxnum_t HitboxNum : PlayerHitboxNum)
-	{
-		if (!HitboxNum.dummy)
-			continue;
 		float CalcAnglesMin[2];
 		if (WorldToScreen(HitboxNum.HitboxPos, CalcAnglesMin))
 		{

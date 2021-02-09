@@ -125,15 +125,17 @@ void MenuHandle()
 		}
 		else
 		{
-			SetCursorPos(g_Engine.GetWindowCenterX(), g_Engine.GetWindowCenterY());
+			g_Engine.pfnSetMousePos(g_Engine.GetWindowCenterX(), g_Engine.GetWindowCenterY());
 			ImGui::GetIO().MouseDrawCursor = false;
 			g_Client.IN_ActivateMouse();
 		}
 	}
+	
 	if ((bShowMenu || bInputActive) && ::GetActiveWindow() == hGameWnd)
 	{
-		POINT Point;
-		if (::GetCursorPos(&Point) && Point.x == g_Engine.GetWindowCenterX() && Point.y == g_Engine.GetWindowCenterY())
+		tagPOINT ppt;
+		g_Engine.pfnGetMousePos(&ppt);
+		if (ppt.x == g_Engine.GetWindowCenterX() && ppt.y == g_Engine.GetWindowCenterY())
 			g_Client.IN_DeactivateMouse();
 	}
 }
@@ -153,22 +155,6 @@ void ClearSound()
 		Sound_No_Index.pop_front();
 	if (Sound_Index.size() && GetTickCount() - Sound_Index.front().timestamp > 900)
 		Sound_Index.pop_front();
-}
-
-void ClearDeque()
-{
-	PlayerBone.deque::clear();
-	PlayerHitbox.deque::clear();
-	PlayerEsp.deque::clear();
-	WorldEsp.deque::clear();
-	WorldBone.deque::clear();
-	WorldHitbox.deque::clear();
-	Grenadeline.deque::clear();
-	Routeline.deque::clear();
-	StrafeDraw.deque::clear();
-	FOVDraw.deque::clear();
-	CrosshairDraw.deque::clear();
-	PlayerHitboxNum.deque::clear();
 }
 
 void HookImGui(HDC hdc)
@@ -198,5 +184,4 @@ void HookImGui(HDC hdc)
 		ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
 	MenuHandle();
 	ClearHudKeys();
-	ClearDeque();
 }

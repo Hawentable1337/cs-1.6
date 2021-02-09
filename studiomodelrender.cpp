@@ -1,5 +1,20 @@
 #include "client.h"
 
+float chams_viewmodel_r;
+float chams_viewmodel_g;
+float chams_viewmodel_b;
+float chams_viewmodel;
+
+float chams_player_r;
+float chams_player_g;
+float chams_player_b;
+float chams_player;
+
+float chams_world_r;
+float chams_world_g;
+float chams_world_b;
+float chams_world;
+
 // This pointer to CStudioModelRenderer class !
 StudioModelRenderer_d pThis;
 
@@ -9,7 +24,7 @@ StudioModelRenderer_d pThis;
 int (*pStudioDrawModel)(int flags);
 int	StudioDrawModel(int flags)
 {
-	int studioret = pStudioDrawModel(flags); 
+	int studioret = pStudioDrawModel(flags);
 	return studioret;
 }
 //=========================
@@ -108,6 +123,30 @@ void StudioSetUpTransform(int trivial_accept)
 //=========================
 void StudioSetupBones(void)
 {
+	cl_entity_s* ent = g_Studio.GetCurrentEntity(); 
+	if (ent && ent == &playerdummy)
+	{
+		float screensizex = modelscreenw * 1.5f / 2.f;
+		float screensizey = modelscreenh / 2.f;
+
+		float screensize;
+		if (screensizex < screensizey)
+			screensize = screensizex;
+		if (screensizex >= screensizey)
+			screensize = screensizey;
+		
+		if (esph && int(esph) < int(screensize) - 1)
+			modelscale += 0.0001f * (screensize - esph);
+		if (esph && int(esph) > int(screensize) + 1)
+			modelscale -= 0.0001f * (esph - screensize);
+
+		pThis->m_protationmatrix = (float(*)[3][4])g_Studio.StudioGetRotationMatrix();
+		for (int i = 0; i < 3; i++)
+		{
+			for (int j = 0; j < 3; j++)
+				(*pThis->m_protationmatrix)[i][j] *= modelscale;
+		}
+	}
 	oStudioSetupBones();
 }
 
@@ -214,8 +253,108 @@ void StudioCalcRotations(float pos[][3], vec4_t *q, mstudioseqdesc_t *pseqdesc, 
 // StudioRenderModel
 // Send bones and verts to renderer
 //=========================
+void Glow(cl_entity_s* ent, bool valident, float glow, float chams, float r, float g, float b, int width)
+{
+	if (valident && glow && DrawVisuals && (!cvar.route_auto || cvar.route_draw_visual) && GetTickCount() - HudRedraw <= 100)
+	{
+		glDepthFunc(GL_GREATER);
+		glDisable(GL_DEPTH_TEST);
+		g_Studio.SetForceFaceFlags(STUDIO_NF_CHROME);
+		ent->curstate.renderfx = kRenderFxGlowShell;
+		ent->curstate.renderamt = width;
+		ent->curstate.rendermode = 0;
+
+		ent->curstate.rendercolor.r = r * 255.0f;
+		ent->curstate.rendercolor.g = g * 255.0f;
+		ent->curstate.rendercolor.b = b * 255.0f;
+
+		oStudioRenderFinal();
+		glEnable(GL_DEPTH_TEST);
+
+		if (!chams)
+		{
+			glDisable(GL_DEPTH_TEST);
+			g_Studio.SetForceFaceFlags(0);
+			ent->curstate.renderfx = 0;
+			oStudioRenderFinal();
+			glEnable(GL_DEPTH_TEST);
+			glDepthFunc(GL_LESS);
+			oStudioRenderFinal();
+		}
+	}
+}
+
+void Chams(cl_entity_s* ent, bool valident, float chams, float chamswall, float chams_r, float chams_g, float chams_b, float chamswall_r, float chamswall_g, float chamswall_b, float& coloring, float& coloring_r, float& coloring_g, float& coloring_b)
+{
+	if (valident && chams && DrawVisuals && (!cvar.route_auto || cvar.route_draw_visual) && GetTickCount() - HudRedraw <= 100)
+	{
+		coloring = true;
+
+		ent->curstate.rendermode = 0;
+		ent->curstate.renderfx = 0;
+		ent->curstate.renderamt = 0;
+		g_Studio.SetForceFaceFlags(0);
+
+		if (chams > 1) glDisable(GL_TEXTURE_2D);
+		if (chams > 1) glBindTexture(GL_TEXTURE_2D, 0);
+
+		ent->curstate.rendermode = 0;
+		ent->curstate.renderfx = 0;
+		ent->curstate.renderamt = 0;
+		g_Studio.SetForceFaceFlags(0);
+
+		if (chamswall)
+		{
+			glDepthFunc(GL_GREATER);
+			glDisable(GL_DEPTH_TEST);
+			coloring_r = chamswall_r;
+			coloring_g = chamswall_g;
+			coloring_b = chamswall_b;
+			oStudioRenderFinal();
+		}
+
+		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_LESS);
+		coloring_r = chams_r;
+		coloring_g = chams_g;
+		coloring_b = chams_b;
+		oStudioRenderFinal();
+
+		if (chams > 1) glEnable(GL_TEXTURE_2D);
+	}
+	coloring = false;
+}
+
 void StudioRenderModel(void)
 {
+	cl_entity_s* ent = g_Studio.GetCurrentEntity();
+
+	bool Dummy = ent && ent == &playerdummy;
+	bool Player = ent && ent->player && (g_Player[ent->index].iTeam != g_Local.iTeam || cvar.visual_visual_team);
+	bool ViewModel = ent && ent == g_Engine.GetViewModel();
+	bool World = ent && ent->model && !strstr(ent->model->name, "/player.mdl") && !strstr(ent->model->name, "/player/") && !strstr(ent->model->name, "/p_") && ent != g_Engine.GetViewModel();
+
+	Glow(ent, World, cvar.chams_world_glow, cvar.chams_world, color_green, color_blue, color_red, 12);
+	Chams(ent, World, cvar.chams_world, cvar.chams_world_wall, color_blue, color_red, color_green, color_red, color_green, color_blue, chams_world, chams_world_r, chams_world_g, chams_world_b);
+	Glow(ent, ViewModel, cvar.chams_view_model_glow, cvar.chams_view_model, color_blue, color_red, color_green, cvar.visual_skins_viewmodel_nohands ? 0 : 1);
+	Chams(ent, ViewModel, cvar.chams_view_model, 0, color_blue, color_red, color_green, 0, 0, 0, chams_viewmodel, chams_viewmodel_r, chams_viewmodel_g, chams_viewmodel_b);
+	Glow(ent, Player, cvar.chams_player_glow, cvar.chams_player, color_green, color_blue, color_red, 12);
+
+	if (ent)
+	{
+		float r[2], g[2], b[2];
+		if (g_Player[ent->index].iTeam == 1) r[0] = 1, g[0] = 0, b[0] = 0, r[1] = 1, g[1] = 0, b[1] = 1;
+		else if (g_Player[ent->index].iTeam == 2) r[0] = 0, g[0] = 0, b[0] = 1, r[1] = 0, g[1] = 1, b[1] = 1;
+		else r[0] = 1, g[0] = 1, b[0] = 1, r[1] = 1, g[1] = 1, b[1] = 1;
+		Chams(ent, Player, cvar.chams_player, cvar.chams_player_wall, r[0], g[0], b[0], r[1], g[1], b[1], chams_player, chams_player_r, chams_player_g, chams_player_b);
+	}
+
+
+	Glow(ent, Dummy, cvar.chams_player_glow, cvar.chams_player, color_green, color_blue, color_red, 12);
+
+	float r[2], g[2], b[2];
+	r[0] = color_red, g[0] = color_green, b[0] = color_blue, r[1] = color_blue, g[1] = color_red, b[1] = color_green;
+	Chams(ent, Dummy, cvar.chams_player, cvar.chams_player_wall, r[0], g[0], b[0], r[1], g[1], b[1], chams_player, chams_player_r, chams_player_g, chams_player_b);
 	oStudioRenderModel();
 }
 
@@ -673,6 +812,7 @@ void HookStudiModelRendererFunctions()
 {
 	c_Offset.EnablePageWrite((DWORD)g_pStudioModelRenderer, sizeof(StudioModelRenderer_t));
 	g_pStudioModelRenderer->StudioRenderModel = StudioRenderModel_Gate;
+	g_pStudioModelRenderer->StudioSetupBones = StudioSetupBones_Gate;
 	g_pStudioModelRenderer->StudioRenderFinal_Hardware = StudioRenderFinal_Hardware_Gate;
 	c_Offset.RestorePageProtection((DWORD)g_pStudioModelRenderer, sizeof(StudioModelRenderer_t));
 	pStudioDrawPlayer = g_pInterface->StudioDrawPlayer;

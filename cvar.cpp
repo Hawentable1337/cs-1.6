@@ -295,6 +295,15 @@ void CVARlist::init()
 	INITCVAR(radar_size_y, 150.0);
 
 	INITCVAR(model_preview, 0);
+
+	INITCVAR(chams_view_model, 0.0);
+	INITCVAR(chams_view_model_glow, 0.0);
+	INITCVAR(chams_player, 0.0);
+	INITCVAR(chams_player_glow, 0.0);
+	INITCVAR(chams_player_wall, 0.0);
+	INITCVAR(chams_world, 0.0);
+	INITCVAR(chams_world_wall, 0.0);
+	INITCVAR(chams_world_glow, 0.0);
 }
 
 void SaveCvar()

@@ -12,6 +12,18 @@ bool WorldToScreen(float* pflOrigin, float* pflVecScreen)
 	return false;
 }
 
+bool ScreenToWorld(float* screen, float* world)
+{
+	screen[0] = (screen[0] - (ImGui::GetIO().DisplaySize.x / 2)) / (ImGui::GetIO().DisplaySize.x / 2);
+	screen[1] = -(screen[1] - (ImGui::GetIO().DisplaySize.y / 2)) / (ImGui::GetIO().DisplaySize.y / 2);
+	if (screen[0] < 1.5f && screen[1] < 1.5f && screen[0] > -1.5f && screen[1] > -1.5f)
+	{
+		g_Engine.pTriAPI->ScreenToWorld(screen, world);
+		return true;
+	}
+	return false;
+}
+
 void DrawFullScreenWindow()
 {
 	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));

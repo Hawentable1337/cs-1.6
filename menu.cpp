@@ -1086,6 +1086,20 @@ void MenuVisual1Window2()
 	ImGui::Checkbox("View Model HitBox", &cvar.skeleton_view_model_hitbox);
 	ImGui::Checkbox("World Bone", &cvar.skeleton_world_bone);
 	ImGui::Checkbox("World Hitbox", &cvar.skeleton_world_hitbox);
+
+	ImGui::Text("Chams"), ImGui::Separator();
+
+	ImGui::Checkbox("Player Glow", &cvar.chams_player_glow);
+	ImGui::Checkbox("Player Wall", &cvar.chams_player_wall);
+	const char* listbox_player[] = { "Player Chams None", "Player Chams Material", "Player Chams Texture", "Player Chams Flat" };
+	ComboBox("Player Chams", &cvar.chams_player, listbox_player, IM_ARRAYSIZE(listbox_player), 4);
+	ImGui::Checkbox("View Model Glow ", &cvar.chams_view_model_glow);
+	const char* listbox_weapon[] = { "View Model Chams None", "View Model Chams Material", "View Model Chams Texture", "View Model Chams Flat" };
+	ComboBox("View Model Chams", &cvar.chams_view_model, listbox_weapon, IM_ARRAYSIZE(listbox_weapon), 4);
+	ImGui::Checkbox("World Glow", &cvar.chams_world_glow);
+	ImGui::Checkbox("World Wall", &cvar.chams_world_wall);
+	const char* listbox_world[] = { "World Chams None", "World Chams Material", "World Chams Texture", "World Chams Flat" };
+	ComboBox("World Chams", &cvar.chams_world, listbox_world, IM_ARRAYSIZE(listbox_world), 4);
 }
 
 void MenuVisual2Window1()
@@ -1676,7 +1690,7 @@ void DrawMenuChild(int total)
 	if (MenuTab == 5)
 	{
 		windowheight1 = 527;
-		windowheight2 = 440;
+		windowheight2 = 629;
 	}
 	if (MenuTab == 6)
 	{

@@ -2,28 +2,24 @@
 
 typedef void (APIENTRY* glBegin_t)(GLenum);
 typedef BOOL (APIENTRY* wglSwapBuffers_t)(HDC  hdc);
-typedef void (APIENTRY* glClear_t)(GLbitfield mask); 
+typedef void (APIENTRY* glClear_t)(GLbitfield mask);
+typedef void (APIENTRY* glColor4f_t)(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha);
 typedef void (__stdcall* glReadPixels_t)(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, GLvoid*);
 
 glBegin_t pglBegin = NULL;
 wglSwapBuffers_t pwglSwapBuffers = NULL;
-glClear_t pglClear = NULL; 
+glClear_t pglClear = NULL;
+glColor4f_t pglColor4f = NULL;
 glReadPixels_t pglReadPixels = NULL;
 
 void APIENTRY Hooked_glBegin(GLenum mode)
 {
 	cl_entity_s* ent = g_Studio.GetCurrentEntity();
-	cl_entity_t* vm = g_Engine.GetViewModel();
-	if (ent && ent == &playerdummy)
+	if (ent && ent == &playerdummy && !cvar.chams_player && DrawVisuals && GetTickCount() - HudRedraw <= 100)
 	{
 		if (mode == GL_TRIANGLE_STRIP)
 			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 	}
-
-	if (ent && (ent == &playerdummy || ent == vm))
-		glDepthRange(0, 0.5);
-	else
-		glDepthRange(0.5, 1);
 
 	pglBegin(mode);
 }
@@ -56,6 +52,32 @@ void __stdcall Hooked_glReadPixels(GLint x, GLint y, GLsizei width, GLsizei heig
 	memcpy(pixels, BufferScreen, dwSize);
 }
 
+void APIENTRY Hooked_glColor4f(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha)
+{
+	if (chams_world)
+	{
+		if (cvar.chams_world == 1 || cvar.chams_world == 3)
+			red = chams_world_r, green = chams_world_g, blue = chams_world_b;
+		if (cvar.chams_world == 2)
+			red = chams_world_r * red, green = chams_world_g * green, blue = chams_world_b * blue;
+	}
+	if (chams_viewmodel)
+	{
+		if (cvar.chams_view_model == 1 || cvar.chams_view_model == 3)
+			red = chams_viewmodel_r, green = chams_viewmodel_g, blue = chams_viewmodel_b;
+		if (cvar.chams_view_model == 2)
+			red = chams_viewmodel_r * red, green = chams_viewmodel_g * green, blue = chams_viewmodel_b * blue;
+	}
+	if (chams_player)
+	{
+		if (cvar.chams_player == 1 || cvar.chams_player == 3)
+			red = chams_player_r, green = chams_player_g, blue = chams_player_b;
+		if (cvar.chams_player == 2)
+			red = chams_player_r * red, green = chams_player_g * green, blue = chams_player_b * blue;
+	}
+	(*pglColor4f)(red, green, blue, alpha);
+}
+
 void HookOpenGL()
 {
 	if (g_Studio.IsHardware() != 1)
@@ -67,6 +89,7 @@ void HookOpenGL()
 		pglBegin = (glBegin_t)DetourFunction((LPBYTE)GetProcAddress(hmOpenGL, "glBegin"), (LPBYTE)& Hooked_glBegin);
 		pwglSwapBuffers = (wglSwapBuffers_t)DetourFunction((LPBYTE)GetProcAddress(hmOpenGL, "wglSwapBuffers"), (LPBYTE)& Hooked_wglSwapBuffers);
 		pglClear = (glClear_t)DetourFunction((LPBYTE)GetProcAddress(hmOpenGL, "glClear"), (LPBYTE)& Hooked_glClear);
+		pglColor4f = (glColor4f_t)DetourFunction((LPBYTE)GetProcAddress(hmOpenGL, "glColor4f"), (LPBYTE)&Hooked_glColor4f);
 		pglReadPixels = (glReadPixels_t)DetourFunction((PBYTE)GetProcAddress(hmOpenGL, "glReadPixels"), (PBYTE)Hooked_glReadPixels);
 	}
 }
