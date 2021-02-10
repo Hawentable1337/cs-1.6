@@ -125,7 +125,7 @@ void MenuHandle()
 		}
 		else
 		{
-			g_Engine.pfnSetMousePos(g_Engine.GetWindowCenterX(), g_Engine.GetWindowCenterY());
+			SetCursorPos(g_Engine.GetWindowCenterX(), g_Engine.GetWindowCenterY());
 			ImGui::GetIO().MouseDrawCursor = false;
 			g_Client.IN_ActivateMouse();
 		}

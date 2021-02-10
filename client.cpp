@@ -274,8 +274,14 @@ void V_CalcRefdef(struct ref_params_s* pparams)
 	PostV_CalcRefdef(pparams);
 }
 
+int HUD_AddEntity(int type, struct cl_entity_s* ent, const char* modelname)
+{
+	return g_Client.HUD_AddEntity(type, ent, modelname);
+}
+
 void HookClientFunctions()
 {
+	g_pClient->HUD_AddEntity = HUD_AddEntity;
 	g_pClient->HUD_CreateEntities = HUD_CreateEntities;
 	g_pClient->HUD_Frame = HUD_Frame;
 	g_pClient->HUD_Redraw = HUD_Redraw;
