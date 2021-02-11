@@ -41,14 +41,78 @@ bool IsSHieldDummy(Vector* origin)
 	return true;
 }
 
+const char* sPlayerModelFiles[] =
+{
+	"models/player.mdl",
+	"models/player/leet/leet.mdl",
+	"models/player/gign/gign.mdl",
+	"models/player/vip/vip.mdl",
+	"models/player/gsg9/gsg9.mdl",
+	"models/player/guerilla/guerilla.mdl",
+	"models/player/arctic/arctic.mdl",
+	"models/player/sas/sas.mdl",
+	"models/player/terror/terror.mdl",
+	"models/player/urban/urban.mdl",
+	"models/player/spetsnaz/spetsnaz.mdl", // CZ
+	"models/player/militia/militia.mdl"    // CZ
+};
+
+enum ModelType_e
+{
+	CS_DEFAULT,
+	CS_LEET,
+	CS_GIGN,
+	CS_VIP,
+	CS_GSG9,
+	CS_GUERILLA,
+	CS_ARCTIC,
+	CS_SAS,
+	CS_TERROR,
+	CS_URBAN,
+	CS_SPETSNAZ,
+	CS_MILITIA,
+};
+
+bool IsValidCTModelIndex(int modelType)
+{
+	switch (static_cast<ModelType_e>(modelType))
+	{
+	case CS_GIGN:
+	case CS_GSG9:
+	case CS_SAS:
+	case CS_URBAN:
+	case CS_SPETSNAZ:
+		return true;
+	default:
+		break;
+	}
+
+	return false;
+}
+
+bool IsValidTModelIndex(int modelType)
+{
+	switch (static_cast<ModelType_e>(modelType))
+	{
+	case CS_LEET:
+	case CS_GUERILLA:
+	case CS_ARCTIC:
+	case CS_TERROR:
+	case CS_MILITIA:
+		return true;
+	default:
+		break;
+	}
+
+	return false;
+}
+
 void GetHitboxes()
 {
 	cl_entity_s* ent = g_Studio.GetCurrentEntity();
 	if (ent && ent->model && ent->model->name)
 	{
 		studiohdr_t* pStudioHeader = (studiohdr_t*)g_Studio.Mod_Extradata(ent->model);
-		if (!pStudioHeader)
-			return;
 		mstudiobbox_t* pHitbox = (mstudiobbox_t*)((byte*)pStudioHeader + pStudioHeader->hitboxindex);
 		mstudiobone_t* pbones = (mstudiobone_t*)((byte*)pStudioHeader + pStudioHeader->boneindex);
 		BoneMatrix_t* pBoneMatrix = (BoneMatrix_t*)g_Studio.StudioGetBoneTransform();
@@ -198,8 +262,6 @@ void GetHitboxes()
 	if (ent && !ent->player && ent->model && ent->model->name && strstr(ent->model->name, "/player/") && ent->curstate.owner > 0 && ent->curstate.owner <= g_Engine.GetMaxClients())
 	{
 		studiohdr_t* pStudioHeader = (studiohdr_t*)g_Studio.Mod_Extradata(ent->model);
-		if (!pStudioHeader)
-			return;
 		mstudiobbox_t* pHitbox = (mstudiobbox_t*)((byte*)pStudioHeader + pStudioHeader->hitboxindex);
 		mstudiobone_t* pbones = (mstudiobone_t*)((byte*)pStudioHeader + pStudioHeader->boneindex);
 		BoneMatrix_t* pBoneMatrix = (BoneMatrix_t*)g_Studio.StudioGetBoneTransform();
@@ -362,165 +424,194 @@ void GetHitboxes()
 
 	if (ent && ent->player && ent->index > 0 && ent->index <= g_Engine.GetMaxClients())
 	{
-		model_t* pModel = g_Studio.SetupPlayerModel(ent->index - 1);
-		if (!pModel)
-			return;
-		studiohdr_t* pStudioHeader = (studiohdr_t*)g_Studio.Mod_Extradata(pModel);
-		mstudiobbox_t* pHitbox = (mstudiobbox_t*)((byte*)pStudioHeader + pStudioHeader->hitboxindex);
-		mstudiobone_t* pbones = (mstudiobone_t*)((byte*)pStudioHeader + pStudioHeader->boneindex);
-		BoneMatrix_t* pBoneMatrix = (BoneMatrix_t*)g_Studio.StudioGetBoneTransform();
+		static cvar_t* cl_minmodels = g_Engine.pfnGetCvarPointer("cl_minmodels");
+		static cvar_t* cl_min_t = g_Engine.pfnGetCvarPointer("cl_min_t");
+		static cvar_t* cl_min_ct = g_Engine.pfnGetCvarPointer("cl_min_ct");
 
-		HitboxBone[ent->index] = -1;
-		if (pBoneMatrix && pbones)
+		model_t* m_pRenderModel;
+
+		if (cl_minmodels && cl_minmodels->value)
 		{
-			for (unsigned int i = 0; i < pStudioHeader->numbones; i++)
+			if (g_Player[ent->index].iTeam == 1)
 			{
-				char modelname[255];
-				strcpy(modelname, pbones[i].name);
-				strlwr(modelname);
-
-				if (strstr(modelname, "head"))
+				int modelindex = (cl_min_t && IsValidTModelIndex(cl_min_t->value)) ? cl_min_t->value : CS_LEET;
+				m_pRenderModel = g_Engine.CL_LoadModel(sPlayerModelFiles[modelindex], nullptr);
+			}
+			else if (g_Player[ent->index].iTeam == 2)
+			{
+				if (g_Player[ent->index].bVip)
 				{
-					HitboxBone[ent->index] = i;
-					break;
+					m_pRenderModel = g_Engine.CL_LoadModel(sPlayerModelFiles[CS_VIP], nullptr);
+				}
+				else
+				{
+					int modelindex = (cl_min_ct && IsValidCTModelIndex(cl_min_ct->value)) ? cl_min_ct->value : CS_GIGN;
+					m_pRenderModel = g_Engine.CL_LoadModel(sPlayerModelFiles[modelindex], nullptr);
 				}
 			}
-		}
-
-		if (HitboxBone[ent->index] != -1)
-		{
-			bool found = false;
-			if (pBoneMatrix && pHitbox)
-			{
-				for (unsigned int i = 0; i < pStudioHeader->numhitboxes; i++)
-				{
-					if (pHitbox[i].bone == HitboxBone[ent->index])
-					{
-						found = true;
-						HeadBox[ent->index] = i;
-						break;
-					}
-				}
-			}
-			if (!found)HeadBox[ent->index] = 0;
 		}
 		else
-			HeadBox[ent->index] = 0;
+			m_pRenderModel = g_Studio.SetupPlayerModel(ent->index - 1);
 
-		if (pBoneMatrix && pbones && cvar.skeleton_player_bone)
+		if (m_pRenderModel)
 		{
-			for (unsigned int i = 0; i < pStudioHeader->numbones; i++)
+			studiohdr_t* pStudioHeader = (studiohdr_t*)g_Studio.Mod_Extradata(m_pRenderModel);
+			mstudiobbox_t* pHitbox = (mstudiobbox_t*)((byte*)pStudioHeader + pStudioHeader->hitboxindex);
+			mstudiobone_t* pbones = (mstudiobone_t*)((byte*)pStudioHeader + pStudioHeader->boneindex);
+			BoneMatrix_t* pBoneMatrix = (BoneMatrix_t*)g_Studio.StudioGetBoneTransform();
+
+			HitboxBone[ent->index] = -1;
+			if (pBoneMatrix && pbones)
 			{
-				if (pbones[i].parent >= 0)
+				for (unsigned int i = 0; i < pStudioHeader->numbones; i++)
 				{
-					playerbone_t Bones;
-					Bones.vBone[0] = (*pBoneMatrix)[i][0][3];
-					Bones.vBone[1] = (*pBoneMatrix)[i][1][3];
-					Bones.vBone[2] = (*pBoneMatrix)[i][2][3];
-					Bones.vBoneParent[0] = (*pBoneMatrix)[pbones[i].parent][0][3];
-					Bones.vBoneParent[1] = (*pBoneMatrix)[pbones[i].parent][1][3];
-					Bones.vBoneParent[2] = (*pBoneMatrix)[pbones[i].parent][2][3];
-					Bones.index = ent->index;
-					Bones.dummy = false;
-					PlayerBone.push_back(Bones);
-				}
-			}
-		}
-		if (pBoneMatrix && pHitbox)
-		{
-			playeresp_t Esp;
-			Esp.index = ent->index;
-			Esp.origin = ent->origin;
-			Esp.sequence = ent->curstate.sequence;
-			Esp.weaponmodel = ent->curstate.weaponmodel;
-			strcpy(Esp.model, getfilename(pModel->name).c_str());
-			Esp.dummy = false;
+					char modelname[255];
+					strcpy(modelname, pbones[i].name);
+					strlwr(modelname);
 
-			playeraim_t Aim;
-			Aim.index = ent->index;
-			Aim.origin = ent->origin;
-			Aim.sequence = ent->curstate.sequence;
-			strcpy(Aim.modelname, pModel->name);
-			
-			int numhitboxes = 0;
-			for (unsigned int i = 0; i < pStudioHeader->numhitboxes; i++)
-			{
-				Vector vBBMax, vBBMin, vCubePointsTrans[8], vCubePoints[8];
-				Vector vEye = pmove->origin + pmove->view_ofs;
-				VectorTransform(pHitbox[i].bbmin, (*pBoneMatrix)[pHitbox[i].bone], vBBMin);
-				VectorTransform(pHitbox[i].bbmax, (*pBoneMatrix)[pHitbox[i].bone], vBBMax);
-
-				vCubePoints[0] = Vector(pHitbox[i].bbmin.x, pHitbox[i].bbmin.y, pHitbox[i].bbmin.z);
-				vCubePoints[1] = Vector(pHitbox[i].bbmin.x, pHitbox[i].bbmax.y, pHitbox[i].bbmin.z);
-				vCubePoints[2] = Vector(pHitbox[i].bbmax.x, pHitbox[i].bbmax.y, pHitbox[i].bbmin.z);
-				vCubePoints[3] = Vector(pHitbox[i].bbmax.x, pHitbox[i].bbmin.y, pHitbox[i].bbmin.z);
-				vCubePoints[4] = Vector(pHitbox[i].bbmax.x, pHitbox[i].bbmax.y, pHitbox[i].bbmax.z);
-				vCubePoints[5] = Vector(pHitbox[i].bbmin.x, pHitbox[i].bbmax.y, pHitbox[i].bbmax.z);
-				vCubePoints[6] = Vector(pHitbox[i].bbmin.x, pHitbox[i].bbmin.y, pHitbox[i].bbmax.z);
-				vCubePoints[7] = Vector(pHitbox[i].bbmax.x, pHitbox[i].bbmin.y, pHitbox[i].bbmax.z);
-				for (unsigned int x = 0; x < 8; x++)
-					VectorTransform(vCubePoints[x], (*pBoneMatrix)[pHitbox[i].bone], vCubePointsTrans[x]);
-
-				if (!IsSHield(vCubePointsTrans))
-				{
-					if (cvar.visual_model_hitbox)
+					if (strstr(modelname, "head"))
 					{
-						playerhitboxnum_t HitboxesNum;
-						HitboxesNum.HitboxPos = (vBBMax + vBBMin) * 0.5f;
-						HitboxesNum.Hitbox = i;
-						HitboxesNum.dummy = false;
-						PlayerHitboxNum.push_back(HitboxesNum);
-					}
-
-					if (cvar.skeleton_player_hitbox)
-					{
-						playerhitbox_t Hitboxes;
-						Hitboxes.index = ent->index;
-						Hitboxes.dummy = false;
-						for (unsigned int x = 0; x < 8; x++)
-							Hitboxes.vCubePointsTrans[x] = vCubePointsTrans[x];
-						PlayerHitbox.push_back(Hitboxes);
-					}
-
-					esphitbox_t EspHitbox;
-					for (unsigned int x = 0; x < 8; x++)
-						EspHitbox.HitboxMulti[x] = vCubePointsTrans[x];
-					Esp.PlayerEspHitbox.push_back(EspHitbox);
-
-					playeraimhitbox_t AimHitbox;
-					for (unsigned int x = 0; x < 8; x++)
-					{
-						AimHitbox.HitboxMulti[x] = vCubePointsTrans[x];
-						AimHitbox.HitboxPointsFOV[x] = g_Local.vPrevForward.AngleBetween(AimHitbox.HitboxMulti[x] - vEye);
-					}
-					AimHitbox.Hitbox = (vBBMax + vBBMin) * 0.5f;
-					AimHitbox.HitboxFOV = g_Local.vPrevForward.AngleBetween(AimHitbox.Hitbox - vEye);
-					Aim.PlayerAimHitbox.push_back(AimHitbox);
-
-					numhitboxes++;
-				}
-			}
-			PlayerEsp.push_back(Esp);
-			PlayerAim.push_back(Aim);
-
-			if (cvar.model_scan)
-			{
-				bool saved = false;
-				for (model_aim_t Models : Model_Aim)
-				{
-					if (strstr(Models.checkmodel, pModel->name))
-					{
-						saved = true;
+						HitboxBone[ent->index] = i;
 						break;
 					}
 				}
-				if (!saved)
+			}
+
+			if (HitboxBone[ent->index] != -1)
+			{
+				bool found = false;
+				if (pBoneMatrix && pHitbox)
 				{
-					model_aim_t Model;
-					Model.numhitboxes = numhitboxes;
-					strcpy(Model.displaymodel, getfilename(pModel->name).c_str());
-					strcpy(Model.checkmodel, pModel->name);
-					Model_Aim.push_back(Model);
+					for (unsigned int i = 0; i < pStudioHeader->numhitboxes; i++)
+					{
+						if (pHitbox[i].bone == HitboxBone[ent->index])
+						{
+							found = true;
+							HeadBox[ent->index] = i;
+							break;
+						}
+					}
+				}
+				if (!found)HeadBox[ent->index] = 0;
+			}
+			else
+				HeadBox[ent->index] = 0;
+
+			if (pBoneMatrix && pbones && cvar.skeleton_player_bone)
+			{
+				for (unsigned int i = 0; i < pStudioHeader->numbones; i++)
+				{
+					if (pbones[i].parent >= 0)
+					{
+						playerbone_t Bones;
+						Bones.vBone[0] = (*pBoneMatrix)[i][0][3];
+						Bones.vBone[1] = (*pBoneMatrix)[i][1][3];
+						Bones.vBone[2] = (*pBoneMatrix)[i][2][3];
+						Bones.vBoneParent[0] = (*pBoneMatrix)[pbones[i].parent][0][3];
+						Bones.vBoneParent[1] = (*pBoneMatrix)[pbones[i].parent][1][3];
+						Bones.vBoneParent[2] = (*pBoneMatrix)[pbones[i].parent][2][3];
+						Bones.index = ent->index;
+						Bones.dummy = false;
+						PlayerBone.push_back(Bones);
+					}
+				}
+			}
+			if (pBoneMatrix && pHitbox)
+			{
+				playeresp_t Esp;
+				Esp.index = ent->index;
+				Esp.origin = ent->origin;
+				Esp.sequence = ent->curstate.sequence;
+				Esp.weaponmodel = ent->curstate.weaponmodel;
+				strcpy(Esp.model, getfilename(m_pRenderModel->name).c_str());
+				Esp.dummy = false;
+
+				playeraim_t Aim;
+				Aim.index = ent->index;
+				Aim.origin = ent->origin;
+				Aim.sequence = ent->curstate.sequence;
+				strcpy(Aim.modelname, m_pRenderModel->name);
+
+				int numhitboxes = 0;
+				for (unsigned int i = 0; i < pStudioHeader->numhitboxes; i++)
+				{
+					Vector vBBMax, vBBMin, vCubePointsTrans[8], vCubePoints[8];
+					Vector vEye = pmove->origin + pmove->view_ofs;
+					VectorTransform(pHitbox[i].bbmin, (*pBoneMatrix)[pHitbox[i].bone], vBBMin);
+					VectorTransform(pHitbox[i].bbmax, (*pBoneMatrix)[pHitbox[i].bone], vBBMax);
+
+					vCubePoints[0] = Vector(pHitbox[i].bbmin.x, pHitbox[i].bbmin.y, pHitbox[i].bbmin.z);
+					vCubePoints[1] = Vector(pHitbox[i].bbmin.x, pHitbox[i].bbmax.y, pHitbox[i].bbmin.z);
+					vCubePoints[2] = Vector(pHitbox[i].bbmax.x, pHitbox[i].bbmax.y, pHitbox[i].bbmin.z);
+					vCubePoints[3] = Vector(pHitbox[i].bbmax.x, pHitbox[i].bbmin.y, pHitbox[i].bbmin.z);
+					vCubePoints[4] = Vector(pHitbox[i].bbmax.x, pHitbox[i].bbmax.y, pHitbox[i].bbmax.z);
+					vCubePoints[5] = Vector(pHitbox[i].bbmin.x, pHitbox[i].bbmax.y, pHitbox[i].bbmax.z);
+					vCubePoints[6] = Vector(pHitbox[i].bbmin.x, pHitbox[i].bbmin.y, pHitbox[i].bbmax.z);
+					vCubePoints[7] = Vector(pHitbox[i].bbmax.x, pHitbox[i].bbmin.y, pHitbox[i].bbmax.z);
+					for (unsigned int x = 0; x < 8; x++)
+						VectorTransform(vCubePoints[x], (*pBoneMatrix)[pHitbox[i].bone], vCubePointsTrans[x]);
+
+					if (!IsSHield(vCubePointsTrans))
+					{
+						if (cvar.visual_model_hitbox)
+						{
+							playerhitboxnum_t HitboxesNum;
+							HitboxesNum.HitboxPos = (vBBMax + vBBMin) * 0.5f;
+							HitboxesNum.Hitbox = i;
+							HitboxesNum.dummy = false;
+							PlayerHitboxNum.push_back(HitboxesNum);
+						}
+
+						if (cvar.skeleton_player_hitbox)
+						{
+							playerhitbox_t Hitboxes;
+							Hitboxes.index = ent->index;
+							Hitboxes.dummy = false;
+							for (unsigned int x = 0; x < 8; x++)
+								Hitboxes.vCubePointsTrans[x] = vCubePointsTrans[x];
+							PlayerHitbox.push_back(Hitboxes);
+						}
+
+						esphitbox_t EspHitbox;
+						for (unsigned int x = 0; x < 8; x++)
+							EspHitbox.HitboxMulti[x] = vCubePointsTrans[x];
+						Esp.PlayerEspHitbox.push_back(EspHitbox);
+
+						playeraimhitbox_t AimHitbox;
+						for (unsigned int x = 0; x < 8; x++)
+						{
+							AimHitbox.HitboxMulti[x] = vCubePointsTrans[x];
+							AimHitbox.HitboxPointsFOV[x] = g_Local.vPrevForward.AngleBetween(AimHitbox.HitboxMulti[x] - vEye);
+						}
+						AimHitbox.Hitbox = (vBBMax + vBBMin) * 0.5f;
+						AimHitbox.HitboxFOV = g_Local.vPrevForward.AngleBetween(AimHitbox.Hitbox - vEye);
+						Aim.PlayerAimHitbox.push_back(AimHitbox);
+
+						numhitboxes++;
+					}
+				}
+				PlayerEsp.push_back(Esp);
+				PlayerAim.push_back(Aim);
+
+				if (cvar.model_scan)
+				{
+					bool saved = false;
+					for (model_aim_t Models : Model_Aim)
+					{
+						if (strstr(Models.checkmodel, m_pRenderModel->name))
+						{
+							saved = true;
+							break;
+						}
+					}
+					if (!saved)
+					{
+						model_aim_t Model;
+						Model.numhitboxes = numhitboxes;
+						strcpy(Model.displaymodel, getfilename(m_pRenderModel->name).c_str());
+						strcpy(Model.checkmodel, m_pRenderModel->name);
+						Model_Aim.push_back(Model);
+					}
 				}
 			}
 		}

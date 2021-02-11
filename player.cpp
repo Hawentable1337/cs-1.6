@@ -69,7 +69,6 @@ void RunHLCommands()
 		g_Engine.pfnClientCmd("alias -rrr \"-reload\"");
 		g_Engine.pfnClientCmd("bind r \"+rrr\"");
 		g_Engine.pfnClientCmd("cl_showfps 1");
-		g_Engine.pfnClientCmd("cl_minmodels 0");
 		run = false;
 	}
 }

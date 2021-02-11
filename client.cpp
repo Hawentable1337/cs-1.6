@@ -147,7 +147,6 @@ void CL_CreateMove(float frametime, struct usercmd_s* cmd, int active)
 	AntiAim(cmd);
 	FakeLag(frametime, cmd);
 	WallRun();
-	CrossHair();
 	AntiAfk(cmd);
 }
 
@@ -239,7 +238,6 @@ void HUD_Frame(double time)
 	Routeline.deque::clear();
 	StrafeDraw.deque::clear();
 	FOVDraw.deque::clear();
-	CrosshairDraw.deque::clear();
 	PlayerHitboxNum.deque::clear();
 	g_Client.HUD_Frame(time);
 }

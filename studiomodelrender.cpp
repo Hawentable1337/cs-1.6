@@ -35,57 +35,54 @@ void PlayerWeapon(int flags, entity_state_s* pplayer)
 	if (flags & STUDIO_RENDER && pplayer->weaponmodel && g_Studio.StudioCheckBBox())
 	{
 		model_t* model = g_Studio.GetModelByIndex(pplayer->weaponmodel);
-		if (model)
-		{
-			studiohdr_t* pStudioHeader = (studiohdr_t*)g_Studio.Mod_Extradata(model);
-			mstudiobbox_t* pHitbox = (mstudiobbox_t*)((byte*)pStudioHeader + pStudioHeader->hitboxindex);
-			mstudiobone_t* pbones = (mstudiobone_t*)((byte*)pStudioHeader + pStudioHeader->boneindex);
-			BoneMatrix_t* pBoneMatrix = (BoneMatrix_t*)g_Studio.StudioGetBoneTransform();
+		studiohdr_t* pStudioHeader = (studiohdr_t*)g_Studio.Mod_Extradata(model);
+		mstudiobbox_t* pHitbox = (mstudiobbox_t*)((byte*)pStudioHeader + pStudioHeader->hitboxindex);
+		mstudiobone_t* pbones = (mstudiobone_t*)((byte*)pStudioHeader + pStudioHeader->boneindex);
+		BoneMatrix_t* pBoneMatrix = (BoneMatrix_t*)g_Studio.StudioGetBoneTransform();
 
-			if (cvar.skeleton_player_weapon_bone)
+		if (cvar.skeleton_player_weapon_bone)
+		{
+			for (unsigned int i = 0; i < pStudioHeader->numbones; i++)
 			{
-				for (unsigned int i = 0; i < pStudioHeader->numbones; i++)
+				if (pbones[i].parent >= 0)
 				{
-					if (pbones[i].parent >= 0)
-					{
-						playerbone_t Bones;
-						Bones.vBone[0] = (*pBoneMatrix)[i][0][3];
-						Bones.vBone[1] = (*pBoneMatrix)[i][1][3];
-						Bones.vBone[2] = (*pBoneMatrix)[i][2][3];
-						Bones.vBoneParent[0] = (*pBoneMatrix)[pbones[i].parent][0][3];
-						Bones.vBoneParent[1] = (*pBoneMatrix)[pbones[i].parent][1][3];
-						Bones.vBoneParent[2] = (*pBoneMatrix)[pbones[i].parent][2][3];
-						Bones.index = pplayer->number;
-						Bones.dummy = false;
-						PlayerBone.push_back(Bones);
-					}
+					playerbone_t Bones;
+					Bones.vBone[0] = (*pBoneMatrix)[i][0][3];
+					Bones.vBone[1] = (*pBoneMatrix)[i][1][3];
+					Bones.vBone[2] = (*pBoneMatrix)[i][2][3];
+					Bones.vBoneParent[0] = (*pBoneMatrix)[pbones[i].parent][0][3];
+					Bones.vBoneParent[1] = (*pBoneMatrix)[pbones[i].parent][1][3];
+					Bones.vBoneParent[2] = (*pBoneMatrix)[pbones[i].parent][2][3];
+					Bones.index = pplayer->number;
+					Bones.dummy = false;
+					PlayerBone.push_back(Bones);
 				}
 			}
-			if (cvar.skeleton_player_weapon_hitbox)
+		}
+		if (cvar.skeleton_player_weapon_hitbox)
+		{
+			for (unsigned int i = 0; i < pStudioHeader->numhitboxes; i++)
 			{
-				for (unsigned int i = 0; i < pStudioHeader->numhitboxes; i++)
+				Vector vCubePointsTrans[8], vCubePoints[8];
+
+				vCubePoints[0] = Vector(pHitbox[i].bbmin.x, pHitbox[i].bbmin.y, pHitbox[i].bbmin.z);
+				vCubePoints[1] = Vector(pHitbox[i].bbmin.x, pHitbox[i].bbmax.y, pHitbox[i].bbmin.z);
+				vCubePoints[2] = Vector(pHitbox[i].bbmax.x, pHitbox[i].bbmax.y, pHitbox[i].bbmin.z);
+				vCubePoints[3] = Vector(pHitbox[i].bbmax.x, pHitbox[i].bbmin.y, pHitbox[i].bbmin.z);
+				vCubePoints[4] = Vector(pHitbox[i].bbmax.x, pHitbox[i].bbmax.y, pHitbox[i].bbmax.z);
+				vCubePoints[5] = Vector(pHitbox[i].bbmin.x, pHitbox[i].bbmax.y, pHitbox[i].bbmax.z);
+				vCubePoints[6] = Vector(pHitbox[i].bbmin.x, pHitbox[i].bbmin.y, pHitbox[i].bbmax.z);
+				vCubePoints[7] = Vector(pHitbox[i].bbmax.x, pHitbox[i].bbmin.y, pHitbox[i].bbmax.z);
+
+				playerhitbox_t Hitboxes;
+				Hitboxes.index = pplayer->number;
+				Hitboxes.dummy = false;
+				for (unsigned int x = 0; x < 8; x++)
 				{
-					Vector vCubePointsTrans[8], vCubePoints[8];
-
-					vCubePoints[0] = Vector(pHitbox[i].bbmin.x, pHitbox[i].bbmin.y, pHitbox[i].bbmin.z);
-					vCubePoints[1] = Vector(pHitbox[i].bbmin.x, pHitbox[i].bbmax.y, pHitbox[i].bbmin.z);
-					vCubePoints[2] = Vector(pHitbox[i].bbmax.x, pHitbox[i].bbmax.y, pHitbox[i].bbmin.z);
-					vCubePoints[3] = Vector(pHitbox[i].bbmax.x, pHitbox[i].bbmin.y, pHitbox[i].bbmin.z);
-					vCubePoints[4] = Vector(pHitbox[i].bbmax.x, pHitbox[i].bbmax.y, pHitbox[i].bbmax.z);
-					vCubePoints[5] = Vector(pHitbox[i].bbmin.x, pHitbox[i].bbmax.y, pHitbox[i].bbmax.z);
-					vCubePoints[6] = Vector(pHitbox[i].bbmin.x, pHitbox[i].bbmin.y, pHitbox[i].bbmax.z);
-					vCubePoints[7] = Vector(pHitbox[i].bbmax.x, pHitbox[i].bbmin.y, pHitbox[i].bbmax.z);
-
-					playerhitbox_t Hitboxes;
-					Hitboxes.index = pplayer->number;
-					Hitboxes.dummy = false;
-					for (unsigned int x = 0; x < 8; x++)
-					{
-						VectorTransform(vCubePoints[x], (*pBoneMatrix)[pHitbox[i].bone], vCubePointsTrans[x]);
-						Hitboxes.vCubePointsTrans[x] = vCubePointsTrans[x];
-					}
-					PlayerHitbox.push_back(Hitboxes);
+					VectorTransform(vCubePoints[x], (*pBoneMatrix)[pHitbox[i].bone], vCubePointsTrans[x]);
+					Hitboxes.vCubePointsTrans[x] = vCubePointsTrans[x];
 				}
+				PlayerHitbox.push_back(Hitboxes);
 			}
 		}
 	}

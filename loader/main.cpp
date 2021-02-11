@@ -78,7 +78,7 @@ void Menu()
 		static int fail = 0;
 		if (sucess)sucess--;
 		if (fail)fail--;
-		if (ImGui::IsWindowHovered(ImGuiHoveredFlags_AllowWhenBlockedByActiveItem))
+		if (ImGui::IsMouseHoveringRect({ 0, 0 }, { 312, 277 }))
 		{
 			GLuint texture = texture_id[INJECTOR];
 			if (sucess) texture = texture_id[CHECKMARK];

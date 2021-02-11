@@ -1,7 +1,5 @@
 #include "client.h"
 
-deque<crosshair_t> CrosshairDraw;
-
 cvar_t* cl_dynamiccrosshair;
 cvar_t* cl_crosshair_size;
 
@@ -168,29 +166,6 @@ void CalculateCrosshairSize()
 }
 
 void DrawCrossHair()
-{
-	for (crosshair_t Cross : CrosshairDraw)
-	{
-		float ColorHSV[3];
-		ImGui::ColorConvertRGBtoHSV(color_red, color_green, color_blue, ColorHSV[0], ColorHSV[1], ColorHSV[2]);
-		for (unsigned int i = 0; i < Cross.iBarSize; i++)
-		{
-			ColorHSV[0] += 1.0f / Cross.iBarSize;
-			if (ColorHSV[0] > 1.0f) ColorHSV[0] -= 1.0f;
-			ImVec2 pos1, pos2;
-			float radius = Cross.flCrosshairDistance + i - 1;
-			pos1.x = ImGui::GetIO().DisplaySize.x / 2 - radius * sin(M_PI * 2 * Cross.angle / 360);
-			pos1.y = ImGui::GetIO().DisplaySize.y / 2 - radius * cos(M_PI * 2 * Cross.angle / 360);
-			radius++;
-			pos2.x = ImGui::GetIO().DisplaySize.x / 2 - radius * sin(M_PI * 2 * Cross.angle / 360);
-			pos2.y = ImGui::GetIO().DisplaySize.y / 2 - radius * cos(M_PI * 2 * Cross.angle / 360);
-
-			ImGui::GetCurrentWindow()->DrawList->AddLine({ pos1.x, pos1.y }, { pos2.x, pos2.y }, ImColor().HSV(ColorHSV[0], ColorHSV[1], ColorHSV[2]), 2.0f);
-		}
-	}
-}
-
-void CrossHair()
 {
 	if (cvar.visual_crosshair && bAliveLocal())
 	{
@@ -394,11 +369,22 @@ void CrossHair()
 		MakeAngle(angle);
 		for (unsigned int i = 0; i < 4; i++)
 		{
-			crosshair_t Cross;
-			Cross.angle = angle[i];
-			Cross.iBarSize = iBarSize;
-			Cross.flCrosshairDistance = flCrosshairDistance;
-			CrosshairDraw.push_back(Cross);
+			float ColorHSV[3];
+			ImGui::ColorConvertRGBtoHSV(color_red, color_green, color_blue, ColorHSV[0], ColorHSV[1], ColorHSV[2]);
+			for (unsigned int x = 0; x < iBarSize; x++)
+			{
+				ColorHSV[0] += 1.0f / iBarSize;
+				if (ColorHSV[0] > 1.0f) ColorHSV[0] -= 1.0f;
+				ImVec2 pos1, pos2;
+				float radius = flCrosshairDistance + x - 1;
+				pos1.x = ImGui::GetIO().DisplaySize.x / 2 - radius * sin(M_PI * 2 * angle[i] / 360);
+				pos1.y = ImGui::GetIO().DisplaySize.y / 2 - radius * cos(M_PI * 2 * angle[i] / 360);
+				radius++;
+				pos2.x = ImGui::GetIO().DisplaySize.x / 2 - radius * sin(M_PI * 2 * angle[i] / 360);
+				pos2.y = ImGui::GetIO().DisplaySize.y / 2 - radius * cos(M_PI * 2 * angle[i] / 360);
+
+				ImGui::GetCurrentWindow()->DrawList->AddLine({ pos1.x, pos1.y }, { pos2.x, pos2.y }, ImColor().HSV(ColorHSV[0], ColorHSV[1], ColorHSV[2]), 2.0f);
+			}
 		}
 	}
 }
