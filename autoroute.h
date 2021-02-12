@@ -30,17 +30,6 @@ typedef enum
 	ROUTE_DESC = 2,
 } ROUTEDIRECTION;
 
-typedef struct
-{
-	char str[10];
-	bool Draw1;
-	bool Draw2;
-	Vector RoutePos1;
-	Vector RoutePos2;
-	Vector RoutePos3;
-} route_t;
-extern deque<route_t> Routeline;
-
 class AutoRoute
 {
 public:

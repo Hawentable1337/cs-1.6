@@ -32,13 +32,25 @@ int	StudioDrawModel(int flags)
 //=========================
 void PlayerWeapon(int flags, entity_state_s* pplayer)
 {
-	if (flags & STUDIO_RENDER && pplayer->weaponmodel && g_Studio.StudioCheckBBox())
+	if (flags & STUDIO_RENDER && pplayer->weaponmodel)
 	{
 		model_t* model = g_Studio.GetModelByIndex(pplayer->weaponmodel);
+		if (!model)
+			return;
 		studiohdr_t* pStudioHeader = (studiohdr_t*)g_Studio.Mod_Extradata(model);
+		if (!pStudioHeader)
+			return;
 		mstudiobbox_t* pHitbox = (mstudiobbox_t*)((byte*)pStudioHeader + pStudioHeader->hitboxindex);
+		if (!pHitbox)
+			return;
 		mstudiobone_t* pbones = (mstudiobone_t*)((byte*)pStudioHeader + pStudioHeader->boneindex);
+		if (!pbones)
+			return;
 		BoneMatrix_t* pBoneMatrix = (BoneMatrix_t*)g_Studio.StudioGetBoneTransform();
+		if (!pBoneMatrix)
+			return;
+		if (!g_Studio.StudioCheckBBox())
+			return;
 
 		if (cvar.skeleton_player_weapon_bone)
 		{
@@ -92,7 +104,7 @@ int (*pStudioDrawPlayer)(int flags, entity_state_s* pplayer);
 int StudioDrawPlayer(int flags, entity_state_s* pplayer)
 {
 	int ret = pStudioDrawPlayer(flags, pplayer);
-	if (pplayer->number > 0 && pplayer->number <= g_Engine.GetMaxClients())
+	if (ret && pplayer->number > 0 && pplayer->number <= g_Engine.GetMaxClients())
 		PlayerWeapon(flags, pplayer);
 	return ret;
 }

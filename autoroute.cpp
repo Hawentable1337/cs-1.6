@@ -1,7 +1,6 @@
 #include "client.h"
 
 AutoRoute autoroute;
-deque<route_t> Routeline;
 
 float GetPointDistance(Vector pos)
 {
@@ -821,7 +820,7 @@ void RouteDirection(usercmd_s* cmd)
 	}
 }
 
-void RouteLine()
+void DrawRouteLine()
 {
 	if (cvar.route_activate && cvar.route_draw && bAliveLocal() && cvar.rage_active)
 	{
@@ -834,9 +833,6 @@ void RouteLine()
 					float dist = GetPointDistance(autoroute.route_line[i].point[j].origin);
 					if (dist < 800)
 					{
-						route_t Route;
-						Route.Draw1 = false;
-						Route.Draw2 = false;
 						if (j > 0 && j % 1 == 0)
 						{
 							Vector vecBegin, vecEnd;
@@ -844,46 +840,28 @@ void RouteLine()
 							vecBegin[2] -= 37;
 							vecEnd = autoroute.route_line[i].point[j].origin;
 							vecEnd[2] -= 37;
-							Route.Draw1 = true;
-							Route.RoutePos1 = vecBegin;
-							Route.RoutePos2 = vecEnd;
+							float vecScreenMin[2], vecScreenMax[2];
+							if (WorldToScreen(vecBegin, vecScreenMin) && WorldToScreen(vecEnd, vecScreenMax))
+								ImGui::GetCurrentWindow()->DrawList->AddLine({ IM_ROUND(vecScreenMin[0]), IM_ROUND(vecScreenMin[1]) }, { IM_ROUND(vecScreenMax[0]), IM_ROUND(vecScreenMax[1]) }, Wheel1());
 						}
 						if (j == 0 || j == autoroute.route_line[i].count - 1)
 						{
 							Vector vecPoint;
 							vecPoint = autoroute.route_line[i].point[j].origin;
 							vecPoint[2] -= 37;
-							Route.Draw2 = true;
-							Route.RoutePos3 = vecPoint;
-							sprintf(Route.str, "%d", i + 1);
+							char str[32];
+							sprintf(str, "%d", i + 1);
+							float vecScreenMin[2];
+							if (WorldToScreen(vecPoint, vecScreenMin))
+							{
+								float label_size = IM_ROUND(ImGui::CalcTextSize(str, NULL, true).x / 2);
+								ImGui::GetCurrentWindow()->DrawList->AddRect({ IM_ROUND(vecScreenMin[0]) - label_size - 2, IM_ROUND(vecScreenMin[1]) - 24 }, { IM_ROUND(vecScreenMin[0]) + label_size + 3, IM_ROUND(vecScreenMin[1]) - 10 }, Wheel1());
+								ImGui::GetCurrentWindow()->DrawList->AddText({ IM_ROUND(vecScreenMin[0]) - label_size, IM_ROUND(vecScreenMin[1]) - 25 }, White(), str);
+								ImGui::GetCurrentWindow()->DrawList->AddRectFilled({ IM_ROUND(vecScreenMin[0]) - 1, IM_ROUND(vecScreenMin[1]) - 1 }, { IM_ROUND(vecScreenMin[0]) + 2, IM_ROUND(vecScreenMin[1]) + 2 }, Wheel2());
+							}
 						}
-						Routeline.push_back(Route);
 					}
 				}
-			}
-		}
-	}
-}
-
-void DrawRouteLine()
-{
-	for (route_t Route : Routeline)
-	{
-		if (Route.Draw1)
-		{
-			float vecScreenMin[2], vecScreenMax[2];
-			if (WorldToScreen(Route.RoutePos1, vecScreenMin) && WorldToScreen(Route.RoutePos2, vecScreenMax))
-				ImGui::GetCurrentWindow()->DrawList->AddLine({ IM_ROUND(vecScreenMin[0]), IM_ROUND(vecScreenMin[1]) }, { IM_ROUND(vecScreenMax[0]), IM_ROUND(vecScreenMax[1]) }, Wheel1());
-		}
-		if (Route.Draw2)
-		{
-			float vecScreenMin[2];
-			if (WorldToScreen(Route.RoutePos3, vecScreenMin))
-			{
-				float label_size = IM_ROUND(ImGui::CalcTextSize(Route.str, NULL, true).x / 2);
-				ImGui::GetCurrentWindow()->DrawList->AddRect({ IM_ROUND(vecScreenMin[0]) - label_size - 2, IM_ROUND(vecScreenMin[1]) - 24 }, { IM_ROUND(vecScreenMin[0]) + label_size + 3, IM_ROUND(vecScreenMin[1]) - 10 }, Wheel1());
-				ImGui::GetCurrentWindow()->DrawList->AddText({ IM_ROUND(vecScreenMin[0]) - label_size, IM_ROUND(vecScreenMin[1]) - 25 }, White(), Route.str);
-				ImGui::GetCurrentWindow()->DrawList->AddRectFilled({ IM_ROUND(vecScreenMin[0]) - 1, IM_ROUND(vecScreenMin[1]) - 1 }, { IM_ROUND(vecScreenMin[0]) + 2, IM_ROUND(vecScreenMin[1]) + 2 }, Wheel2());
 			}
 		}
 	}
@@ -893,7 +871,6 @@ void Route(usercmd_s* cmd)
 {
 	autoroute.CreateMove(cmd);
 	RouteDirection(cmd);
-	RouteLine();
 }
 
 void ContinueRoute()

@@ -23,7 +23,7 @@ void LoadTextureImageBack(char* image, int index)
 bool popoup = true;
 void DrawPopupWindow()
 {
-	static DWORD closewindow = GetTickCount() + 11000;
+	static DWORD closewindow = GetTickCount() + 21000;
 	if (closewindow < GetTickCount())
 		popoup = false;
 	
@@ -46,11 +46,11 @@ void DrawPopupWindow()
 	showmouse = false;
 
 	ImGui::SetNextWindowPos(ImVec2(100, 100), ImGuiCond_Once);
-	if(ImGui::Begin("##noname", &popoup, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse))
+	if(ImGui::Begin("##noname", &popoup, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse))
 	{
 		if (ImGui::IsWindowHovered())
-			closewindow = GetTickCount() + 11000;
-		ImGui::GetWindowDrawList()->AddImage((GLuint*)texture_id[BACKGRND], ImVec2(ImGui::GetCurrentWindow()->Pos.x + 6, ImGui::GetCurrentWindow()->Pos.y + 27), ImVec2(ImGui::GetCurrentWindow()->Pos.x + ImGui::GetCurrentWindow()->Size.x - 6, ImGui::GetCurrentWindow()->Pos.y + ImGui::GetCurrentWindow()->Size.y - 8));
+			popoup = false;
+		ImGui::GetWindowDrawList()->AddImage((GLuint*)texture_id[BACKGRND], ImVec2(ImGui::GetCurrentWindow()->Pos.x + 6, ImGui::GetCurrentWindow()->Pos.y + 6), ImVec2(ImGui::GetCurrentWindow()->Pos.x + ImGui::GetCurrentWindow()->Size.x - 6, ImGui::GetCurrentWindow()->Pos.y + ImGui::GetCurrentWindow()->Size.y - 6));
 		
 		ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), "\n  You are injected!  ");
 		if ((closewindow - GetTickCount()) / 100 % 10)

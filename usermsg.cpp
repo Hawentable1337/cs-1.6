@@ -6,7 +6,14 @@ pfnUserMsgHook pTeamInfo;
 pfnUserMsgHook pDeathMsg;
 pfnUserMsgHook pScoreAttrib;
 pfnUserMsgHook pServerName;
+pfnUserMsgHook pSetFOV;
 
+int SetFOV(const char* pszName, int iSize, void* pbuf)
+{
+	BEGIN_READ(pbuf, iSize);
+	g_Local.iFOV = READ_BYTE();
+	return pSetFOV(pszName, iSize, pbuf);
+}
 int ServerName(const char* pszName, int iSize, void* pbuf)
 {
 	BEGIN_READ(pbuf, iSize);
@@ -145,4 +152,5 @@ void HookUserMessages()
 	HOOK_MSG(DeathMsg);
 	HOOK_MSG(ScoreAttrib);
 	HOOK_MSG(ServerName);
+	HOOK_MSG(SetFOV);
 }

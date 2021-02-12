@@ -3,17 +3,6 @@
 
 typedef struct
 {
-	float r;
-	float g;
-	float b;
-	float a;
-	int Radius;
-	ImVec2 Pos;
-} fov_t;
-extern deque<fov_t> FOVDraw;
-
-typedef struct
-{
 	float HitboxFOV;
 	Vector Hitbox;
 	float HitboxPointsFOV[8];

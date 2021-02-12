@@ -234,10 +234,6 @@ void HUD_Frame(double time)
 	WorldEsp.deque::clear();
 	WorldBone.deque::clear();
 	WorldHitbox.deque::clear();
-	Grenadeline.deque::clear();
-	Routeline.deque::clear();
-	StrafeDraw.deque::clear();
-	FOVDraw.deque::clear();
 	PlayerHitboxNum.deque::clear();
 	g_Client.HUD_Frame(time);
 }
@@ -260,7 +256,6 @@ void PostV_CalcRefdef(struct ref_params_s* pparams)
 {
 	g_Local.vPostForward = pparams->forward;
 	g_Local.iPostHealth = pparams->health;
-	TraceGrenade(pparams);
 	ViewModelFov(pparams);
 	ThirdPerson(pparams);
 }

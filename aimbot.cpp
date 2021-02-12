@@ -1,6 +1,5 @@
 #include "client.h"
 
-deque<fov_t> FOVDraw;
 deque<playeraim_t> PlayerAim;
 deque<playeraimlegit_t> PlayerAimLegit;
 
@@ -1189,42 +1188,6 @@ void RageAimbot(struct usercmd_s* cmd)
 	}
 }
 
-void AimBotFOV()
-{
-	if (bAliveLocal() && IsCurWeaponGun() && !cvar.rage_active && cvar.legit[g_Local.weapon.m_iWeaponID].active && cvar.legit[g_Local.weapon.m_iWeaponID].drawfov && m_flCurrentFOV > 0 && m_flCurrentFOV <= 45 && g_Local.iFOV)
-	{
-		fov_t FOV;
-		float x = ImGui::GetIO().DisplaySize.x / 2;
-		float y = ImGui::GetIO().DisplaySize.y / 2;
-		float dx = ImGui::GetIO().DisplaySize.x / g_Local.iFOV;
-		float dy = ImGui::GetIO().DisplaySize.y / g_Local.iFOV;
-
-		float radius = tanf(DEG2RAD(m_flCurrentFOV) * 0.5f) / tanf(DEG2RAD(g_Local.iFOV) * 0.5f) * ImGui::GetIO().DisplaySize.x;
-
-		ImVec2 positions;
-		positions.x = (x - (dx * g_Local.vNoRecoilAngle[1]));
-		positions.y = (y + (dy * g_Local.vNoRecoilAngle[0]));
-
-		float ColorHSV[4];
-
-		ImGui::ColorConvertRGBtoHSV(color_red, color_green, color_blue, ColorHSV[0], ColorHSV[1], ColorHSV[2]);
-		for (unsigned int i = 1; i < (int)radius; i++)
-		{
-			ColorHSV[3] = 0.2f / radius * i;
-			ColorHSV[0] += 1.0f / radius;
-			if (ColorHSV[0] > 1.0f)
-				ColorHSV[0] -= 1.0f;
-			FOV.Pos = positions;
-			FOV.Radius = i;
-			FOV.r = ColorHSV[0];
-			FOV.g = ColorHSV[1];
-			FOV.b = ColorHSV[2];
-			FOV.a = ColorHSV[3];
-			FOVDraw.push_back(FOV);
-		}
-	}
-}
-
 void AimBot(struct usercmd_s* cmd)
 {
 	iTargetTrigger = 0;
@@ -1247,7 +1210,6 @@ void AimBot(struct usercmd_s* cmd)
 			KnifeAimBot(cmd);
 		}
 	}
-	AimBotFOV();
 }
 
 void KnifeDraw()
@@ -1497,8 +1459,31 @@ void TriggerDraw()
 
 void DrawAimBotFOV()
 {
-	for (fov_t FOV : FOVDraw)
-		ImGui::GetCurrentWindow()->DrawList->AddCircle({ IM_ROUND(FOV.Pos.x), IM_ROUND(FOV.Pos.y) }, FOV.Radius, ImColor().HSV(FOV.r, FOV.g, FOV.b, FOV.a), 32);
+	if (bAliveLocal() && IsCurWeaponGun() && !cvar.rage_active && cvar.legit[g_Local.weapon.m_iWeaponID].active && cvar.legit[g_Local.weapon.m_iWeaponID].drawfov && m_flCurrentFOV > 0 && m_flCurrentFOV <= 45 && g_Local.iFOV)
+	{
+		float x = ImGui::GetIO().DisplaySize.x / 2;
+		float y = ImGui::GetIO().DisplaySize.y / 2;
+		float dx = ImGui::GetIO().DisplaySize.x / g_Local.iFOV;
+		float dy = ImGui::GetIO().DisplaySize.y / g_Local.iFOV;
+
+		float radius = tanf(DEG2RAD(m_flCurrentFOV) * 0.5f) / tanf(DEG2RAD(g_Local.iFOV) * 0.5f) * ImGui::GetIO().DisplaySize.x;
+
+		ImVec2 positions;
+		positions.x = (x - (dx * g_Local.vNoRecoilAngle[1]));
+		positions.y = (y + (dy * g_Local.vNoRecoilAngle[0]));
+
+		float ColorHSV[4];
+
+		ImGui::ColorConvertRGBtoHSV(color_red, color_green, color_blue, ColorHSV[0], ColorHSV[1], ColorHSV[2]);
+		for (unsigned int i = 1; i < (int)radius; i++)
+		{
+			ColorHSV[3] = 0.2f / radius * i;
+			ColorHSV[0] += 1.0f / radius;
+			if (ColorHSV[0] > 1.0f)
+				ColorHSV[0] -= 1.0f;
+			ImGui::GetCurrentWindow()->DrawList->AddCircle({ IM_ROUND(positions.x), IM_ROUND(positions.y) }, i, ImColor().HSV(ColorHSV[0], ColorHSV[1], ColorHSV[2], ColorHSV[3]), 32);
+		}
+	}
 }
 
 void DrawAimbot()

@@ -1,7 +1,5 @@
 #include "client.h"
 
-deque<strafe_t> StrafeDraw;
-
 float FrameCount;
 float FpsCount;
 float InterpFps;
@@ -368,17 +366,6 @@ inline float EdgeDistance() {
 	return mind;
 }
 
-void LongJump()
-{
-	if (flJumpmesstime > GetTickCount())
-	{
-		strafe_t Strafe;
-		Strafe.Pos1 = vStart;
-		Strafe.Pos2 = vEnd;
-		StrafeDraw.push_back(Strafe);
-	}
-}
-
 void Kz(float frametime, struct usercmd_s *cmd)
 {
 	if (bAliveLocal())
@@ -393,8 +380,6 @@ void Kz(float frametime, struct usercmd_s *cmd)
 			FastRun(cmd);
 		if (cvar.kz_strafe)
 			StrafeHack(cmd);
-		if (cvar.kz_show_kz)
-			LongJump();
 	}
 	if (bJumped && (pmove->flags & FL_ONGROUND || pmove->movetype == MOVETYPE_FLY))
 	{
@@ -452,27 +437,27 @@ void KzFameCount()
 
 void DrawLongJump()
 {
-	for (strafe_t Strafe : StrafeDraw)
+	if (flJumpmesstime > GetTickCount() && cvar.kz_show_kz)
 	{
 		float VecScreenMin[2];
 		float VecScreenMax[2];
-		if (WorldToScreen(Strafe.Pos1, VecScreenMin) && WorldToScreen(Strafe.Pos2, VecScreenMax))
+		if (WorldToScreen(vStart, VecScreenMin) && WorldToScreen(vEnd, VecScreenMax))
 			ImGui::GetCurrentWindow()->DrawList->AddLine({ IM_ROUND(VecScreenMin[0]), IM_ROUND(VecScreenMin[1]) }, { IM_ROUND(VecScreenMax[0]), IM_ROUND(VecScreenMax[1]) }, Wheel1());
 
-		if (WorldToScreen(Strafe.Pos1, VecScreenMin))
+		if (WorldToScreen(vStart, VecScreenMin))
 			ImGui::GetCurrentWindow()->DrawList->AddRectFilled({ IM_ROUND(VecScreenMin[0]) - 1, IM_ROUND(VecScreenMin[1]) - 1 }, { IM_ROUND(VecScreenMin[0]) + 2, IM_ROUND(VecScreenMin[1]) + 2 }, Wheel2());
 
-		if (WorldToScreen(Strafe.Pos2, VecScreenMax))
+		if (WorldToScreen(vEnd, VecScreenMax))
 			ImGui::GetCurrentWindow()->DrawList->AddRectFilled({ IM_ROUND(VecScreenMax[0]) - 1, IM_ROUND(VecScreenMax[1]) - 1 }, { IM_ROUND(VecScreenMax[0]) + 2, IM_ROUND(VecScreenMax[1]) + 2 }, Wheel2());
 
-		if (WorldToScreen(Strafe.Pos1, VecScreenMin))
+		if (WorldToScreen(vStart, VecScreenMin))
 		{
 			float label_size = IM_ROUND(ImGui::CalcTextSize("Start", NULL, true).x / 2);
 			ImGui::GetCurrentWindow()->DrawList->AddRect({ IM_ROUND(VecScreenMin[0]) - label_size - 2, IM_ROUND(VecScreenMin[1]) - 24 }, { IM_ROUND(VecScreenMin[0]) + label_size + 3, IM_ROUND(VecScreenMin[1]) - 10 }, Wheel1());
 			ImGui::GetCurrentWindow()->DrawList->AddText({ IM_ROUND(VecScreenMin[0]) - label_size, IM_ROUND(VecScreenMin[1]) - 25 }, White(), "Start");
 		}
 
-		if (WorldToScreen(Strafe.Pos2, VecScreenMax))
+		if (WorldToScreen(vEnd, VecScreenMax))
 		{
 			float label_size = IM_ROUND(ImGui::CalcTextSize("Stop", NULL, true).x / 2);
 			ImGui::GetCurrentWindow()->DrawList->AddRect({ IM_ROUND(VecScreenMax[0]) - label_size - 2, IM_ROUND(VecScreenMax[1]) - 24 }, { IM_ROUND(VecScreenMax[0]) + label_size + 3, IM_ROUND(VecScreenMax[1]) - 10 }, Wheel1());
