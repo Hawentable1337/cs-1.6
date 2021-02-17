@@ -18,8 +18,17 @@ void APIENTRY Hooked_glBegin(GLenum mode)
 	cl_entity_s* ent = g_Studio.GetCurrentEntity();
 	if (ent && ent == &playerdummy)
 	{
-		if (mode == GL_TRIANGLE_STRIP && !cvar.chams_player && !cvar.chams_player_glow)
-			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+		if (cvar.chams_player > 1 && chams_playerdummy)
+		{
+			glDisable(GL_TEXTURE_2D);
+			glBindTexture(GL_TEXTURE_2D, 0);
+			glEnable(GL_TEXTURE_2D);
+		}
+		if (!cvar.chams_player && !cvar.chams_player_glow)
+		{
+			if (mode == GL_TRIANGLE_STRIP)
+				glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+		}
 	}
 	pglBegin(mode);
 }

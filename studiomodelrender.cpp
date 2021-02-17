@@ -339,6 +339,42 @@ void Chams(cl_entity_s* ent, bool valident, float chams, float chamswall, float 
 	coloring = false;
 }
 
+void ChamsDummy(cl_entity_s* ent, bool valident, float chams, float chamswall, float chams_r, float chams_g, float chams_b, float chamswall_r, float chamswall_g, float chamswall_b, float& coloring, float& coloring_r, float& coloring_g, float& coloring_b)
+{
+	if (valident && chams && DrawVisuals && (!cvar.route_auto || cvar.route_draw_visual) && GetTickCount() - HudRedraw <= 100)
+	{
+		coloring = true;
+
+		ent->curstate.rendermode = 0;
+		ent->curstate.renderfx = 0;
+		ent->curstate.renderamt = 0;
+		g_Studio.SetForceFaceFlags(0);
+
+		ent->curstate.rendermode = 0;
+		ent->curstate.renderfx = 0;
+		ent->curstate.renderamt = 0;
+		g_Studio.SetForceFaceFlags(0);
+
+		if (chamswall)
+		{
+			glDepthFunc(GL_GREATER);
+			glDisable(GL_DEPTH_TEST);
+			coloring_r = chamswall_r;
+			coloring_g = chamswall_g;
+			coloring_b = chamswall_b;
+			oStudioRenderFinal();
+		}
+
+		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_LESS);
+		coloring_r = chams_r;
+		coloring_g = chams_g;
+		coloring_b = chams_b;
+		oStudioRenderFinal();
+	}
+	coloring = false;
+}
+
 void StudioRenderModel(void)
 {
 	cl_entity_s* ent = g_Studio.GetCurrentEntity();
@@ -364,7 +400,7 @@ void StudioRenderModel(void)
 	Glow(ent, Dummy, cvar.chams_player_glow, cvar.chams_player, color_green, color_blue, color_red, 12);
 	float r[2], g[2], b[2];
 	r[0] = color_red, g[0] = color_green, b[0] = color_blue, r[1] = color_blue, g[1] = color_red, b[1] = color_green;
-	Chams(ent, Dummy, cvar.chams_player, cvar.chams_player_wall, r[0], g[0], b[0], r[1], g[1], b[1], chams_playerdummy, chams_playerdummy_r, chams_playerdummy_g, chams_playerdummy_b);
+	ChamsDummy(ent, Dummy, cvar.chams_player, cvar.chams_player_wall, r[0], g[0], b[0], r[1], g[1], b[1], chams_playerdummy, chams_playerdummy_r, chams_playerdummy_g, chams_playerdummy_b);
 	oStudioRenderModel();
 }
 
