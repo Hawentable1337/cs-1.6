@@ -1916,14 +1916,17 @@ void DrawMenuChild(int total)
 			ImGui::End();
 		}
 
-		if (cvar.model_preview && (pmove->iuser1 == OBS_NONE || pmove->iuser1 == OBS_ROAMING) && modelmenu)
+		if (cvar.model_preview && modelmenu && pmove->iuser1 != OBS_MAP_FREE && pmove->iuser1 != OBS_MAP_CHASE && pmove->view_ofs[2] != PM_DEAD_VIEWHEIGHT)
 		{
+			drawdummy = true;
+			drawgetdummy = true;
+			drawbackdummy = true;
 			float WindowBorderSize = ImGui::GetStyle().WindowBorderSize;
 			ImGui::GetStyle().WindowBorderSize = 1.0f;
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(200, 300));
 			ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
 			ImGui::SetNextWindowPos(ImVec2(model_pos_x, model_pos_y), ImGuiCond_Once);
-			ImGui::SetNextWindowSize(ImVec2(200, 300), ImGuiCond_Once);
+			ImGui::SetNextWindowSize(ImVec2(modelscreenw, modelscreenh), ImGuiCond_Once);
 			ImGui::Begin("esppreview", reinterpret_cast<bool*>(true), ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
 			{
 				model_pos_x = (int)ImGui::GetWindowPos().x;

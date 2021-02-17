@@ -10,6 +10,11 @@ float chams_player_g;
 float chams_player_b;
 float chams_player;
 
+float chams_playerdummy_r;
+float chams_playerdummy_g;
+float chams_playerdummy_b;
+float chams_playerdummy;
+
 float chams_world_r;
 float chams_world_g;
 float chams_world_b;
@@ -145,9 +150,9 @@ void StudioSetupBones(void)
 			screensize = screensizey;
 		
 		if (esph && int(esph) < int(screensize) - 1)
-			modelscale += 0.0001f * (screensize - esph);
+			modelscale += 0.00001f * (screensize - esph);
 		if (esph && int(esph) > int(screensize) + 1)
-			modelscale -= 0.0001f * (esph - screensize);
+			modelscale -= 0.00001f * (esph - screensize);
 
 		pThis->m_protationmatrix = (float(*)[3][4])g_Studio.StudioGetRotationMatrix();
 		for (int i = 0; i < 3; i++)
@@ -273,9 +278,9 @@ void Glow(cl_entity_s* ent, bool valident, float glow, float chams, float r, flo
 		ent->curstate.renderamt = width;
 		ent->curstate.rendermode = 0;
 
-		ent->curstate.rendercolor.r = r * 255.0f;
-		ent->curstate.rendercolor.g = g * 255.0f;
-		ent->curstate.rendercolor.b = b * 255.0f;
+		ent->curstate.rendercolor.r = byte(r * 255.0f);
+		ent->curstate.rendercolor.g = byte(g * 255.0f);
+		ent->curstate.rendercolor.b = byte(b * 255.0f);
 
 		oStudioRenderFinal();
 		glEnable(GL_DEPTH_TEST);
@@ -348,7 +353,6 @@ void StudioRenderModel(void)
 	Glow(ent, ViewModel, cvar.chams_view_model_glow, cvar.chams_view_model, color_blue, color_red, color_green, cvar.visual_skins_viewmodel_nohands ? 0 : 1);
 	Chams(ent, ViewModel, cvar.chams_view_model, 0, color_blue, color_red, color_green, 0, 0, 0, chams_viewmodel, chams_viewmodel_r, chams_viewmodel_g, chams_viewmodel_b);
 	Glow(ent, Player, cvar.chams_player_glow, cvar.chams_player, color_green, color_blue, color_red, 12);
-
 	if (ent)
 	{
 		float r[2], g[2], b[2];
@@ -357,13 +361,10 @@ void StudioRenderModel(void)
 		else r[0] = 1, g[0] = 1, b[0] = 1, r[1] = 1, g[1] = 1, b[1] = 1;
 		Chams(ent, Player, cvar.chams_player, cvar.chams_player_wall, r[0], g[0], b[0], r[1], g[1], b[1], chams_player, chams_player_r, chams_player_g, chams_player_b);
 	}
-
-
 	Glow(ent, Dummy, cvar.chams_player_glow, cvar.chams_player, color_green, color_blue, color_red, 12);
-
 	float r[2], g[2], b[2];
 	r[0] = color_red, g[0] = color_green, b[0] = color_blue, r[1] = color_blue, g[1] = color_red, b[1] = color_green;
-	Chams(ent, Dummy, cvar.chams_player, cvar.chams_player_wall, r[0], g[0], b[0], r[1], g[1], b[1], chams_player, chams_player_r, chams_player_g, chams_player_b);
+	Chams(ent, Dummy, cvar.chams_player, cvar.chams_player_wall, r[0], g[0], b[0], r[1], g[1], b[1], chams_playerdummy, chams_playerdummy_r, chams_playerdummy_g, chams_playerdummy_b);
 	oStudioRenderModel();
 }
 

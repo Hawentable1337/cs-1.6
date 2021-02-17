@@ -41,21 +41,3 @@ void ColorChange()
 	if (Color[0] < 0.0f) Color[0] += 1.0f;
 	ImGui::ColorConvertHSVtoRGB(Color[0], Color[1], Color[2], color_red, color_green, color_blue);
 }
-
-void ConsolePrintColor(BYTE R, BYTE G, BYTE B, char* fmt, ...)
-{
-	va_list va_alist;
-	char buf[256];
-	va_start(va_alist, fmt);
-	_vsnprintf(buf, sizeof(buf), fmt, va_alist);
-	va_end(va_alist);
-	TColor24 DefaultColor;
-	PColor24 Ptr;
-	Ptr = Console_TextColor;
-	DefaultColor = *Ptr;
-	Ptr->R = R;
-	Ptr->G = G;
-	Ptr->B = B;
-	g_Engine.Con_Printf(buf);
-	*Ptr = DefaultColor;
-}

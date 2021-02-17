@@ -29,7 +29,6 @@ public:
 	void GlobalTime(); 
 	void Error(char* fmt, ...);
 	void PatchInterpolation(void);
-	void ConsoleColorInitalize();
 	unsigned Absolute(DWORD Addr);
 
 	bool GetRendererInfo();
@@ -47,8 +46,7 @@ public:
 	DWORD CL_Move(void);
 	DWORD FindSpeed(void);
 	DWORD PreS_DynamicSound(void);
-	DWORD Steam_GSInitiateGameConnection(void); 
-	DWORD FindGameConsole();
+	DWORD Steam_GSInitiateGameConnection(void);
 	DWORD FindInterface(DWORD GetStudioModelInterfaceAddress);
 	PUserMsg FindUserMsgBase();
 };

@@ -16,11 +16,5 @@ ImColor Wheel3();
 ImColor Team(int i);
 
 void ColorChange();
-void ConsolePrintColor(BYTE R, BYTE G, BYTE B, char* fmt, ...);
-
-typedef struct Color24
-{
-	BYTE R, G, B;
-} TColor24, * PColor24;
 
 #endif

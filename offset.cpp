@@ -423,39 +423,6 @@ DWORD AutoOffset::Steam_GSInitiateGameConnection(void)
 	return Address;
 }
 
-DWORD AutoOffset::FindGameConsole()
-{
-	DWORD PatternAddress = FindPattern("GameConsole003", UiBase, UiEnd, 0);
-	DWORD ReferenAddress = FindReference(UiBase, UiEnd, PatternAddress) + 0x21;
-
-	if (FarProc(ReferenAddress, UiBase, UiEnd))
-	{
-		Error("Couldn't find %s.", __FUNCTION__);
-		return 0;
-	}
-
-	DWORD GameConsole = *(PDWORD)ReferenAddress;
-
-	return GameConsole;
-}
-
-void AutoOffset::ConsoleColorInitalize()
-{
-	DWORD GameConsole = FindGameConsole();
-
-	if (GameConsole)
-	{
-		DWORD Panel = (*(PDWORD)(GameConsole + 8) - GameConsole);
-
-		Console_TextColor = PColor24(Panel + GameConsole + 288 + sizeof(DWORD));
-
-		if (*(PDWORD)(DWORD(Console_TextColor) + 8) != 0)
-		{
-			Console_TextColor = PColor24(Panel + GameConsole + 288 + (sizeof(DWORD) * 2));
-		}
-	}
-}
-
 DWORD FindCodeAddress(DWORD dwStart, DWORD dwEnd, LPBYTE bCode, UINT CodeSize, INT OpcodeNum, BOOL bPattern)
 {
 	DWORD i;

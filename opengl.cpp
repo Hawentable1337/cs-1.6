@@ -14,13 +14,13 @@ glReadPixels_t pglReadPixels = NULL;
 
 void APIENTRY Hooked_glBegin(GLenum mode)
 {
+	Playerdummy();
 	cl_entity_s* ent = g_Studio.GetCurrentEntity();
-	if (ent && ent == &playerdummy && !cvar.chams_player && DrawVisuals && GetTickCount() - HudRedraw <= 100)
+	if (ent && ent == &playerdummy)
 	{
-		if (mode == GL_TRIANGLE_STRIP)
+		if (mode == GL_TRIANGLE_STRIP && !cvar.chams_player && !cvar.chams_player_glow)
 			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 	}
-
 	pglBegin(mode);
 }
 
@@ -75,7 +75,14 @@ void APIENTRY Hooked_glColor4f(GLfloat red, GLfloat green, GLfloat blue, GLfloat
 		if (cvar.chams_player == 2)
 			red = chams_player_r * red, green = chams_player_g * green, blue = chams_player_b * blue;
 	}
-	(*pglColor4f)(red, green, blue, alpha);
+	if (chams_playerdummy)
+	{
+		if (cvar.chams_player == 1 || cvar.chams_player == 3)
+			red = chams_playerdummy_r, green = chams_playerdummy_g, blue = chams_playerdummy_b;
+		if (cvar.chams_player == 2)
+			red = chams_playerdummy_r * red, green = chams_playerdummy_g * green, blue = chams_playerdummy_b * blue;
+	}
+	pglColor4f(red, green, blue, alpha);
 }
 
 void HookOpenGL()

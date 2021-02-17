@@ -14,7 +14,6 @@ cl_enginefunc_t g_Engine;
 engine_studio_api_t g_Studio;
 r_studio_interface_t g_Interface;
 StudioModelRenderer_t g_StudioModelRenderer;
-PColor24 Console_TextColor;
 
 DWORD HudRedraw;
 
@@ -24,6 +23,7 @@ void HUD_Redraw(float time, int intermission)
 	HudRedraw = GetTickCount();
 	DrawOverviewLayer();
 	KzFameCount();
+	GetDummyModels(); 
 }
 
 int HUD_Key_Event(int down, int keynum, const char* pszCurrentBinding)
@@ -238,12 +238,6 @@ void HUD_Frame(double time)
 	g_Client.HUD_Frame(time);
 }
 
-void HUD_CreateEntities()
-{
-	Playerdummy();
-	g_Client.HUD_CreateEntities();
-}
-
 void PreV_CalcRefdef(struct ref_params_s* pparams)
 {
 	g_Local.vPunchangle = pparams->punchangle;
@@ -254,6 +248,7 @@ void PreV_CalcRefdef(struct ref_params_s* pparams)
 
 void PostV_CalcRefdef(struct ref_params_s* pparams)
 {
+	GetDummyAngle(pparams);
 	g_Local.vPostForward = pparams->forward;
 	g_Local.iPostHealth = pparams->health;
 	ViewModelFov(pparams);
@@ -267,15 +262,8 @@ void V_CalcRefdef(struct ref_params_s* pparams)
 	PostV_CalcRefdef(pparams);
 }
 
-int HUD_AddEntity(int type, struct cl_entity_s* ent, const char* modelname)
-{
-	return g_Client.HUD_AddEntity(type, ent, modelname);
-}
-
 void HookClientFunctions()
 {
-	g_pClient->HUD_AddEntity = HUD_AddEntity;
-	g_pClient->HUD_CreateEntities = HUD_CreateEntities;
 	g_pClient->HUD_Frame = HUD_Frame;
 	g_pClient->HUD_Redraw = HUD_Redraw;
 	g_pClient->CL_CreateMove = CL_CreateMove;

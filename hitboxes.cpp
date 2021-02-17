@@ -148,7 +148,6 @@ void WorldHitboxes(cl_entity_s* ent)
 			for (unsigned int i = 0; i < pStudioHeader->numhitboxes; i++)
 			{
 				Vector vBBMax, vBBMin, vCubePointsTrans[8], vCubePoints[8];
-				Vector vEye = pmove->origin + pmove->view_ofs;
 				VectorTransform(pHitbox[i].bbmin, (*pBoneMatrix)[pHitbox[i].bone], vBBMin);
 				VectorTransform(pHitbox[i].bbmax, (*pBoneMatrix)[pHitbox[i].bone], vBBMax);
 
@@ -627,6 +626,7 @@ void PlayerHitboxes(cl_entity_s* ent)
 
 void DummyHitboxes(cl_entity_s* ent)
 {
+	DrawDummyBack();
 	if (ent && ent->model && ent == &playerdummy)
 	{
 		studiohdr_t* pStudioHeader = (studiohdr_t*)g_Studio.Mod_Extradata(ent->model);
@@ -668,7 +668,6 @@ void DummyHitboxes(cl_entity_s* ent)
 		for (unsigned int i = 0; i < pStudioHeader->numhitboxes; i++)
 		{
 			Vector vBBMax, vBBMin, vCubePointsTrans[8], vCubePoints[8];
-			Vector vEye = pmove->origin + pmove->view_ofs;
 			VectorTransform(pHitbox[i].bbmin, (*pBoneMatrix)[pHitbox[i].bone], vBBMin);
 			VectorTransform(pHitbox[i].bbmax, (*pBoneMatrix)[pHitbox[i].bone], vBBMax);
 

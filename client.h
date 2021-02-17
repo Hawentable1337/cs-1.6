@@ -190,7 +190,6 @@ extern cl_enginefunc_t g_Engine;
 extern engine_studio_api_t g_Studio;
 extern r_studio_interface_t g_Interface;
 extern StudioModelRenderer_t g_StudioModelRenderer;
-extern PColor24 Console_TextColor;
 
 extern DWORD HudRedraw;
 

@@ -28,8 +28,6 @@ DWORD WINAPI Hook()
 
 	c_Offset.PatchInterpolation();
 
-	c_Offset.ConsoleColorInitalize();
-
 	LoadCvar();
 
 	LoadHitbox();

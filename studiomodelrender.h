@@ -137,6 +137,11 @@ extern float chams_world_g;
 extern float chams_world_b;
 extern float chams_world;
 
+extern float chams_playerdummy_r;
+extern float chams_playerdummy_g;
+extern float chams_playerdummy_b;
+extern float chams_playerdummy;
+
 void HookStudiModelRendererFunctions();
 
 #endif

@@ -26,7 +26,7 @@ void Health(int id, float x, float y, float h)
 void Vip(int id, float x, float y, float w)
 {
 	if (!cvar.visual_vip || !g_Player[id].bVip) return;
-	ImGui::GetCurrentWindow()->DrawList->AddImage((GLuint*)texture_id[VIP], { x, y - w }, { x + w, y });
+	ImGui::GetCurrentWindow()->DrawList->AddImage((GLuint*)texture_id[VIP], { x, y - w / 2 }, { x + w, y });
 }
 
 bool Reload(int sequence, float x, float y, ImU32 team, ImU32 green)
@@ -86,7 +86,7 @@ void HealthDummy(float x, float y, float h)
 void VipDummy(float x, float y, float w)
 {
 	if (!cvar.visual_vip) return;
-	ImGui::GetCurrentWindow()->DrawList->AddImage((GLuint*)texture_id[VIP], { x, y - w }, { x + w, y });
+	ImGui::GetCurrentWindow()->DrawList->AddImage((GLuint*)texture_id[VIP], { x, y - w / 2 }, { x + w, y });
 }
 
 bool ReloadDummy(float x, float y, ImU32 wheel, ImU32 green)
@@ -200,7 +200,10 @@ void DrawPlayerEsp()
 			VipDummy(x, y, w);
 		}
 		else
-			esph = 0;
+		{
+			esph = 0; 
+			modelscale = 0.01;
+		}
 	}
 }
 

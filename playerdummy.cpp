@@ -4,15 +4,57 @@ cl_entity_s playerdummy;
 
 deque<playermodel_t> PlayerModel;
 
-float modelscreenw = 100, modelscreenh = 100;
+float modelscreenw = 200, modelscreenh = 300;
 int model_type;
 float esph;
 float model_pos_x = 100, model_pos_y = 100;
 float modelscale = 0.01;
+bool drawdummy = false;
+bool drawgetdummy = false;
+bool drawbackdummy = false;
 
-void Playerdummy()
+float vViewanglesDummy[3];
+
+void GetDummyAngle(ref_params_s* pparams)
 {
-	if (bShowMenu && (pmove->iuser1 == OBS_NONE || pmove->iuser1 == OBS_ROAMING) && cvar.model_preview && DrawVisuals && GetTickCount() - HudRedraw <= 100)
+	vViewanglesDummy[0] = pparams->viewangles[0];
+	vViewanglesDummy[1] = pparams->viewangles[1] + 180;
+	vViewanglesDummy[2] = -pparams->viewangles[2];
+}
+
+void DrawDummyBack()
+{
+	if (drawbackdummy)
+	{
+		Vector world1, screen1 = Vector(model_pos_x, model_pos_y, 0);
+		Vector world2, screen2 = Vector(model_pos_x + modelscreenw, model_pos_y, 0);
+		Vector world3, screen3 = Vector(model_pos_x + modelscreenw, model_pos_y + modelscreenh, 0);
+		Vector world4, screen4 = Vector(model_pos_x, model_pos_y + modelscreenh, 0);
+		ScreenToWorld(screen1, world1);
+		ScreenToWorld(screen2, world2);
+		ScreenToWorld(screen3, world3);
+		ScreenToWorld(screen4, world4);
+		glDisable(GL_TEXTURE_2D);
+		glEnable(GL_BLEND);
+		glEnable(GL_LINE_SMOOTH);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glColor4f(0.06f, 0.06f, 0.06f, 0.94f);
+		glBegin(GL_QUADS);
+		glVertex3fv(world1);
+		glVertex3fv(world2);
+		glVertex3fv(world3);
+		glVertex3fv(world4);
+		glEnd();
+		glEnable(GL_TEXTURE_2D);
+		glDisable(GL_BLEND);
+		glDisable(GL_LINE_SMOOTH);
+		drawbackdummy = false;
+	}
+}
+
+void GetDummyModels()
+{
+	if (drawgetdummy)
 	{
 		for (int i = 0; i < 256; i++)
 		{
@@ -34,16 +76,21 @@ void Playerdummy()
 			model.mod = mod;
 			PlayerModel.push_back(model);
 		}
+		drawgetdummy = false;
+	}
+}
+
+void Playerdummy()
+{
+	if (drawdummy)
+	{
+		Vector world, screen = Vector(model_pos_x + (modelscreenw / 2), model_pos_y + (modelscreenh / 2) + 40, 0);
+		ScreenToWorld(screen, world);
 
 		if (PlayerModel.size() && model_type > PlayerModel.size() - 1)
 			model_type = PlayerModel.size() - 1;
 		if (PlayerModel.size() == 0)
 			model_type = 0;
-
-		float screen[] = { model_pos_x + (modelscreenw / 2), model_pos_y + (modelscreenh / 2) + 40 };
-		Vector world;
-		if (!ScreenToWorld(screen, world) || !modelmenu)
-			return;
 
 		for (int i = 0; i < PlayerModel.size(); i++)
 		{
@@ -58,12 +105,14 @@ void Playerdummy()
 
 			if (i != model_type)
 				continue;
+
 			playerdummy.model = mod;
-			playerdummy.curstate.angles = Vector(pmove->angles.x, pmove->angles.y + 180, pmove->angles.z);
+			playerdummy.curstate.angles = vViewanglesDummy;
 			playerdummy.curstate.sequence = 1;
 			playerdummy.origin = world;
 
 			g_Engine.CL_CreateVisibleEntity(ET_TEMPENTITY, &playerdummy);
 		}
+		drawdummy = false;
 	}
 }

@@ -3,6 +3,6 @@
 
 void DrawFullScreenWindow();
 bool WorldToScreen(float* pflOrigin, float* pflVecScreen);
-bool ScreenToWorld(float* screen, float* world);
+void ScreenToWorld(float* screen, float* world);
 
 #endif
