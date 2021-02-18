@@ -6,9 +6,9 @@ deque<playermodel_t> PlayerModel;
 
 float modelscreenw = 200, modelscreenh = 300;
 int model_type;
-float esph;
+float espx, espy, espw, esph;
 float model_pos_x = 100, model_pos_y = 100;
-float modelscale = 0.01;
+float modelscale = 0.03;
 bool drawdummy = false;
 bool drawgetdummy = false;
 bool drawbackdummy = false;

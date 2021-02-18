@@ -83,10 +83,11 @@ void HealthDummy(float x, float y, float h)
 	}
 }
 
-void VipDummy(float x, float y, float w)
+bool VipDummy(float x, float y, float w)
 {
-	if (!cvar.visual_vip) return;
+	if (!cvar.visual_vip) return false;
 	ImGui::GetCurrentWindow()->DrawList->AddImage((GLuint*)texture_id[VIP], { x, y - w / 2 }, { x + w, y });
+	return true;
 }
 
 bool ReloadDummy(float x, float y, ImU32 wheel, ImU32 green)
@@ -186,23 +187,45 @@ void DrawPlayerEsp()
 		float x, y, w, h, xo;
 		if (bCalcScreen(Esp, x, y, w, h, xo))
 		{
-			esph = h;
 			Box(x, y, w, h, Wheel1());
 			HealthDummy(x, y, h);
 			if (ReloadDummy(xo, y, Wheel1(), Green()))
+			{
 				y -= 15;
+				h += 15;
+			}
 			if (NameDummy(xo, y, Wheel1(), White()))
+			{
 				y -= 15;
+				h += 15;
+			}
 			if (ModelDummy(xo, y, Wheel1(), White()))
+			{
 				y -= 15;
+				h += 15;
+			}
 			if (WeaponDummy(xo, y, Wheel1(), White()))
+			{
 				y -= 15;
-			VipDummy(x, y, w);
+				h += 15;
+			}
+			if (VipDummy(x, y, w))
+			{
+				y -= w / 2;
+				h += w / 2;
+			}
+			espx = x;
+			espy = y;
+			espw = w;
+			esph = h;
 		}
 		else
 		{
-			esph = 0; 
-			modelscale = 0.01;
+			espx = 0;
+			espy = 0;
+			espw = 0;
+			esph = 0;
+			modelscale = 0.03;
 		}
 	}
 }

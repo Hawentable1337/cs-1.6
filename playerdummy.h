@@ -12,7 +12,7 @@ extern deque<playermodel_t> PlayerModel;
 
 extern float modelscreenw, modelscreenh;
 extern int model_type;
-extern float esph;
+extern float espx, espy, espw, esph;
 extern float model_pos_x, model_pos_y;
 extern float modelscale;
 extern bool drawdummy;

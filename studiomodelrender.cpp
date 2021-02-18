@@ -140,20 +140,66 @@ void StudioSetupBones(void)
 	cl_entity_s* ent = g_Studio.GetCurrentEntity(); 
 	if (ent && ent == &playerdummy)
 	{
-		float screensizex = modelscreenw * 1.5f / 2.f;
-		float screensizey = modelscreenh / 2.f;
+		if (espx && espy && espw && esph)
+		{
+			if (espx > model_pos_x + 26 && espx + espw < model_pos_x + modelscreenw - 26 &&
+				espy > model_pos_y + 51 && espy + esph < model_pos_y + modelscreenh - 11)
+			{
+				float result;
+				float out[4];
+				out[0] = espx - (model_pos_x + 26);
+				out[1] = espy - (model_pos_y + 51);
+				out[2] = model_pos_x + (modelscreenw - 26) - (espx + espw);
+				out[3] = model_pos_y + (modelscreenh - 11) - (espy + esph);
+				result = out[0];
+				for (unsigned int i = 0; i < 4; i++)
+				{
+					//LogToFile("+ out %d %1.f", i, out[i]);
+					result = min(result, out[i]);
+				}
 
-		float screensize;
-		if (screensizex < screensizey)
-			screensize = screensizex;
-		if (screensizex >= screensizey)
-			screensize = screensizey;
-		
-		if (esph && int(esph) < int(screensize) - 1)
-			modelscale += 0.00001f * (screensize - esph);
-		if (esph && int(esph) > int(screensize) + 1)
-			modelscale -= 0.00001f * (esph - screensize);
+				//LogToFile("+ result %1.f", result);
+				if(modelscale + 0.000001f * result * result < 1)
+					modelscale += 0.000001f * result * result;
+				else if(modelscale + 0.0000001f * result * result < 1)
+					modelscale += 0.0000001f * result * result;
+			}
+			if (espx < model_pos_x + 24 || espx + espw > model_pos_x + modelscreenw - 24 ||
+				espy < model_pos_y + 49 || espy + esph > model_pos_y + modelscreenh - 9)
+			{
+				float result;
+				float out[4];
+				if (espx < model_pos_x + 24)
+					out[0] = (model_pos_x + 24) - espx;
+				else
+					out[0] = 0;
+				if (espy < model_pos_y + 49)
+					out[1] = (model_pos_y + 49) - espy;
+				else
+					out[1] = 0;
+				if (espx + espw > model_pos_x + modelscreenw - 24)
+					out[2] = (espx + espw) - (model_pos_x + (modelscreenw - 24));
+				else
+					out[2] = 0;
+				if (espy + esph > model_pos_y + modelscreenh - 9)
+					out[3] = (espy + esph) - (model_pos_y + (modelscreenh - 9));
+				else
+					out[3] = 0;
 
+				result = out[0];
+				for (unsigned int i = 0; i < 4; i++)
+				{
+					//LogToFile("- out %d %1.f", i, out[i]);
+					result = max(result, out[i]);
+				}
+				//LogToFile("- result %1.f", result);
+				if (modelscale - 0.000001f * result * result > 0)
+					modelscale -= 0.000001f * result * result;
+				else if (modelscale - 0.0000001f * result * result > 0)
+					modelscale -= 0.0000001f * result * result;
+			}
+		}
+		//LogToFile("%.16f", modelscale);
 		pThis->m_protationmatrix = (float(*)[3][4])g_Studio.StudioGetRotationMatrix();
 		for (int i = 0; i < 3; i++)
 		{

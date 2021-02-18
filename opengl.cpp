@@ -24,11 +24,6 @@ void APIENTRY Hooked_glBegin(GLenum mode)
 			glBindTexture(GL_TEXTURE_2D, 0);
 			glEnable(GL_TEXTURE_2D);
 		}
-		if (!cvar.chams_player && !cvar.chams_player_glow)
-		{
-			if (mode == GL_TRIANGLE_STRIP)
-				glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
-		}
 	}
 	pglBegin(mode);
 }

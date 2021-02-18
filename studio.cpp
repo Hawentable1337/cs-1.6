@@ -21,8 +21,23 @@ void StudioDrawPoints()
 	g_Studio.StudioDrawPoints();
 }
 
+void StudioEntityLight(struct alight_s* plight)
+{
+	cl_entity_s* ent = g_Studio.GetCurrentEntity();
+	if (ent && ent == &playerdummy)
+	{
+		plight->ambientlight = 128;
+		plight->shadelight = 192;
+		plight->color.x = 1.f;
+		plight->color.y = 1.f;
+		plight->color.z = 1.f;
+	}
+	g_Studio.StudioEntityLight(plight);
+}
+
 void HookStudioFunctions()
 {
+	g_pStudio->StudioEntityLight = StudioEntityLight;
 	g_pStudio->StudioDrawPoints = StudioDrawPoints;
 	g_pStudio->StudioSetRemapColors = StudioSetRemapColors;
 	g_pStudio->StudioCheckBBox = StudioCheckBBox;
