@@ -12,6 +12,7 @@ typedef struct overviewInfo_s
 }
 overviewInfo_t;
 
+void GetRadarAngle(ref_params_s* pparams);
 void DrawOverview(); 
 void LoadOverview(char* levelname);
 void DrawOverviewLayer();

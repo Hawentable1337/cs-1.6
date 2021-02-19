@@ -220,6 +220,9 @@
     <ClCompile Include="guiwindowpop.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="thirdperson.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="autoroute.h">
@@ -439,6 +442,9 @@
       <Filter>source</Filter>
     </ClInclude>
     <ClInclude Include="guiwindowpop.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="thirdperson.h">
       <Filter>source</Filter>
     </ClInclude>
   </ItemGroup>

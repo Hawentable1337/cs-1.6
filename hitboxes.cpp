@@ -626,9 +626,9 @@ void PlayerHitboxes(cl_entity_s* ent)
 
 void DummyHitboxes(cl_entity_s* ent)
 {
-	DrawDummyBack();
 	if (ent && ent->model && ent == &playerdummy)
 	{
+		DrawDummyBack();
 		studiohdr_t* pStudioHeader = (studiohdr_t*)g_Studio.Mod_Extradata(ent->model);
 		if (!pStudioHeader)
 			return;

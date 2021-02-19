@@ -5,6 +5,18 @@ int iX, iY, iW, iH;
 bool MapLoaded = false;
 int xTile = 1, yTile = 1; 
 model_s* m_MapSprites;
+float RadarAngle[3];
+float RadarOrg[3];
+
+void GetRadarAngle(ref_params_s* pparams)
+{
+	RadarAngle[0] = pparams->viewangles[0];
+	RadarAngle[1] = pparams->viewangles[1];
+	RadarAngle[2] = pparams->viewangles[2];
+	RadarOrg[0] = pparams->vieworg[0];
+	RadarOrg[1] = pparams->vieworg[1];
+	RadarOrg[2] = pparams->vieworg[2];
+}
 
 bool ParseOverview(char* overview_txt)
 {
@@ -129,20 +141,17 @@ void DrawOverviewLayer()
 	if (!(DrawVisuals && (!cvar.route_auto || cvar.route_draw_visual)))
 		return;
 
-	Vector vAngle, vEye = pmove->origin + pmove->view_ofs;
-	if (bAliveLocal())
-		g_Engine.GetViewAngles(vAngle);
-	else
-		vAngle = pmove->angles;
+	Vector Org = RadarOrg;
+	Vector Angle = RadarAngle;
 
 	glViewport(iX, ImGui::GetIO().DisplaySize.y - (iY + iH), iW, iH);
 	if (m_MapSprites) 
 	{
 		float vStepRight[2], vStepUp[2], inner[2], outer[2];
-		float z = ((90.0f - vAngle[0]) / 90.0f) * m_OverviewData.layersHeights[0];
+		float z = ((90.0f - Angle[0]) / 90.0f) * m_OverviewData.layersHeights[0];
 		float xStep = (8192.f / cvar.radar_zoom) / xTile;
 		float yStep = -(8192.f / (cvar.radar_zoom * (4.f / 3.f))) / yTile;
-		float angle = (float)((vAngle[1] + 90.0) * (M_PI / 180));
+		float angle = (float)((Angle[1] + 90.0) * (M_PI / 180));
 		if (m_OverviewData.rotated)
 			angle -= float(M_PI / 2);
 		vStepRight[0] = (float)cos(angle) * xStep;
@@ -154,15 +163,15 @@ void DrawOverviewLayer()
 		{
 			float origin_tilex = (float)(-4.f + m_OverviewData.zoom * (1.0 / 1024.0) * m_OverviewData.origin[0]);
 			float origin_tiley = (float)(3.f + m_OverviewData.zoom * (1.0 / 1024.0) * m_OverviewData.origin[1]);
-			tile_y = -(float)(origin_tilex - (1.0 / 1024) * m_OverviewData.zoom * vEye[0]);
-			tile_x = (float)(origin_tiley - (1.0 / 1024) * m_OverviewData.zoom * vEye[1]);
+			tile_y = -(float)(origin_tilex - (1.0 / 1024) * m_OverviewData.zoom * Org[0]);
+			tile_x = (float)(origin_tiley - (1.0 / 1024) * m_OverviewData.zoom * Org[1]);
 		}
 		else 
 		{ 
 			float origin_tilex = (float)(3.f + m_OverviewData.zoom * (1.0 / 1024.0) * m_OverviewData.origin[0]);
 			float origin_tiley = (float)(4.f + m_OverviewData.zoom * (1.0 / 1024.0) * m_OverviewData.origin[1]);
-			tile_x = (float)(origin_tilex - (1.0 / 1024) * m_OverviewData.zoom * vEye[0]);
-			tile_y = (float)(origin_tiley - (1.0 / 1024) * m_OverviewData.zoom * vEye[1]);
+			tile_x = (float)(origin_tilex - (1.0 / 1024) * m_OverviewData.zoom * Org[0]);
+			tile_y = (float)(origin_tiley - (1.0 / 1024) * m_OverviewData.zoom * Org[1]);
 		}
 		outer[0] = (ImGui::GetIO().DisplaySize.x / 2) - tile_x * vStepRight[0] - tile_y * vStepUp[0];
 		outer[1] = (ImGui::GetIO().DisplaySize.y / 2) - tile_x * vStepRight[1] - tile_y * vStepUp[1];
@@ -214,11 +223,8 @@ void DrawOverviewEntities()
 	if (!cvar.radar)
 		return;
 
-	Vector vAngle, vEye = pmove->origin + pmove->view_ofs;
-	if (bAliveLocal())
-		g_Engine.GetViewAngles(vAngle);
-	else
-		vAngle = pmove->angles;
+	Vector Org = RadarOrg;
+	Vector Angle = RadarAngle;
 
 	for (unsigned int i = 1; i <= g_Engine.GetMaxClients(); i++)
 	{
@@ -227,25 +233,27 @@ void DrawOverviewEntities()
 			continue;
 		if (ent->curstate.messagenum < g_Engine.GetEntityByIndex(pmove->player_index + 1)->curstate.messagenum)
 			continue;
-		if (ent->index == pmove->player_index + 1)
-			continue;
 		if (!g_Player[ent->index].bAliveInScoreTab)
 			continue;
 		if (ent->curstate.mins.IsZero())
 			continue;
 		if (ent->curstate.maxs.IsZero())
 			continue;
-		if (g_Engine.GetEntityByIndex(pmove->player_index + 1)->curstate.iuser2 == ent->index)
-			continue;
 		if (cvar.visual_idhook_only && idhook.FirstKillPlayer[ent->index] != 1)
 			continue;
-		if (!cvar.visual_visual_team && g_Player[ent->index].iTeam == g_Local.iTeam)
+		if (!cvar.visual_visual_team && g_Player[ent->index].iTeam == g_Local.iTeam && ent->index != pmove->player_index + 1)
 			continue;
 		if (g_Player[ent->index].iTeam == 0)
 			continue;
+		
+		Vector origin;
+		if (ent->index == pmove->player_index + 1)
+			origin = RadarOrg;
+		else
+			origin = ent->origin;
 
 		float calcscreen[2];
-		VectorRotateZ(ent->origin - vEye, -vAngle[1], calcscreen);
+		VectorRotateZ(origin - Org, -Angle[1], calcscreen);
 		float screenx = iX + iW / 2 - calcscreen[1] / cvar.radar_zoom * m_OverviewData.zoom * 0.3f * iW / 2 / (ImGui::GetIO().DisplaySize.x / 6.7);
 		float screeny = iY + iH / 2 - calcscreen[0] / cvar.radar_zoom * m_OverviewData.zoom * 0.4f * iH / 2 / (ImGui::GetIO().DisplaySize.y / 5.1);
 
@@ -259,8 +267,14 @@ void DrawOverviewEntities()
 			screeny = iY + iH / 2 + iH / 2 - boxsize - 2;
 		if (screeny < iY + iH / 2 - iH / 2 + boxsize + 3)
 			screeny = iY + iH / 2 - iH / 2 + boxsize + 3;
+		
+		Vector angles;
+		if (ent->index == pmove->player_index + 1)
+			angles = RadarAngle;
+		else
+			angles = ent->angles;
 
-		Vector vforward, vRight, vAngles = Vector(0, -ent->angles[1] + vAngle[1] + 90, 0);
+		Vector vforward, vRight, vAngles = Vector(0, -angles[1] + Angle[1] + 90, 0);
 		g_Engine.pfnAngleVectors(vAngles, vforward, vRight, NULL);
 
 		ImVec2 a, b, c, d;
@@ -287,11 +301,8 @@ void DrawOverviewEntitiesSoundIndex()
 	if (!cvar.radar)
 		return;
 
-	Vector vAngle, vEye = pmove->origin + pmove->view_ofs;
-	if (bAliveLocal())
-		g_Engine.GetViewAngles(vAngle);
-	else
-		vAngle = pmove->angles;
+	Vector Org = RadarOrg;
+	Vector Angle = RadarAngle;
 
 	for (player_sound_index_t sound_index : Sound_Index)
 	{
@@ -312,7 +323,7 @@ void DrawOverviewEntitiesSoundIndex()
 			continue;
 
 		float calcscreen[2];
-		VectorRotateZ(sound_index.origin - vEye, -vAngle[1], calcscreen);
+		VectorRotateZ(sound_index.origin - Org, -Angle[1], calcscreen);
 		float screenx = IM_ROUND(iX + iW / 2 - calcscreen[1] / cvar.radar_zoom * m_OverviewData.zoom * 0.3f * iW / 2 / (ImGui::GetIO().DisplaySize.x / 6.7));
 		float screeny = IM_ROUND(iY + iH / 2 - calcscreen[0] / cvar.radar_zoom * m_OverviewData.zoom * 0.4f * iH / 2 / (ImGui::GetIO().DisplaySize.y / 5.1));
 
@@ -328,8 +339,8 @@ void DrawOverviewEntitiesSoundIndex()
 			screeny = iY + iH / 2 - iH / 2 + boxsize + 3;
 
 		QAngle QAimAngles;
-		VectorAngles(sound_index.origin - vEye, QAimAngles);
-		Vector vforward, vRight, vAngles = Vector(0, -QAimAngles[1] + vAngle[1] - 90, 0);
+		VectorAngles(sound_index.origin - Org, QAimAngles);
+		Vector vforward, vRight, vAngles = Vector(0, -QAimAngles[1] + Angle[1] - 90, 0);
 		g_Engine.pfnAngleVectors(vAngles, vforward, vRight, NULL);
 
 		ImVec2 a, b, c, d;
@@ -356,18 +367,15 @@ void DrawOverviewEntitiesSoundNoIndex()
 	if (!cvar.radar)
 		return;
 
-	Vector vAngle, vEye = pmove->origin + pmove->view_ofs;
-	if (bAliveLocal())
-		g_Engine.GetViewAngles(vAngle);
-	else
-		vAngle = pmove->angles;
+	Vector Org = RadarOrg;
+	Vector Angle = RadarAngle;
 
 	for (player_sound_no_index_t sound_no_index : Sound_No_Index)
 	{
 		if (GetTickCount() - sound_no_index.timestamp > 300)
 			continue;
 		float calcscreen[2];
-		VectorRotateZ(sound_no_index.origin - vEye, -vAngle[1], calcscreen);
+		VectorRotateZ(sound_no_index.origin - Org, -Angle[1], calcscreen);
 		float screenx = IM_ROUND(iX + iW / 2 - calcscreen[1] / cvar.radar_zoom * m_OverviewData.zoom * 0.3f * iW / 2 / (ImGui::GetIO().DisplaySize.x / 6.7));
 		float screeny = IM_ROUND(iY + iH / 2 - calcscreen[0] / cvar.radar_zoom * m_OverviewData.zoom * 0.4f * iH / 2 / (ImGui::GetIO().DisplaySize.y / 5.1));
 
@@ -383,8 +391,8 @@ void DrawOverviewEntitiesSoundNoIndex()
 			screeny = iY + iH / 2 - iH / 2 + boxsize + 3;
 
 		QAngle QAimAngles;
-		VectorAngles(sound_no_index.origin - vEye, QAimAngles);
-		Vector vforward, vRight, vAngles = Vector(0, -QAimAngles[1] + vAngle[1] - 90, 0);
+		VectorAngles(sound_no_index.origin - Org, QAimAngles);
+		Vector vforward, vRight, vAngles = Vector(0, -QAimAngles[1] + Angle[1] - 90, 0);
 		g_Engine.pfnAngleVectors(vAngles, vforward, vRight, NULL);
 
 		ImVec2 a, b, c, d;
@@ -399,19 +407,6 @@ void DrawOverviewEntitiesSoundNoIndex()
 
 		ImGui::GetWindowDrawList()->AddImageQuad((GLuint*)texture_id[GREENSOUND], a, b, c, d);
 	}
-}
-
-void DrawOverviewMyPos()
-{
-	ImU32 color;
-	if (g_Local.iTeam == 1)
-		color = Red();
-	else if (g_Local.iTeam == 2)
-		color = Blue();
-	else
-		color = White();
-	ImGui::GetCurrentWindow()->DrawList->AddTriangleFilled({ IM_ROUND(iX + iW / 2 - cvar.radar_point_size) , IM_ROUND(iY + iH / 2) }, { IM_ROUND(iX + iW / 2), IM_ROUND(iY + iH / 2 - cvar.radar_point_size / 2) }, { IM_ROUND(iX + iW / 2) , IM_ROUND(iY + iH / 2 - cvar.radar_point_size) }, color);
-	ImGui::GetCurrentWindow()->DrawList->AddTriangleFilled({ IM_ROUND(iX + iW / 2 + cvar.radar_point_size) , IM_ROUND(iY + iH / 2) }, { IM_ROUND(iX + iW / 2), IM_ROUND(iY + iH / 2 - cvar.radar_point_size / 2) }, { IM_ROUND(iX + iW / 2) , IM_ROUND(iY + iH / 2 - cvar.radar_point_size) }, color);
 }
 
 void DrawOverview()
@@ -463,7 +458,6 @@ void DrawOverview()
 		DrawOverviewEntitiesSoundNoIndex();
 		DrawOverviewEntitiesSoundIndex();
 		DrawOverviewEntities();
-		DrawOverviewMyPos();
 	}
 	ImGui::End();
 	ImGui::PopStyleColor();

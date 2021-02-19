@@ -153,16 +153,11 @@ void StudioSetupBones(void)
 				out[3] = model_pos_y + (modelscreenh - 11) - (espy + esph);
 				result = out[0];
 				for (unsigned int i = 0; i < 4; i++)
-				{
-					//LogToFile("+ out %d %1.f", i, out[i]);
 					result = min(result, out[i]);
-				}
-
-				//LogToFile("+ result %1.f", result);
-				if(modelscale + 0.000001f * result * result < 1)
-					modelscale += 0.000001f * result * result;
-				else if(modelscale + 0.0000001f * result * result < 1)
-					modelscale += 0.0000001f * result * result;
+				if(modelscale + 0.0001f * result < 1)
+					modelscale += 0.0001f * result;
+				else if(modelscale + 0.00001f * result < 1)
+					modelscale += 0.00001f * result;
 			}
 			if (espx < model_pos_x + 24 || espx + espw > model_pos_x + modelscreenw - 24 ||
 				espy < model_pos_y + 49 || espy + esph > model_pos_y + modelscreenh - 9)
@@ -185,21 +180,15 @@ void StudioSetupBones(void)
 					out[3] = (espy + esph) - (model_pos_y + (modelscreenh - 9));
 				else
 					out[3] = 0;
-
 				result = out[0];
 				for (unsigned int i = 0; i < 4; i++)
-				{
-					//LogToFile("- out %d %1.f", i, out[i]);
 					result = max(result, out[i]);
-				}
-				//LogToFile("- result %1.f", result);
-				if (modelscale - 0.000001f * result * result > 0)
-					modelscale -= 0.000001f * result * result;
-				else if (modelscale - 0.0000001f * result * result > 0)
-					modelscale -= 0.0000001f * result * result;
+				if (modelscale - 0.0001f * result > 0)
+					modelscale -= 0.0001f * result;
+				else if (modelscale - 0.00001f * result > 0)
+					modelscale -= 0.00001f * result;
 			}
 		}
-		//LogToFile("%.16f", modelscale);
 		pThis->m_protationmatrix = (float(*)[3][4])g_Studio.StudioGetRotationMatrix();
 		for (int i = 0; i < 3; i++)
 		{

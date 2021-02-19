@@ -122,6 +122,7 @@ extern char hldir[256];
 #include "viewmodel.h"
 #include "afk.h"
 #include "guiwindowpop.h"
+#include "thirdperson.h"
 
 void HookClientFunctions();
 void CL_Move();

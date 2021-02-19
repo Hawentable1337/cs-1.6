@@ -224,6 +224,7 @@
     <ClCompile Include="strings.cpp" />
     <ClCompile Include="studio.cpp" />
     <ClCompile Include="studiomodelrender.cpp" />
+    <ClCompile Include="thirdperson.cpp" />
     <ClCompile Include="tracegrenade.cpp" />
     <ClCompile Include="usermsg.cpp" />
     <ClCompile Include="vector\QAngle.cpp" />
@@ -299,6 +300,7 @@
     <ClInclude Include="strings.h" />
     <ClInclude Include="studio.h" />
     <ClInclude Include="studiomodelrender.h" />
+    <ClInclude Include="thirdperson.h" />
     <ClInclude Include="tracegrenade.h" />
     <ClInclude Include="usermsg.h" />
     <ClInclude Include="vector\QAngle.h" />

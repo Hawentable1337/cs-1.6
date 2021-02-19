@@ -175,27 +175,8 @@ float HeightOrigin()
 	vTempOrigin[2] -= 8192;
 	pmtrace_t pTrace;
 	g_Engine.pEventAPI->EV_SetTraceHull((pmove->flags & FL_DUCKING) ? 1 : 0);
-	g_Engine.pEventAPI->EV_PlayerTrace(pmove->origin, vTempOrigin, PM_STUDIO_BOX, -1, &pTrace);
-
-	float flHeightorigin = abs(pTrace.endpos.z - pmove->origin.z);
-	g_Engine.pEventAPI->EV_SetTraceHull((pmove->flags & FL_DUCKING) ? 1 : 0);
-	g_Engine.pEventAPI->EV_PlayerTrace(pmove->origin, pTrace.endpos, PM_STUDIO_BOX, -1, &pTrace);
-	if (pTrace.fraction < 1.0f)//not working
-	{
-		flHeightorigin = abs(pTrace.endpos.z - pmove->origin.z);
-
-		int i = g_Engine.pEventAPI->EV_IndexFromTrace(&pTrace);
-		if (i > 0 && i <= g_Engine.GetMaxClients())
-		{
-			cl_entity_s* ent = g_Engine.GetEntityByIndex(i);
-			if (ent)
-			{
-				float dst = pmove->origin.z - (pmove->flags & FL_DUCKING ? 18 : 32) - ent->curstate.origin.z - flHeightorigin;
-				if (dst < 30) flHeightorigin -= 14.0;
-			}
-		}
-	}
-	return flHeightorigin;
+	g_Engine.pEventAPI->EV_PlayerTrace(pmove->origin, vTempOrigin, PM_GLASS_IGNORE | PM_STUDIO_BOX, -1, &pTrace);
+	return abs(pTrace.endpos.z - pmove->origin.z);
 }
 
 inline float EndSpeed(float StartSpeed, float gravity, float frametime, float distance)
@@ -285,11 +266,14 @@ double _my_abs(double n)
 
 float GroundAngle()
 {
-	Vector vTemp1 = pmove->origin;
-	vTemp1[2] -= 8192;
-	pmtrace_t* trace = g_Engine.PM_TraceLine(pmove->origin, vTemp1, 1, (pmove->flags & FL_DUCKING) ? 1 : 0, -1);
-
-	return acos(trace->plane.normal[2]) / M_PI * 180;
+	if (HeightOrigin() <= 60)
+	{
+		Vector vTemp1 = pmove->origin;
+		vTemp1[2] -= 8192;
+		pmtrace_t* trace = g_Engine.PM_TraceLine(pmove->origin, vTemp1, 1, (pmove->flags & FL_DUCKING) ? 1 : 0, -1);
+		return acos(trace->plane.normal[2]) / M_PI * 180;
+	}
+	return 0;
 }
 
 void JumpBug(float frametime, struct usercmd_s *cmd)

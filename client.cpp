@@ -248,9 +248,10 @@ void PreV_CalcRefdef(struct ref_params_s* pparams)
 
 void PostV_CalcRefdef(struct ref_params_s* pparams)
 {
-	GetDummyAngle(pparams);
 	g_Local.vPostForward = pparams->forward;
 	g_Local.iPostHealth = pparams->health;
+	GetRadarAngle(pparams);
+	GetDummyAngle(pparams);
 	ViewModelFov(pparams);
 	ThirdPerson(pparams);
 }
